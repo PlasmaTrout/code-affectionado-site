@@ -9,7 +9,7 @@ This tutorial is designed to guide the reader through creating a very simple bun
 
 Requirements
 -----
--	Apache Felix (See [Starting From Scratch](/osgi/2013/08/09/felix-from-the-ground-up))
+-	Apache Felix (See [Starting From Scratch](/blog/2013/08/15/apache-felix-starting-from-scratch/))
 -	Apache Maven
 -	IDE Of Choice (Preferably IntelliJ IDEA)
 -   Internet Connection (For Maven Repositories)
@@ -79,7 +79,7 @@ This plugins job is just to take the JAR and add the configuration instructions 
 
 First we add org.osgi.core and then we just add a current version of junit for testing. That should be all we need for now. There is one last thing we need to do though. See that link towards the top of your POM that specifies that packaging should be JAR? Lets change that to bundle.
 
-{% codeblock lang:xml %}
+{% codeblock Change Packaging Type lang:xml %}
 <groupId>com.bhn.training</groupId>
 <artifactId>greeter-bundle</artifactId>
 <packaging>bundle</packaging>
@@ -87,24 +87,24 @@ First we add org.osgi.core and then we just add a current version of junit for t
 
 Now our plugin will kick in and give us the correct output. If we run a **mvn package** we should get a build success and just o make sure our plugins are working lets go into the target directory of your project. There you should see a new jar file names greeter-bundle-1.0-SNAPSHOT.jar or something similar. If you execute the command:
 
-{% codeblock %}
+{% codeblock Unpack And Examine Manifest %}
 jar -xvf greeter-bundle-1.0-SNAPSHOT.jar META-INF/MANIFEST.MF
 cat META-INF/MANIFEST.MF
 {% endcodeblock %}
 
 You should see now that the manifest included with this JAR is a bit different from a normal JAR. For instance a normal JAR might look something like this:
 
-{% highlight bash %}
+{% codeblock Normal JAR Manifest %}
 Manifest-Version: 1.0
 Archiver-Version: Plexus Archiver
 Created-By: Apache Maven
 Built-By: PlasmaTrout
 Build-Jdk: 1.6.0_51
-{% endhighlight %}
+{% endcodeblock %}
 
 However our new one, ends up very similar to:
 
-{% highlight bash %}
+{% codeblock OSGi JAR Manifest %}
 Manifest-Version: 1.0
 Bnd-LastModified: 1376419554357
 Build-Jdk: 1.6.0_51
@@ -116,7 +116,7 @@ Bundle-Version: 1.0.0.SNAPSHOT
 Created-By: Apache Maven Bundle Plugin
 Export-Package: org.bhn.training;version="1.0.0.SNAPSHOT"
 Tool: Bnd-1.50.0
-{% endhighlight %}
+{% endcodeblock %}
 
 Notice the extra entries? These will be become crucial to understand later, but just know that since our plugin really only specified two (name and symbolic name), quite a few more were actually written to the manifest by default thanks to the maven plugin.
 
@@ -136,7 +136,7 @@ public interface Greeter {
 
 As you can see it, really won't do much, but it gets the point across. Now lets go to our **impl** package and add an implementation class SimpleStringGreeterImpl.java with the code:
 
-{% highlight java %}
+{% codeblock Greeter Implementation lang:java %}
 package org.bhn.training.impl;
 
 import org.bhn.training.api.Greeter;
@@ -147,7 +147,7 @@ public class SimpleStringGreeterImpl implements Greeter {
         return "Hello World!";
     }
 }
-{% endhighlight %}
+{% endcodeblock %}
 
 Now that we have an implementation of a simple service. What we need to do is write some code to register that service in whats called a service registry. Then anyone who needs to be greeted can simple use the interface to get an instance to the service. 
 
@@ -155,7 +155,7 @@ The programmatic way to do this is to create an Activator. An activator in a bun
 
 First rename App.java to SimpleActivator.java (It should be SimpleStringGreeterActivator buts thats too verbose for the tutorial right now). Then change it to looks like the following:
 
-{% highlight java %}
+{% codeblock Greeter Activator Class lang:java %}
 package org.bhn.training;
 
 import org.osgi.framework.BundleActivator;
@@ -173,24 +173,24 @@ public class SimpleActivator implements BundleActivator
       // What to do when it stops
     }
 }
-{% endhighlight %}
+{% endcodeblock %}
 
 See the two methods it exposed? We will put some code in here in a second, but before we forget lets add the appropriate manifest entry so that the framework knows where this is. In the plugin that we set up earlier add this element to the instructions element:
 
-{% highlight xml %}
+{% codeblock Maven Plugin Activator Instruction lang:xml %}
 <Bundle-Activator>org.bhn.training.SimpleActivator</Bundle-Activator>
-{% endhighlight %}
+{% endcodeblock %}
 
 This manifest entry tells the framework what class the activator is in so it can dynamically call the interface methods start and stop for it. If we build and checkout the manifest now we will see:
 
-{% highlight xml %}
+{% codeblock Manifest Revisited %}
 Manifest-Version: 1.0
 Bnd-LastModified: 1376421388797
 Build-Jdk: 1.6.0_51
 Built-By: JSDowning
 Bundle-Activator: org.bhn.training.SimpleActivator
 ... bunch of other stuff ...
-{% endhighlight %}
+{% endcodeblock %}
 
 Good, we can see our Activator in there, lets put some code in it. The steps involved in registering a service are pretty simple.
 
@@ -198,7 +198,7 @@ Good, we can see our Activator in there, lets put some code in it. The steps inv
 1. We use registerService to keep the ServiceRegistration
 1. When done we use the ServiceRegistration to unregister the service.
 
-{% highlight java %}
+{% codeblock Fully Functioning Activator lang:java %}
 package org.bhn.training;
 
 import org.bhn.training.impl.SimpleStringGreeterImpl;
@@ -226,13 +226,13 @@ public class SimpleActivator implements BundleActivator
     }
 }
 
-{% endhighlight %}
+{% endcodeblock %}
 
 So the gist of this is that the service registers our Implementation class under the string name of the interface. This means anyone who wants a reference to this service can use the interface to get it. It's important to note that right now, it won't work because even though our interfaces are public, they won't be exposed in the framework. We must explicitly tell OSGi to expose our interfaces. Let's do that so we can call it later. The easiest way to do this is to export the interfaces namespace, so lets add this line to the plugin:
 
-{% highlight xml %}
+{% codeblock Exposing Our API In Maven lang:xml %}
 <Export-Package>org.bhn.training.api</Export-Package>
-{% endhighlight %}
+{% endcodeblock %}
 
 This tells the framework to allow other bundles to see this namespace. Without this there would be know way a caller could get a reference to our service, because there would be no interface found called org.bhn.training.api.Greeter to lookup. Notice that the impl class is never exposed. There is absolutely NO method here that someone could instantiate a new SimpleStringGreetingImpl(). Even though its public, it's not exposed by the framework. This gets to the heart of why OSGi is so modular. It's relatively impossible to couple your classes together without some seriously bad practices.
 
@@ -240,19 +240,19 @@ Deploy Our Bundle
 -----
 We are going to use the command line to deploy it, but you don't have to. If you still have the web interface from the previous tutorial you can update and install it from there as well. But from the command line it looks like:
 
-{% highlight bash %}
+{% codeblock Deploying A Bundle Using Felix Command Line %}
 g! felix:install file:/Users/PlasmaTrout/Projects/greeter-bundle/target/greeter-bundle-1.0-SNAPSHOT.jar
 Bundle ID: 13
 
 g! felix:start 13
-{% endhighlight %}
+{% endcodeblock %}
 
 
 Create A Gogo Shell Command
 -----
 It's started but we still have no way of seeing it. Lets create a way to actually call it. In other tutorials we talked about the Gogo shell and how extensible it is, but lets create a new command just to demonstrate how easy it is to expose our interface as a command as well. All we need to do to make this happen is add two new properties to our service. Lets change our startup to be:
 
-{% highlight java %}
+{% codeblock Creating A Gogo Shell Command lang:java %}
 public void start(BundleContext bundleContext) throws Exception {
       Hashtable<String,Object> props = new Hashtable<String, Object>();
       props.put("osgi.command.scope","tutorial");
@@ -261,19 +261,19 @@ public void start(BundleContext bundleContext) throws Exception {
               .registerService(org.bhn.training.api.Greeter.class.getName(),
               new SimpleStringGreeterImpl(),props);
 }
-{% endhighlight %}
+{% endcodeblock %}
 
 Using these two properties, you can expose any class method as a Gogo shell command. The first specifies the scope of the command, which is just a clever way to avoid conflicts with other command named the same. The second is the method to call and command name wrapped it one. So calling **tutorial:greet** should cause a hello world to appear. Lets **mvn package** again then run an update on our bundle. My bundle was 13 so typing **update 13** will reinstall from the installed location. Now if you look at your command list by typing **help** you should have a **tutorial:greet** command visible. Type it and see what happens:
 
-{% highlight bash %}
+{% codeblock Executing Our New Command %}
 g! tutorial:greet
 Hello World!
 g!
-{% endhighlight %}
+{% endcodeblock %}
 
 This still isn't a very good test of the service from a consumer standpoint. You really would want to test that the service is in the registry and that you can ask for it by interface name. If you want to do that, create a new package named org.bhn.training.commands and put a class called GreeterCommands in it. Should end up like the following:
 
-{% highlight java %}
+{% codeblock Making A Better Command Class lang:java %}
 package org.bhn.training.commands;
 
 import org.bhn.training.api.Greeter;
@@ -292,7 +292,7 @@ public class GreeterCommands {
         return greeter.greet();
     }
 }
-{% endhighlight %}
+{% endcodeblock %}
 This code shows a programmatic method to call a service from code. We will expound on this somewhat later because there is a lot easier ways of doing this, but this way represents the classic steps to OSGi service calling:
 
 1. Get the BundleContext
@@ -302,7 +302,7 @@ This code shows a programmatic method to call a service from code. We will expou
 
 Next we need ot change the startup to register two services instead of one like so:
 
-{% highlight java %}
+{% codeblock Registering Two Services lang:java %}
 public void start(BundleContext bundleContext) throws Exception {
       Hashtable props = new Hashtable();
       props.put("osgi.command.scope","tutorial");
@@ -318,7 +318,7 @@ public void start(BundleContext bundleContext) throws Exception {
             new GreeterCommands(),props);
 
 }
-{% endhighlight %}
+{% endcodeblock %}
 
 Now after an **felix:update** you can call your command again and witness that its actually calling the service using the OSGi API. 
 

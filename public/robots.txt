@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://plasmatrout.github.io/sitemap.xml 
+Sitemap: http://peaceful-shelf-3096.herokuapp.com/sitemap.xml 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component name="GreetCommandComponent"
+               xmlns:scr="http://www.osgi.org/xmlns/scr/v1.2.0">
+    <implementation scr:class="org.bhn.training.commands.GreeterCommands"/>
+    <service>
+        <scr:provide interface="org.bhn.training.commands.GreeterCommands">
+            <property name="osgi.command.scope" value="tutorialds"></property>
+            <property name="osgi.command.function">greet</property>
+        </scr:provide>
+    </service>
+</scr:component>

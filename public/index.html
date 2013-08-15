@@ -9,7 +9,7 @@
   <meta name="author" content="jeff.downing@latchd.com">
 
   
-  <meta name="description" content="This tutorial is designed to guide the reader through creating a very simple bundle example. For simplicity we will use the commit Greeter/Greet &hellip;">
+  <meta name="description" content="In our previous example tutorial we created an OSGi bundle in a programmatic fashion. In that bundle we registered two services into the service &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://plasmatrout.github.io">
+  <link rel="canonical" href="http://peaceful-shelf-3096.herokuapp.com">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Aggrolearning" type="application/atom+xml">
@@ -50,7 +50,7 @@
   
 <form action="http://google.com/search" method="get">
   <fieldset role="search">
-    <input type="hidden" name="q" value="site:plasmatrout.github.io" />
+    <input type="hidden" name="q" value="site:peaceful-shelf-3096.herokuapp.com" />
     <input class="search" type="text" name="q" results="0" placeholder="Search"/>
   </fieldset>
 </form>
@@ -65,6 +65,234 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/08/15/apache-felix-modifying-our-first-bundle-for-declarative-services/">Apache Felix - Modifying Our First Bundle for Declarative Services</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-15T15:53:00-04:00" pubdate data-updated="true">Aug 15<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In our previous <a href="/blog/2013/08/15/apache-felix-first-bundle/">example tutorial</a> we created an OSGi bundle in a programmatic fashion. In that bundle we registered two services into the service registry. While rather simple in implementation, the solution did depend heavily on use of the Activator class. And since only one Activator can be defined in a bundle, registering even more services would present a significant challenge on readability. We are going to neaten this up a bit and use some features of the R4 compendium known as Declarative Services. We will expound on it a little as we go along, but I encourage you to read the specifications on the <a href="http://www.osgi.org/Download/HomePage">OSGi Alliances Site</a>.</p>
+
+<p>If you haven&rsquo;t done the first bundle tutorial mentioned above you can grab the source at:</p>
+
+<figure class='code'><figcaption><span>Git Hub Quick Start</span><a href='https://github.com/PlasmaTrout/greeter-bundle-lab3'>GitHub </a></figcaption> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone git@github.com:PlasmaTrout/greeter-bundle-lab3.git
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Requirements</h2>
+
+<ul>
+<li>Apache Felix (See <a href="/blog/2013/08/14/apache-felix-starting-from-scratch/">Starting From Scratch</a>)</li>
+<li>Apache Maven</li>
+<li>IDE Of Choice (Preferably IntelliJ IDEA)</li>
+<li>Internet Connection (For Maven Repositories)</li>
+<li>GIT (Needed To Pull Previous Project)</li>
+</ul>
+
+
+<h2>Audience</h2>
+
+<p>Typically, this is Lab #3 in a classroom environment, however anyone that wishes can use this tutorial to create a tutorial bundle. The typical audience already understands what OSGi is and that Apache Felix is just one implementation of an OSGi framework.</p>
+
+<h2>What We Are Going To Do</h2>
+
+<ol>
+<li>Remove The Activator From The Project</li>
+<li>Add A XML File For The Greeter Service To The Resources Directory</li>
+<li>Add Another XML File For The Greet Command To The Resources Directory</li>
+<li>Build, Deploy And Test</li>
+</ol>
+
+
+<h2>Remove The Activator From The Project</h2>
+
+<p>So let&rsquo;s delete that Activator now. Just completely wipe it out of the project. When your finished with that edit your POM.xml and completely wipe out this line (we don&rsquo;t need it anymore):</p>
+
+<figure class='code'><figcaption><span>Remove This Activator Line </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;Bundle-Activator&gt;</span>org.bhn.training.SimpleActivator<span class="nt">&lt;/Bundle-Activator&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you have any doubts as to whether its gone after a new build, just peek into the JAR file and make sure its gone. Mine looks something like this now (note no activator is inside the bundle):</p>
+
+<figure class='code'><figcaption><span>Sample JAR Contents Now </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>0 Wed Aug 14 11:18:10 EDT 2013 org/
+</span><span class='line'>0 Wed Aug 14 11:18:10 EDT 2013 org/bhn/
+</span><span class='line'>0 Wed Aug 14 11:18:10 EDT 2013 org/bhn/training/
+</span><span class='line'>0 Wed Aug 14 11:18:10 EDT 2013 org/bhn/training/api/
+</span><span class='line'>155 Wed Aug 14 11:16:32 EDT 2013 org/bhn/training/api/Greeter.class
+</span><span class='line'>0 Wed Aug 14 11:18:10 EDT 2013 org/bhn/training/commands/
+</span><span class='line'>1132 Wed Aug 14 11:16:32 EDT 2013 org/bhn/training/commands/GreeterCommands.class
+</span><span class='line'>0 Wed Aug 14 11:18:10 EDT 2013 org/bhn/training/impl/
+</span><span class='line'>482 Wed Aug 14 11:16:32 EDT 2013 org/bhn/training/impl/SimpleStringGreeterImpl.class</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Add A XML File For The Greeter Service To The Resources Directory</h2>
+
+<p>Because we are using maven, we need to make some new directories and maven knows about so we can include resources into our project. Make a resources dir under main and then put a new dir under the resources dir called OSGI-INF. Our new directories path should look like:</p>
+
+<figure class='code'><figcaption><span>Add A New Resource Path </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;&lt;Project>>/src/main/resources/OSGI-INF</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now in the OSGI-INF directory, lets create a new file called greetercomponent.xml. The name is somewhat irrelevant, however I would name it something that indicates what component it is for. The reason is, each service will be in its own xml file. After a while component1, component2 and component3 won&rsquo;t help developers quickly find its configuration.</p>
+
+<p>Now we are going to do the same job that we did in the Activator in a declarative manner. Modify your greetercomponent.xml file to look like the following:</p>
+
+<figure class='code'><figcaption><span>Add A Declarative Services Component File (greetercomponent.xml)</span> <a href='/downloads/code/greetercomponent.xml'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;scr:component</span> <span class="na">name=</span><span class="s">&quot;GreeterComponent&quot;</span>
+</span><span class='line'>               <span class="na">xmlns:scr=</span><span class="s">&quot;http://www.osgi.org/xmlns/scr/v1.2.0&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;implementation</span> <span class="na">scr:class=</span><span class="s">&quot;org.bhn.training.impl.SimpleStringGreeterImpl&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;service&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;scr:provide</span> <span class="na">interface=</span><span class="s">&quot;org.bhn.training.api.Greeter&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/service&gt;</span>
+</span><span class='line'><span class="nt">&lt;/scr:component&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So interpreting this file is rather straight-forward. We are first declaring a component. What&rsquo;s a component. Well a component is really just a Java class that is declared in an XML document. Very similar to the concepts of beans if you are used to other Java terminologies. It has a name just for management in the framework. You can install other web consoles that help manage them by their component name.</p>
+
+<p>Then we tell the component what its implementation class is, so it can create it when its needed.</p>
+
+<p>Then we create a service and tell it what interface to provide, that is, register for us. That&rsquo;s all there really is to a simple service. However, before we can use this xml file, we need to tell the maven plugin to add a manifest entry for where to find it. That entry is known as the Service-Component entry. In our POM in the instructions for our bundle plugin lets add the following line:</p>
+
+<figure class='code'><figcaption><span>Tell The Bundle The File Exists </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;Service-Component&gt;</span>OSGI-INF/greetercomponent.xml<span class="nt">&lt;/Service-Component&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>With this line in the file you are ready to deploy to your framework. But before you do, you need to make sure another specific bundle is installed in the container. It&rsquo;s called the SCR Declarative Services bundle and it should be running. If not not sweat, pull up your OSGi console and enter:</p>
+
+<figure class='code'><figcaption><span>Install Service Component Registry Bundle </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>felix:install http://mirror.sdunix.com/apache//felix/org.apache.felix.scr-1.6.2.jar
+</span><span class='line'>felix:start X (where x is the number of the bundle)</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After you deploy your bundle. Pull up the <a href="http://localhost:8080/system/console">web console</a> and expand it. You should see your new manifest entry is present and you should have a new service id registered. This is a pretty good indication that everything went as planned, but lets add our command otherwise testing it won&rsquo;t be too easy.</p>
+
+<h2>Add Another XML File For The Greet Command To The Resources Directory</h2>
+
+<p>So lets add one more component file to the OSGI-INF directory. Lets add a greetcommandcomponent.xml file. And do something similar as the above example to register it. However, in this component, we need properties to set upon activation so we have some new elements to add to the definition:</p>
+
+<figure class='code'><figcaption><span>Add A Command Declarative Services Component File (greetcommandcomponent.xml)</span> <a href='/downloads/code/greetcommandcomponent.xml'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;scr:component</span> <span class="na">name=</span><span class="s">&quot;GreetCommandComponent&quot;</span>
+</span><span class='line'>               <span class="na">xmlns:scr=</span><span class="s">&quot;http://www.osgi.org/xmlns/scr/v1.2.0&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;implementation</span> <span class="na">scr:class=</span><span class="s">&quot;org.bhn.training.commands.GreeterCommands&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;service&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;scr:provide</span> <span class="na">interface=</span><span class="s">&quot;org.bhn.training.commands.GreeterCommands&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;osgi.command.scope&quot;</span> <span class="na">value=</span><span class="s">&quot;tutorialds&quot;</span><span class="nt">&gt;&lt;/property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">&quot;osgi.command.function&quot;</span><span class="nt">&gt;</span>greet<span class="nt">&lt;/property&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/scr:provide&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/service&gt;</span>
+</span><span class='line'><span class="nt">&lt;/scr:component&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then we just add this to our manifest by changing our Service-Component entry to:</p>
+
+<figure class='code'><figcaption><span>Add A Second Component File To The Maven Plugin </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;Service-Component&gt;</span>OSGI-INF/greetercomponent.xml,
+</span><span class='line'>            OSGI-INF/greetcommandcomponent.xml<span class="nt">&lt;/Service-Component&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Build, Deploy and Test</h2>
+
+<p>So package this guy up with a <strong>mvn package</strong> and then deploy using your method of choice (for this one I used the web console personally). After its deployed and started you should see a new command in our console for <strong>tutorialds:greet</strong> and be able to call it. I did have some exceptions during the making of this tutorial and you may experience the same. The few things that happened to me were:</p>
+
+<h3>IllegalStateExceptions</h3>
+
+<p><em>ERROR: greeter-bundle (15): [GreeterComponent] Cannot register Component
+java.lang.IllegalStateException: Invalid BundleContext</em></p>
+
+<p>This occured mainly because I had a typo in one of the component files which confused Felix into writing some properties it shouldn&rsquo;t have. I think the name attribute was missing from one of the properties. However, even after fixing it, the exception stayed there until I restarted the whole framework.</p>
+
+<h3>XmlParseExceptions</h3>
+
+<p>Typically they come in a variety of flavors and they are usually due to badly formed xml documents. Mine came from a example in the R4 compendium that had a declarative services entry as the following:</p>
+
+<figure class='code'><figcaption><span>Malformed Header </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;xml</span> <span class="na">version=</span><span class="s">&quot;1.0&quot;</span> <span class="na">encoding=</span><span class="s">&quot;UTF-8&quot;</span><span class="nt">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Which I pasted and didn&rsquo;t check, but its really supposed to be:</p>
+
+<figure class='code'><figcaption><span>Standard Header </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In the next tutorial I think we will kill the command on this bundle and then add PaxExam so we can unit test our product. Generating commands for each bundle to test them is not a feasible option for long term sustainability. PaxExam will allow us to run Felix as a part of our Maven test lifecycle and test our bundle.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -99,7 +327,7 @@
 <h2>Requirements</h2>
 
 <ul>
-<li>Apache Felix (See <a href="/osgi/2013/08/09/felix-from-the-ground-up">Starting From Scratch</a>)</li>
+<li>Apache Felix (See <a href="/blog/2013/08/15/apache-felix-starting-from-scratch/">Starting From Scratch</a>)</li>
 <li>Apache Maven</li>
 <li>IDE Of Choice (Preferably IntelliJ IDEA)</li>
 <li>Internet Connection (For Maven Repositories)</li>
@@ -204,7 +432,8 @@
 
 <p>First we add org.osgi.core and then we just add a current version of junit for testing. That should be all we need for now. There is one last thing we need to do though. See that link towards the top of your POM that specifies that packaging should be JAR? Lets change that to bundle.</p>
 
-<figure class='code'> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Change Packaging Type </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 </pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;groupId&gt;</span>com.bhn.training<span class="nt">&lt;/groupId&gt;</span>
@@ -215,7 +444,8 @@
 
 <p>Now our plugin will kick in and give us the correct output. If we run a <strong>mvn package</strong> we should get a build success and just o make sure our plugins are working lets go into the target directory of your project. There you should see a new jar file names greeter-bundle-1.0-SNAPSHOT.jar or something similar. If you execute the command:</p>
 
-<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>Unpack And Examine Manifest </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>jar -xvf greeter-bundle-1.0-SNAPSHOT.jar META-INF/MANIFEST.MF
 </span><span class='line'>cat META-INF/MANIFEST.MF</span></code></pre></td></tr></table></div></figure>
@@ -223,30 +453,44 @@
 
 <p>You should see now that the manifest included with this JAR is a bit different from a normal JAR. For instance a normal JAR might look something like this:</p>
 
-<div>
-  <pre><code class='bash'>Manifest-Version: 1.0
-Archiver-Version: Plexus Archiver
-Created-By: Apache Maven
-Built-By: PlasmaTrout
-Build-Jdk: 1.6.0_51</code></pre>
-</div>
+<figure class='code'><figcaption><span>Normal JAR Manifest </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Manifest-Version: 1.0
+</span><span class='line'>Archiver-Version: Plexus Archiver
+</span><span class='line'>Created-By: Apache Maven
+</span><span class='line'>Built-By: PlasmaTrout
+</span><span class='line'>Build-Jdk: 1.6.0_51</span></code></pre></td></tr></table></div></figure>
 
 
 <p>However our new one, ends up very similar to:</p>
 
-<div>
-  <pre><code class='bash'>Manifest-Version: 1.0
-Bnd-LastModified: 1376419554357
-Build-Jdk: 1.6.0_51
-Built-By: PlasmaTrout
-Bundle-ManifestVersion: 2
-Bundle-Name: greeter-bundle
-Bundle-SymbolicName: greeter-bundle
-Bundle-Version: 1.0.0.SNAPSHOT
-Created-By: Apache Maven Bundle Plugin
-Export-Package: org.bhn.training;version=&quot;1.0.0.SNAPSHOT&quot;
-Tool: Bnd-1.50.0</code></pre>
-</div>
+<figure class='code'><figcaption><span>OSGi JAR Manifest </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Manifest-Version: 1.0
+</span><span class='line'>Bnd-LastModified: 1376419554357
+</span><span class='line'>Build-Jdk: 1.6.0_51
+</span><span class='line'>Built-By: PlasmaTrout
+</span><span class='line'>Bundle-ManifestVersion: 2
+</span><span class='line'>Bundle-Name: greeter-bundle
+</span><span class='line'>Bundle-SymbolicName: greeter-bundle
+</span><span class='line'>Bundle-Version: 1.0.0.SNAPSHOT
+</span><span class='line'>Created-By: Apache Maven Bundle Plugin
+</span><span class='line'>Export-Package: org.bhn.training;version="1.0.0.SNAPSHOT"
+</span><span class='line'>Tool: Bnd-1.50.0</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Notice the extra entries? These will be become crucial to understand later, but just know that since our plugin really only specified two (name and symbolic name), quite a few more were actually written to the manifest by default thanks to the maven plugin.</p>
@@ -273,18 +517,28 @@ Tool: Bnd-1.50.0</code></pre>
 
 <p>As you can see it, really won&rsquo;t do much, but it gets the point across. Now lets go to our <strong>impl</strong> package and add an implementation class SimpleStringGreeterImpl.java with the code:</p>
 
-<div>
-  <pre><code class='java'>package org.bhn.training.impl;
-
-import org.bhn.training.api.Greeter;
-
-public class SimpleStringGreeterImpl implements Greeter {
-    @Override
-    public String greet() {
-        return &quot;Hello World!&quot;;
-    }
-}</code></pre>
-</div>
+<figure class='code'><figcaption><span>Greeter Implementation </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">.</span><span class="na">impl</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.bhn.training.api.Greeter</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SimpleStringGreeterImpl</span> <span class="kd">implements</span> <span class="n">Greeter</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">greet</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">&quot;Hello World!&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Now that we have an implementation of a simple service. What we need to do is write some code to register that service in whats called a service registry. Then anyone who needs to be greeted can simple use the interface to get an instance to the service.</p>
@@ -293,44 +547,67 @@ public class SimpleStringGreeterImpl implements Greeter {
 
 <p>First rename App.java to SimpleActivator.java (It should be SimpleStringGreeterActivator buts thats too verbose for the tutorial right now). Then change it to looks like the following:</p>
 
-<div>
-  <pre><code class='java'>package org.bhn.training;
-
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-
-public class SimpleActivator implements BundleActivator
-{
-    @Override
-    public void start(BundleContext bundleContext) throws Exception {
-      // What to do when it starts
-    }
-
-    @Override
-    public void stop(BundleContext bundleContext) throws Exception {
-      // What to do when it stops
-    }
-}</code></pre>
-</div>
+<figure class='code'><figcaption><span>Greeter Activator Class </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.osgi.framework.BundleActivator</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.osgi.framework.BundleContext</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SimpleActivator</span> <span class="kd">implements</span> <span class="n">BundleActivator</span>
+</span><span class='line'><span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">(</span><span class="n">BundleContext</span> <span class="n">bundleContext</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">// What to do when it starts</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">stop</span><span class="o">(</span><span class="n">BundleContext</span> <span class="n">bundleContext</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>      <span class="c1">// What to do when it stops</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>See the two methods it exposed? We will put some code in here in a second, but before we forget lets add the appropriate manifest entry so that the framework knows where this is. In the plugin that we set up earlier add this element to the instructions element:</p>
 
-<div>
-  <pre><code class='xml'>&lt;Bundle-Activator&gt;org.bhn.training.SimpleActivator&lt;/Bundle-Activator&gt;</code></pre>
-</div>
+<figure class='code'><figcaption><span>Maven Plugin Activator Instruction </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;Bundle-Activator&gt;</span>org.bhn.training.SimpleActivator<span class="nt">&lt;/Bundle-Activator&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>This manifest entry tells the framework what class the activator is in so it can dynamically call the interface methods start and stop for it. If we build and checkout the manifest now we will see:</p>
 
-<div>
-  <pre><code class='xml'>Manifest-Version: 1.0
-Bnd-LastModified: 1376421388797
-Build-Jdk: 1.6.0_51
-Built-By: JSDowning
-Bundle-Activator: org.bhn.training.SimpleActivator
-... bunch of other stuff ...</code></pre>
-</div>
+<figure class='code'><figcaption><span>Manifest Revisited </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>Manifest-Version: 1.0
+</span><span class='line'>Bnd-LastModified: 1376421388797
+</span><span class='line'>Build-Jdk: 1.6.0_51
+</span><span class='line'>Built-By: JSDowning
+</span><span class='line'>Bundle-Activator: org.bhn.training.SimpleActivator
+</span><span class='line'>... bunch of other stuff ...</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Good, we can see our Activator in there, lets put some code in it. The steps involved in registering a service are pretty simple.</p>
@@ -342,41 +619,68 @@ Bundle-Activator: org.bhn.training.SimpleActivator
 </ol>
 
 
-<div>
-  <pre><code class='java'>package org.bhn.training;
-
-import org.bhn.training.impl.SimpleStringGreeterImpl;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
-
-import java.util.Hashtable;
-
-public class SimpleActivator implements BundleActivator
-{
-    ServiceRegistration registration;
-
-    @Override
-    public void start(BundleContext bundleContext) throws Exception {
-      Hashtable&lt;String,Object&gt; props = new Hashtable&lt;String, Object&gt;();
-      registration = bundleContext
-        .registerService(org.bhn.training.api.Greeter.class.getName(),
-            new SimpleStringGreeterImpl(),props);
-    }
-
-    @Override
-    public void stop(BundleContext bundleContext) throws Exception {
-      registration.unregister();
-    }
-}</code></pre>
-</div>
+<figure class='code'><figcaption><span>Fully Functioning Activator </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.bhn.training.impl.SimpleStringGreeterImpl</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.osgi.framework.BundleActivator</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.osgi.framework.BundleContext</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.osgi.framework.ServiceRegistration</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">java.util.Hashtable</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SimpleActivator</span> <span class="kd">implements</span> <span class="n">BundleActivator</span>
+</span><span class='line'><span class="o">{</span>
+</span><span class='line'>    <span class="n">ServiceRegistration</span> <span class="n">registration</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">(</span><span class="n">BundleContext</span> <span class="n">bundleContext</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">Hashtable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">props</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Hashtable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;();</span>
+</span><span class='line'>      <span class="n">registration</span> <span class="o">=</span> <span class="n">bundleContext</span>
+</span><span class='line'>          <span class="o">.</span><span class="na">registerService</span><span class="o">(</span><span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">.</span><span class="na">api</span><span class="o">.</span><span class="na">Greeter</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span>
+</span><span class='line'>          <span class="k">new</span> <span class="nf">SimpleStringGreeterImpl</span><span class="o">(),</span><span class="n">props</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">stop</span><span class="o">(</span><span class="n">BundleContext</span> <span class="n">bundleContext</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">registration</span><span class="o">.</span><span class="na">unregister</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>So the gist of this is that the service registers our Implementation class under the string name of the interface. This means anyone who wants a reference to this service can use the interface to get it. It&rsquo;s important to note that right now, it won&rsquo;t work because even though our interfaces are public, they won&rsquo;t be exposed in the framework. We must explicitly tell OSGi to expose our interfaces. Let&rsquo;s do that so we can call it later. The easiest way to do this is to export the interfaces namespace, so lets add this line to the plugin:</p>
 
-<div>
-  <pre><code class='xml'>&lt;Export-Package&gt;org.bhn.training.api&lt;/Export-Package&gt;</code></pre>
-</div>
+<figure class='code'><figcaption><span>Exposing Our API In Maven </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;Export-Package&gt;</span>org.bhn.training.api<span class="nt">&lt;/Export-Package&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>This tells the framework to allow other bundles to see this namespace. Without this there would be know way a caller could get a reference to our service, because there would be no interface found called org.bhn.training.api.Greeter to lookup. Notice that the impl class is never exposed. There is absolutely NO method here that someone could instantiate a new SimpleStringGreetingImpl(). Even though its public, it&rsquo;s not exposed by the framework. This gets to the heart of why OSGi is so modular. It&rsquo;s relatively impossible to couple your classes together without some seriously bad practices.</p>
@@ -385,61 +689,92 @@ public class SimpleActivator implements BundleActivator
 
 <p>We are going to use the command line to deploy it, but you don&rsquo;t have to. If you still have the web interface from the previous tutorial you can update and install it from there as well. But from the command line it looks like:</p>
 
-<div>
-  <pre><code class='bash'>g! felix:install file:/Users/PlasmaTrout/Projects/greeter-bundle/target/greeter-bundle-1.0-SNAPSHOT.jar
-Bundle ID: 13
-
-g! felix:start 13</code></pre>
-</div>
+<figure class='code'><figcaption><span>Deploying A Bundle Using Felix Command Line </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>g! felix:install file:/Users/PlasmaTrout/Projects/greeter-bundle/target/greeter-bundle-1.0-SNAPSHOT.jar
+</span><span class='line'>Bundle ID: 13
+</span><span class='line'>
+</span><span class='line'>g! felix:start 13</span></code></pre></td></tr></table></div></figure>
 
 
 <h2>Create A Gogo Shell Command</h2>
 
 <p>It&rsquo;s started but we still have no way of seeing it. Lets create a way to actually call it. In other tutorials we talked about the Gogo shell and how extensible it is, but lets create a new command just to demonstrate how easy it is to expose our interface as a command as well. All we need to do to make this happen is add two new properties to our service. Lets change our startup to be:</p>
 
-<div>
-  <pre><code class='java'>public void start(BundleContext bundleContext) throws Exception {
-      Hashtable&lt;String,Object&gt; props = new Hashtable&lt;String, Object&gt;();
-      props.put(&quot;osgi.command.scope&quot;,&quot;tutorial&quot;);
-      props.put(&quot;osgi.command.function&quot;,new String[] { &quot;greet&quot; });
-      registration = bundleContext
-              .registerService(org.bhn.training.api.Greeter.class.getName(),
-              new SimpleStringGreeterImpl(),props);
-}</code></pre>
-</div>
+<figure class='code'><figcaption><span>Creating A Gogo Shell Command </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">(</span><span class="n">BundleContext</span> <span class="n">bundleContext</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">Hashtable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">props</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Hashtable</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;();</span>
+</span><span class='line'>      <span class="n">props</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;osgi.command.scope&quot;</span><span class="o">,</span><span class="s">&quot;tutorial&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">props</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;osgi.command.function&quot;</span><span class="o">,</span><span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="s">&quot;greet&quot;</span> <span class="o">});</span>
+</span><span class='line'>      <span class="n">registration</span> <span class="o">=</span> <span class="n">bundleContext</span>
+</span><span class='line'>              <span class="o">.</span><span class="na">registerService</span><span class="o">(</span><span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">.</span><span class="na">api</span><span class="o">.</span><span class="na">Greeter</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span>
+</span><span class='line'>              <span class="k">new</span> <span class="nf">SimpleStringGreeterImpl</span><span class="o">(),</span><span class="n">props</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Using these two properties, you can expose any class method as a Gogo shell command. The first specifies the scope of the command, which is just a clever way to avoid conflicts with other command named the same. The second is the method to call and command name wrapped it one. So calling <strong>tutorial:greet</strong> should cause a hello world to appear. Lets <strong>mvn package</strong> again then run an update on our bundle. My bundle was 13 so typing <strong>update 13</strong> will reinstall from the installed location. Now if you look at your command list by typing <strong>help</strong> you should have a <strong>tutorial:greet</strong> command visible. Type it and see what happens:</p>
 
-<div>
-  <pre><code class='bash'>g! tutorial:greet
-Hello World!
-g!</code></pre>
-</div>
+<figure class='code'><figcaption><span>Executing Our New Command </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>g! tutorial:greet
+</span><span class='line'>Hello World!
+</span><span class='line'>g!</span></code></pre></td></tr></table></div></figure>
 
 
 <p>This still isn&rsquo;t a very good test of the service from a consumer standpoint. You really would want to test that the service is in the registry and that you can ask for it by interface name. If you want to do that, create a new package named org.bhn.training.commands and put a class called GreeterCommands in it. Should end up like the following:</p>
 
-<div>
-  <pre><code class='java'>package org.bhn.training.commands;
-
-import org.bhn.training.api.Greeter;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import static org.osgi.framework.FrameworkUtil.*;
-
-public class GreeterCommands {
-
-    public String greet(){
-        BundleContext ctx = getBundle(org.bhn.training.api.Greeter.class)
-                .getBundleContext();
-        ServiceReference ref = ctx.getServiceReference(
-                org.bhn.training.api.Greeter.class.getName());
-        Greeter greeter = (Greeter) ctx.getService(ref);
-        return greeter.greet();
-    }
-}</code></pre>
-</div>
+<figure class='code'><figcaption><span>Making A Better Command Class </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">.</span><span class="na">commands</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.bhn.training.api.Greeter</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.osgi.framework.BundleContext</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.osgi.framework.ServiceReference</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">static</span> <span class="n">org</span><span class="o">.</span><span class="na">osgi</span><span class="o">.</span><span class="na">framework</span><span class="o">.</span><span class="na">FrameworkUtil</span><span class="o">.*;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">GreeterCommands</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">greet</span><span class="o">(){</span>
+</span><span class='line'>        <span class="n">BundleContext</span> <span class="n">ctx</span> <span class="o">=</span> <span class="n">getBundle</span><span class="o">(</span><span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">.</span><span class="na">api</span><span class="o">.</span><span class="na">Greeter</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'>                <span class="o">.</span><span class="na">getBundleContext</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">ServiceReference</span> <span class="n">ref</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="na">getServiceReference</span><span class="o">(</span>
+</span><span class='line'>                <span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">.</span><span class="na">api</span><span class="o">.</span><span class="na">Greeter</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+</span><span class='line'>        <span class="n">Greeter</span> <span class="n">greeter</span> <span class="o">=</span> <span class="o">(</span><span class="n">Greeter</span><span class="o">)</span> <span class="n">ctx</span><span class="o">.</span><span class="na">getService</span><span class="o">(</span><span class="n">ref</span><span class="o">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">greeter</span><span class="o">.</span><span class="na">greet</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>This code shows a programmatic method to call a service from code. We will expound on this somewhat later because there is a lot easier ways of doing this, but this way represents the classic steps to OSGi service calling:</p>
@@ -454,23 +789,38 @@ public class GreeterCommands {
 
 <p>Next we need ot change the startup to register two services instead of one like so:</p>
 
-<div>
-  <pre><code class='java'>public void start(BundleContext bundleContext) throws Exception {
-      Hashtable props = new Hashtable();
-      props.put(&quot;osgi.command.scope&quot;,&quot;tutorial&quot;);
-      props.put(&quot;osgi.command.function&quot;,new String[] { &quot;greet&quot; });
-
-      Hashtable noprops = new Hashtable();
-
-        registration = bundleContext
-              .registerService(org.bhn.training.api.Greeter.class.getName(),
-              new SimpleStringGreeterImpl(),noprops);
-        command = bundleContext.registerService(
-            org.bhn.training.commands.GreeterCommands.class.getName(),
-            new GreeterCommands(),props);
-
-}</code></pre>
-</div>
+<figure class='code'><figcaption><span>Registering Two Services </span></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">start</span><span class="o">(</span><span class="n">BundleContext</span> <span class="n">bundleContext</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">Hashtable</span> <span class="n">props</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Hashtable</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">props</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;osgi.command.scope&quot;</span><span class="o">,</span><span class="s">&quot;tutorial&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">props</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">&quot;osgi.command.function&quot;</span><span class="o">,</span><span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span> <span class="s">&quot;greet&quot;</span> <span class="o">});</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">Hashtable</span> <span class="n">noprops</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Hashtable</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">registration</span> <span class="o">=</span> <span class="n">bundleContext</span>
+</span><span class='line'>              <span class="o">.</span><span class="na">registerService</span><span class="o">(</span><span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">.</span><span class="na">api</span><span class="o">.</span><span class="na">Greeter</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span>
+</span><span class='line'>              <span class="k">new</span> <span class="nf">SimpleStringGreeterImpl</span><span class="o">(),</span><span class="n">noprops</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">command</span> <span class="o">=</span> <span class="n">bundleContext</span><span class="o">.</span><span class="na">registerService</span><span class="o">(</span>
+</span><span class='line'>          <span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">.</span><span class="na">commands</span><span class="o">.</span><span class="na">GreeterCommands</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getName</span><span class="o">(),</span>
+</span><span class='line'>            <span class="k">new</span> <span class="nf">GreeterCommands</span><span class="o">(),</span><span class="n">props</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Now after an <strong>felix:update</strong> you can call your command again and witness that its actually calling the service using the OSGi API.</p>
@@ -488,7 +838,7 @@ public class GreeterCommands {
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2013/08/15/apache-felix-starting-from-scratch/">Apache Felix - Starting From Scratch</a></h1>
+      <h1 class="entry-title"><a href="/blog/2013/08/14/apache-felix-starting-from-scratch/">Apache Felix - Starting From Scratch</a></h1>
     
     
       <p class="meta">
@@ -504,7 +854,7 @@ public class GreeterCommands {
   
 
 
-<time datetime="2013-08-15T14:20:00-04:00" pubdate data-updated="true">Aug 15<span>th</span>, 2013</time>
+<time datetime="2013-08-14T14:20:00-04:00" pubdate data-updated="true">Aug 14<span>th</span>, 2013</time>
         
       </p>
     
@@ -539,39 +889,46 @@ public class GreeterCommands {
 
 <p>Make a directory for yourself somewhere where we can work as a scratchpad. I typically move my files from the Download directory so they don’t get lost in the mass of downloads that end up in there. I usually do something like:</p>
 
-<div>
-  <pre><code class='bash'>$HOME/projects/apache-felix</code></pre>
-</div>
+<figure class='code'><figcaption><span>Sample Path </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>$HOME/projects/apache-felix</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Once you have your structure set up, mv the file (or copy) from the Downloads directory to your new location and unzip it. Mileage may vary on Windows devices but on MacOS set up can be accomplished by issuing the following commands:</p>
 
-<div>
-  <pre><code class='bash'>cd $HOME/projects
-mkdir apache-felix
-cd apache-felix/
-cp /Users/&lt;&lt;me&gt;&gt;/Downloads/org.apache.felix.main.distribution-4.2.1.zip .
-unzip org.apache.felix.main.distribution-4.2.1.zip</code></pre>
-</div>
+<figure class='code'><figcaption><span>Installation </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd $HOME/projects
+</span><span class='line'>mkdir apache-felix
+</span><span class='line'>cd apache-felix/
+</span><span class='line'>cp /Users/&lt;&lt;me>>/Downloads/org.apache.felix.main.distribution-4.2.1.zip .
+</span><span class='line'>unzip org.apache.felix.main.distribution-4.2.1.zip</span></code></pre></td></tr></table></div></figure>
 
 
 <h2>Start It Up</h2>
 
 <p>After its unzipped you’ll notice an felix-framework-x-x-x folder (depending on what distribution you have). If you change directory into that folder you can explore the structure of this bare bones install. We won’t be deep diving into all of these directories just yet, just notice they are there. If you decide to explore, be sure not to edit them. The framework boots off of these directories and uses them to index and locate classes. Changing them around is not a great idea. So lets start up Felix, if you type:</p>
 
-<div>
-  <pre><code class='bash'>java -jar bin/felix.jar</code></pre>
-</div>
+<figure class='code'><figcaption><span>Running Felix </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>java -jar bin/felix.jar</span></code></pre></td></tr></table></div></figure>
 
 
 <p>You should be welcomed with a running framework console that looks like:</p>
 
-<div>
-  <pre><code class='bash'>____________________________
-Welcome to Apache Felix Gogo
-
-g!</code></pre>
-</div>
+<figure class='code'><figcaption><span>The Gogo Shell </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>____________________________
+</span><span class='line'>Welcome to Apache Felix Gogo
+</span><span class='line'>
+</span><span class='line'>g!</span></code></pre></td></tr></table></div></figure>
 
 
 <p>What this? Well by default, all that comes with Felix, as far as administration is concerned, is a console. Now, don’t get the wrong impression, this is one powerful console thats staring back at you. It just doesn’t seem like it right now (especially since the terminal apparently is some sort of strange dance style).</p>
@@ -580,81 +937,121 @@ g!</code></pre>
 
 <p>So we came all this way, we might as well issue some commands. Type in the following to the shell:</p>
 
-<div>
-  <pre><code class='bash'>felix:lb</code></pre>
-</div>
+<figure class='code'><figcaption><span>List Bundles Command </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>felix:lb</span></code></pre></td></tr></table></div></figure>
 
 
 <p>The command “lb” is a felix command for listing all of the bundles installed in Felix. The felix prefix is sort of a namespace qualifier. It exists primarily in the case two different command bundles use the same command name. But since they come with Felix, there are also aliased directly on the console. So typing “lb” will work as well. As far as instruction go, however, I will almost always prefix the command. My rationale is that in other systems, like Apache Karaf, it will be mandatory since so many open source bundles exist in the framework and you will need to get used to it anyways.</p>
 
 <p>The output of our <strong>felix:lb</strong> command should have resembled the following:</p>
 
-<div>
-  <pre><code class='bash'>g! felix:lb
-START LEVEL 1
-   ID|State      |Level|Name
-    0|Active     |    0|System Bundle (4.2.1)
-    1|Active     |    1|Apache Felix Bundle Repository (1.6.6)
-    2|Active     |    1|Apache Felix Gogo Command (0.12.0)
-    3|Active     |    1|Apache Felix Gogo Runtime (0.10.0)
-    4|Active     |    1|Apache Felix Gogo Shell (0.10.0)
-g!</code></pre>
-</div>
+<figure class='code'><figcaption><span>List Bundles Output </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>g! felix:lb
+</span><span class='line'>START LEVEL 1
+</span><span class='line'>   ID|State      |Level|Name
+</span><span class='line'>    0|Active     |    0|System Bundle (4.2.1)
+</span><span class='line'>    1|Active     |    1|Apache Felix Bundle Repository (1.6.6)
+</span><span class='line'>    2|Active     |    1|Apache Felix Gogo Command (0.12.0)
+</span><span class='line'>    3|Active     |    1|Apache Felix Gogo Runtime (0.10.0)
+</span><span class='line'>    4|Active     |    1|Apache Felix Gogo Shell (0.10.0)
+</span><span class='line'>g!</span></code></pre></td></tr></table></div></figure>
 
 
 <p>For those of you that have browsed another Felix installation, possibly Sling or Adobe CQ, you probably are asking “Yeah right, where are the other 200+ bundles?”. Well this is it, the default Felix framework operates on these 5 bundles and doesn’t need much else. You can start developing right now on these building whatever you heart desires.</p>
 
 <p>So, what else can you do on the console? Well type help in the console and you should get back a list of all of the available commands out of the box. The console should happily respond:</p>
 
-<div>
-  <pre><code class='bash'>... some stuff ...
-felix:install
-felix:lb
-felix:log
-felix:ls
-felix:refresh
-felix:resolve
-felix:start
-felix:stop
-... more stuff ...</code></pre>
-</div>
+<figure class='code'><figcaption><span>Help Command Output </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>... some stuff ...
+</span><span class='line'>felix:install
+</span><span class='line'>felix:lb
+</span><span class='line'>felix:log
+</span><span class='line'>felix:ls
+</span><span class='line'>felix:refresh
+</span><span class='line'>felix:resolve
+</span><span class='line'>felix:start
+</span><span class='line'>felix:stop
+</span><span class='line'>... more stuff ...</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Before you try these out, it’s important to note that the help system can also give you some pretty detailed information on each command. For instance type <strong>help felix:ls</strong> and look at the output:</p>
 
-<div>
-  <pre><code class='bash'>g! help felix:ls
-
-ls - get current directory contents
-   scope: felix
-   parameters:
-      CommandSession   automatically supplied shell session
-
-ls - get specified path contents
-   scope: felix
-   parameters:
-      CommandSession   automatically supplied shell session
-      String   path with optionally wildcarded file name
-g!</code></pre>
-</div>
+<figure class='code'><figcaption><span>Help List Output </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>g! help felix:ls
+</span><span class='line'>
+</span><span class='line'>ls - get current directory contents
+</span><span class='line'>   scope: felix
+</span><span class='line'>   parameters:
+</span><span class='line'>      CommandSession   automatically supplied shell session
+</span><span class='line'>
+</span><span class='line'>ls - get specified path contents
+</span><span class='line'>   scope: felix
+</span><span class='line'>   parameters:
+</span><span class='line'>      CommandSession   automatically supplied shell session
+</span><span class='line'>      String   path with optionally wildcarded file name
+</span><span class='line'>g!</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Then try it:</p>
 
-<div>
-  <pre><code class='bash'>g! felix:ls
-/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/bin
-/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/bundle
-/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/conf
-/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/DEPENDENCIES
-/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/doc
-/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/felix-cache
-/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/LICENSE
-/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/LICENSE.kxml2
-/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/NOTICE
-
-g!</code></pre>
-</div>
+<figure class='code'><figcaption><span>List Command Output </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>g! felix:ls
+</span><span class='line'>/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/bin
+</span><span class='line'>/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/bundle
+</span><span class='line'>/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/conf
+</span><span class='line'>/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/DEPENDENCIES
+</span><span class='line'>/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/doc
+</span><span class='line'>/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/felix-cache
+</span><span class='line'>/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/LICENSE
+</span><span class='line'>/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/LICENSE.kxml2
+</span><span class='line'>/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/NOTICE
+</span><span class='line'>
+</span><span class='line'>g!</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Thats all there is really to understanding the GOGO shell. Now mastering all of these commands would be a good idea, but it’s not really needed. That is unless you want to stay lightweight, say on a mobile device or micro-board type installation. For the desktop environments there is a web based console (strategically named WebConsole :) that we can employ to make this a little easier for us.</p>
@@ -665,38 +1062,52 @@ g!</code></pre>
 
 <p>After executing a <strong>help felix:install</strong>, you will notice that the command is scoped to the felix prefix and takes a collection of parameters. This means if we really wanted to we could install multiple things at once. Secondly, note it takes a URL to a file and not just a file path. This means it’s more than capable of installing over the internet. Let’s take advantage of the that to install the web console and a http server into the framework. In the console issue the command:</p>
 
-<div>
-  <pre><code class='bash'>felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.webconsole-4.2.0-all.jar</code></pre>
-</div>
+<figure class='code'><figcaption><span>Installing The Web Console </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.webconsole-4.2.0-all.jar</span></code></pre></td></tr></table></div></figure>
 
 
 <p>the web console requires a web server so lets install jetty</p>
 
-<div>
-  <pre><code class='bash'>felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.http.jetty-2.2.0.jar</code></pre>
-</div>
+<figure class='code'><figcaption><span>Installing Jetty </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.http.jetty-2.2.0.jar</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Once the download and install is completed, the console should return back a Bundle ID: X (where X is a number). This represent the bundle id that you just installed and will use to find out more information about the bundle and start/stop it. Now do an <strong>felix:lb</strong> and look at your list. You should have two bundles in the installed state.
 In order to start up our console we will first need to start the Jetty bundle then our Web Management Console bundle. To do that type the command <strong>felix:start X</strong> (where x is the number of the Jetty bundle).</p>
 
-<div>
-  <pre><code class='bash'>g! lb
-START LEVEL 1
-   ID|State      |Level|Name
-    0|Active     |    0|System Bundle (4.2.1)
-    1|Active     |    1|Apache Felix Bundle Repository (1.6.6)
-    2|Active     |    1|Apache Felix Gogo Command (0.12.0)
-    3|Active     |    1|Apache Felix Gogo Runtime (0.10.0)
-    4|Active     |    1|Apache Felix Gogo Shell (0.10.0)
-    6|Installed  |    1|Apache Felix Web Management Console (All In One) (4.2.0.all)
-    7|Installed  |    1|Apache Felix Http Jetty (2.2.0)
-g! felix:start 7
-g! [INFO] Started jetty 6.1.x at port(s) HTTP:8080
-
-g! felix:start 6
-g!</code></pre>
-</div>
+<figure class='code'><figcaption><span>Starting Jetty and Web Console </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>g! lb
+</span><span class='line'>START LEVEL 1
+</span><span class='line'>   ID|State      |Level|Name
+</span><span class='line'>    0|Active     |    0|System Bundle (4.2.1)
+</span><span class='line'>    1|Active     |    1|Apache Felix Bundle Repository (1.6.6)
+</span><span class='line'>    2|Active     |    1|Apache Felix Gogo Command (0.12.0)
+</span><span class='line'>    3|Active     |    1|Apache Felix Gogo Runtime (0.10.0)
+</span><span class='line'>    4|Active     |    1|Apache Felix Gogo Shell (0.10.0)
+</span><span class='line'>    6|Installed  |    1|Apache Felix Web Management Console (All In One) (4.2.0.all)
+</span><span class='line'>    7|Installed  |    1|Apache Felix Http Jetty (2.2.0)
+</span><span class='line'>g! felix:start 7
+</span><span class='line'>g! [INFO] Started jetty 6.1.x at port(s) HTTP:8080
+</span><span class='line'>
+</span><span class='line'>g! felix:start 6
+</span><span class='line'>g!</span></code></pre></td></tr></table></div></figure>
 
 
 <p>Do the same for the Web Management Console. Then go to <a href="http://localhost:8080">http://localhost:8080</a> and see if you get a subtle Jetty 404 ERROR. Believe it or not, this 404 is actually a good thing. It tells us Jetty is running and we have no pages on the root. We do, however, have servlets in the path /system/console now. So try going to this URL using a username of admin and a password of admin:</p>
@@ -746,18 +1157,27 @@ Under OSGi we get Bundles (which is where we are), Configuration, Log Service an
 
 <p>Lets continue our class setup with the following ones (They are mostly to enhance our web console and will provide good practice):</p>
 
-<div>
-  <pre><code class='bash'>felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.configadmin-1.6.0.jar
-felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.log-1.0.1.jar
-felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.metatype-1.0.6.jar
-felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.dependencymanager-3.1.0.jar
-felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.eventadmin-1.3.2.jar
-felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.deploymentadmin-0.9.4.jar
-felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.webconsole.plugins.event-1.0.2.jar
-felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.webconsole.plugins.packageadmin-1.0.0.jar
-felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.scr-1.6.2.jar
-felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.webconsole.plugins.ds-1.0.0.jar</code></pre>
-</div>
+<figure class='code'><figcaption><span>Adding More Features Practice </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.configadmin-1.6.0.jar
+</span><span class='line'>felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.log-1.0.1.jar
+</span><span class='line'>felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.metatype-1.0.6.jar
+</span><span class='line'>felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.dependencymanager-3.1.0.jar
+</span><span class='line'>felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.eventadmin-1.3.2.jar
+</span><span class='line'>felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.deploymentadmin-0.9.4.jar
+</span><span class='line'>felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.webconsole.plugins.event-1.0.2.jar
+</span><span class='line'>felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.webconsole.plugins.packageadmin-1.0.0.jar
+</span><span class='line'>felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.scr-1.6.2.jar
+</span><span class='line'>felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.webconsole.plugins.ds-1.0.0.jar</span></code></pre></td></tr></table></div></figure>
 
 
 
@@ -781,11 +1201,15 @@ felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/08/15/apache-felix-modifying-our-first-bundle-for-declarative-services/">Apache Felix - Modifying Our First Bundle for Declarative Services</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/08/15/apache-felix-first-bundle/">Apache Felix - First Bundle the Programmatic Way</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2013/08/15/apache-felix-starting-from-scratch/">Apache Felix - Starting From Scratch</a>
+        <a href="/blog/2013/08/14/apache-felix-starting-from-scratch/">Apache Felix - Starting From Scratch</a>
       </li>
     
   </ul>

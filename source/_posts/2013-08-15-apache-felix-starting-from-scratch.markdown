@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Apache Felix - Starting From Scratch"
-date: 2013-08-15 14:20
+date: 2013-08-14 14:20
 comments: true
 categories: [OSGi, Apache Felix]
 ---
@@ -30,36 +30,36 @@ Before we get moving let me explain that these labs were designed to mimic the f
 
 Make a directory for yourself somewhere where we can work as a scratchpad. I typically move my files from the Download directory so they don’t get lost in the mass of downloads that end up in there. I usually do something like:
 
-{% highlight bash %}
+{% codeblock Sample Path %}
 $HOME/projects/apache-felix
-{% endhighlight %}
+{% endcodeblock %}
 
 Once you have your structure set up, mv the file (or copy) from the Downloads directory to your new location and unzip it. Mileage may vary on Windows devices but on MacOS set up can be accomplished by issuing the following commands:
 
-{% highlight bash %}
+{% codeblock Installation %}
 cd $HOME/projects
 mkdir apache-felix
 cd apache-felix/
 cp /Users/<<me>>/Downloads/org.apache.felix.main.distribution-4.2.1.zip .
 unzip org.apache.felix.main.distribution-4.2.1.zip
-{% endhighlight %}
+{% endcodeblock %}
 
 Start It Up
 -----
 After its unzipped you’ll notice an felix-framework-x-x-x folder (depending on what distribution you have). If you change directory into that folder you can explore the structure of this bare bones install. We won’t be deep diving into all of these directories just yet, just notice they are there. If you decide to explore, be sure not to edit them. The framework boots off of these directories and uses them to index and locate classes. Changing them around is not a great idea. So lets start up Felix, if you type:
 
-{% highlight bash %}
+{% codeblock Running Felix %}
 java -jar bin/felix.jar
-{% endhighlight %}
+{% endcodeblock %}
 
 You should be welcomed with a running framework console that looks like:
 
-{% highlight bash %}
+{% codeblock The Gogo Shell %}
 ____________________________
 Welcome to Apache Felix Gogo
 
 g!
-{% endhighlight %}
+{% endcodeblock %}
 
 What this? Well by default, all that comes with Felix, as far as administration is concerned, is a console. Now, don’t get the wrong impression, this is one powerful console thats staring back at you. It just doesn’t seem like it right now (especially since the terminal apparently is some sort of strange dance style).
 
@@ -67,15 +67,15 @@ The GOGO shell (the dance style in question), is a standard Apache shell that yo
 
 So we came all this way, we might as well issue some commands. Type in the following to the shell:
 
-{% highlight bash %}
+{% codeblock List Bundles Command %}
 felix:lb
-{% endhighlight %}
+{% endcodeblock %}
 
 The command “lb” is a felix command for listing all of the bundles installed in Felix. The felix prefix is sort of a namespace qualifier. It exists primarily in the case two different command bundles use the same command name. But since they come with Felix, there are also aliased directly on the console. So typing “lb” will work as well. As far as instruction go, however, I will almost always prefix the command. My rationale is that in other systems, like Apache Karaf, it will be mandatory since so many open source bundles exist in the framework and you will need to get used to it anyways.
 
 The output of our **felix:lb** command should have resembled the following:
 
-{% highlight bash %}
+{% codeblock List Bundles Output %}
 g! felix:lb
 START LEVEL 1
    ID|State      |Level|Name
@@ -85,13 +85,13 @@ START LEVEL 1
     3|Active     |    1|Apache Felix Gogo Runtime (0.10.0)
     4|Active     |    1|Apache Felix Gogo Shell (0.10.0)
 g!
-{% endhighlight %}
+{% endcodeblock %}
 
 For those of you that have browsed another Felix installation, possibly Sling or Adobe CQ, you probably are asking “Yeah right, where are the other 200+ bundles?”. Well this is it, the default Felix framework operates on these 5 bundles and doesn’t need much else. You can start developing right now on these building whatever you heart desires. 
 
 So, what else can you do on the console? Well type help in the console and you should get back a list of all of the available commands out of the box. The console should happily respond:
 
-{% highlight bash %}
+{% codeblock Help Command Output %}
 ... some stuff ...
 felix:install
 felix:lb
@@ -102,11 +102,11 @@ felix:resolve
 felix:start
 felix:stop
 ... more stuff ...
-{% endhighlight %}
+{% endcodeblock %}
 
 Before you try these out, it’s important to note that the help system can also give you some pretty detailed information on each command. For instance type **help felix:ls** and look at the output:
 
-{% highlight bash %}
+{% codeblock Help List Output %}
 g! help felix:ls
 
 ls - get current directory contents
@@ -120,11 +120,11 @@ ls - get specified path contents
       CommandSession   automatically supplied shell session
       String   path with optionally wildcarded file name
 g!
-{% endhighlight %}
+{% endcodeblock %}
 
 Then try it:
 
-{% highlight bash %}
+{% codeblock List Command Output %}
 g! felix:ls
 /Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/bin
 /Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/bundle
@@ -137,7 +137,7 @@ g! felix:ls
 /Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/NOTICE
 
 g!
-{% endhighlight %}
+{% endcodeblock %}
 
 Thats all there is really to understanding the GOGO shell. Now mastering all of these commands would be a good idea, but it’s not really needed. That is unless you want to stay lightweight, say on a mobile device or micro-board type installation. For the desktop environments there is a web based console (strategically named WebConsole :) that we can employ to make this a little easier for us. 
 
@@ -147,20 +147,20 @@ Installing A Web Console
 -----
 After executing a **help felix:install**, you will notice that the command is scoped to the felix prefix and takes a collection of parameters. This means if we really wanted to we could install multiple things at once. Secondly, note it takes a URL to a file and not just a file path. This means it’s more than capable of installing over the internet. Let’s take advantage of the that to install the web console and a http server into the framework. In the console issue the command:
 
-{% highlight bash %}
+{% codeblock Installing The Web Console %}
 felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.webconsole-4.2.0-all.jar
-{% endhighlight %}
+{% endcodeblock %}
 
 the web console requires a web server so lets install jetty
 
-{% highlight bash %}
+{% codeblock Installing Jetty %}
 felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.http.jetty-2.2.0.jar
-{% endhighlight %}
+{% endcodeblock %}
 
 Once the download and install is completed, the console should return back a Bundle ID: X (where X is a number). This represent the bundle id that you just installed and will use to find out more information about the bundle and start/stop it. Now do an **felix:lb** and look at your list. You should have two bundles in the installed state.
 In order to start up our console we will first need to start the Jetty bundle then our Web Management Console bundle. To do that type the command **felix:start X** (where x is the number of the Jetty bundle). 
 
-{% highlight bash %}
+{% codeblock Starting Jetty and Web Console %}
 g! lb
 START LEVEL 1
    ID|State      |Level|Name
@@ -176,7 +176,7 @@ g! [INFO] Started jetty 6.1.x at port(s) HTTP:8080
 
 g! felix:start 6
 g!
-{% endhighlight %}
+{% endcodeblock %}
 
 Do the same for the Web Management Console. Then go to <http://localhost:8080> and see if you get a subtle Jetty 404 ERROR. Believe it or not, this 404 is actually a good thing. It tells us Jetty is running and we have no pages on the root. We do, however, have servlets in the path /system/console now. So try going to this URL using a username of admin and a password of admin:
 
@@ -219,7 +219,7 @@ So that really the bare minimum install, however there are some Felix provided b
 
 Lets continue our class setup with the following ones (They are mostly to enhance our web console and will provide good practice):
 
-{% highlight bash %}
+{% codeblock Adding More Features Practice %}
 felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.configadmin-1.6.0.jar
 felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.log-1.0.1.jar
 felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.metatype-1.0.6.jar
@@ -230,5 +230,5 @@ felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.
 felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.webconsole.plugins.packageadmin-1.0.0.jar
 felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.scr-1.6.2.jar
 felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.webconsole.plugins.ds-1.0.0.jar
-{% endhighlight %}
+{% endcodeblock %}
 
