@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: 
+
+Sitemap: http://plasmatrout.github.io/sitemap.xml 

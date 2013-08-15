@@ -1,0 +1,454 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Apache Felix - Starting From Scratch - Aggrolearning</title>
+  <meta name="author" content="jeff.downing@latchd.com">
+
+  
+  <meta name="description" content="This tutorial is designed to provide guidance on downloading, installing and configuring Apache Felix for use in other classroom labs. It&rsquo;s &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://plasmatrout.github.io/blog/2013/08/15/apache-felix-starting-from-scratch">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Aggrolearning" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Aggrolearning</a></h1>
+  
+    <h2>The coders beacon for aggressive learning</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:plasmatrout.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Apache Felix - Starting From Scratch</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-15T14:20:00-04:00" pubdate data-updated="true">Aug 15<span>th</span>, 2013</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>This tutorial is designed to provide guidance on downloading, installing and configuring Apache Felix for use in other classroom labs. It&rsquo;s designed to give the bare bones and provide a starting point needed in the remainder of the tutorials that will be given on Apache Felix. Its can also easily be adapter for classroom demonstrations and hackathons.</p>
+
+<h2>Audience</h2>
+
+<p>Typically, this is Lab #1 in a classroom environment, however anyone that wishes can use this tutorial to set up their own Apache Felix envinroment for learning OSGi. The typical audience already understands what OSGi is and that Apache Felix is just one implementation of an OSGi framework.</p>
+
+<h2>What We Are Going To Do</h2>
+
+<ol>
+<li>Install Apache Felix</li>
+<li>Start It Up</li>
+<li>Install A Web Console</li>
+<li>Add Some Bundles</li>
+</ol>
+
+
+<h2>Installing Apache Felix</h2>
+
+<p>Apache Felix is pretty easy to get started with regardless of what discipline of development you come from. The first step is to get your hands on the binary, which at time of write is found at the following URL:</p>
+
+<p><a href="http://felix.apache.org/downloads.cgi">http://felix.apache.org/downloads.cgi</a></p>
+
+<p><em>For these examples we will use the zip version since it will translate regardless of what operating system your are using.</em></p>
+
+<p>Before we get moving let me explain that these labs were designed to mimic the framework you will see most often in Adobe CQ, which is why we are using Apache Felix here. But there are a plethora of OSGi frameworks to choose from and you may have fun downloading and trying a few others out. Keep in mind, while some of the other frameworks will make things considerably easier, they may in fact, deviate from the OSGi Alliance&rsquo;s original specifications. If we work in Felix we are almost certain to be R4 compliant. Let&rsquo;s get started.</p>
+
+<p>Make a directory for yourself somewhere where we can work as a scratchpad. I typically move my files from the Download directory so they don’t get lost in the mass of downloads that end up in there. I usually do something like:</p>
+
+<div>
+  <pre><code class='bash'>$HOME/projects/apache-felix</code></pre>
+</div>
+
+
+<p>Once you have your structure set up, mv the file (or copy) from the Downloads directory to your new location and unzip it. Mileage may vary on Windows devices but on MacOS set up can be accomplished by issuing the following commands:</p>
+
+<div>
+  <pre><code class='bash'>cd $HOME/projects
+mkdir apache-felix
+cd apache-felix/
+cp /Users/&lt;&lt;me&gt;&gt;/Downloads/org.apache.felix.main.distribution-4.2.1.zip .
+unzip org.apache.felix.main.distribution-4.2.1.zip</code></pre>
+</div>
+
+
+<h2>Start It Up</h2>
+
+<p>After its unzipped you’ll notice an felix-framework-x-x-x folder (depending on what distribution you have). If you change directory into that folder you can explore the structure of this bare bones install. We won’t be deep diving into all of these directories just yet, just notice they are there. If you decide to explore, be sure not to edit them. The framework boots off of these directories and uses them to index and locate classes. Changing them around is not a great idea. So lets start up Felix, if you type:</p>
+
+<div>
+  <pre><code class='bash'>java -jar bin/felix.jar</code></pre>
+</div>
+
+
+<p>You should be welcomed with a running framework console that looks like:</p>
+
+<div>
+  <pre><code class='bash'>____________________________
+Welcome to Apache Felix Gogo
+
+g!</code></pre>
+</div>
+
+
+<p>What this? Well by default, all that comes with Felix, as far as administration is concerned, is a console. Now, don’t get the wrong impression, this is one powerful console thats staring back at you. It just doesn’t seem like it right now (especially since the terminal apparently is some sort of strange dance style).</p>
+
+<p>The GOGO shell (the dance style in question), is a standard Apache shell that you will see on both Felix and Karaf.  Karaf however, does have a ANSI color one which makes it a little more exciting (and by exciting I mean 1990&rsquo;s IRC exciting). The g! prompt is the surefire mechism to recognize this shell over the others.</p>
+
+<p>So we came all this way, we might as well issue some commands. Type in the following to the shell:</p>
+
+<div>
+  <pre><code class='bash'>felix:lb</code></pre>
+</div>
+
+
+<p>The command “lb” is a felix command for listing all of the bundles installed in Felix. The felix prefix is sort of a namespace qualifier. It exists primarily in the case two different command bundles use the same command name. But since they come with Felix, there are also aliased directly on the console. So typing “lb” will work as well. As far as instruction go, however, I will almost always prefix the command. My rationale is that in other systems, like Apache Karaf, it will be mandatory since so many open source bundles exist in the framework and you will need to get used to it anyways.</p>
+
+<p>The output of our <strong>felix:lb</strong> command should have resembled the following:</p>
+
+<div>
+  <pre><code class='bash'>g! felix:lb
+START LEVEL 1
+   ID|State      |Level|Name
+    0|Active     |    0|System Bundle (4.2.1)
+    1|Active     |    1|Apache Felix Bundle Repository (1.6.6)
+    2|Active     |    1|Apache Felix Gogo Command (0.12.0)
+    3|Active     |    1|Apache Felix Gogo Runtime (0.10.0)
+    4|Active     |    1|Apache Felix Gogo Shell (0.10.0)
+g!</code></pre>
+</div>
+
+
+<p>For those of you that have browsed another Felix installation, possibly Sling or Adobe CQ, you probably are asking “Yeah right, where are the other 200+ bundles?”. Well this is it, the default Felix framework operates on these 5 bundles and doesn’t need much else. You can start developing right now on these building whatever you heart desires.</p>
+
+<p>So, what else can you do on the console? Well type help in the console and you should get back a list of all of the available commands out of the box. The console should happily respond:</p>
+
+<div>
+  <pre><code class='bash'>... some stuff ...
+felix:install
+felix:lb
+felix:log
+felix:ls
+felix:refresh
+felix:resolve
+felix:start
+felix:stop
+... more stuff ...</code></pre>
+</div>
+
+
+<p>Before you try these out, it’s important to note that the help system can also give you some pretty detailed information on each command. For instance type <strong>help felix:ls</strong> and look at the output:</p>
+
+<div>
+  <pre><code class='bash'>g! help felix:ls
+
+ls - get current directory contents
+   scope: felix
+   parameters:
+      CommandSession   automatically supplied shell session
+
+ls - get specified path contents
+   scope: felix
+   parameters:
+      CommandSession   automatically supplied shell session
+      String   path with optionally wildcarded file name
+g!</code></pre>
+</div>
+
+
+<p>Then try it:</p>
+
+<div>
+  <pre><code class='bash'>g! felix:ls
+/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/bin
+/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/bundle
+/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/conf
+/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/DEPENDENCIES
+/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/doc
+/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/felix-cache
+/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/LICENSE
+/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/LICENSE.kxml2
+/Users/Me/ExternalLibraries/apache-felix-bare/felix-framework-4.2.1/NOTICE
+
+g!</code></pre>
+</div>
+
+
+<p>Thats all there is really to understanding the GOGO shell. Now mastering all of these commands would be a good idea, but it’s not really needed. That is unless you want to stay lightweight, say on a mobile device or micro-board type installation. For the desktop environments there is a web based console (strategically named WebConsole :) that we can employ to make this a little easier for us.</p>
+
+<p>Before you install it, take a look at the help on the <strong>felix:install</strong> command.</p>
+
+<h2>Installing A Web Console</h2>
+
+<p>After executing a <strong>help felix:install</strong>, you will notice that the command is scoped to the felix prefix and takes a collection of parameters. This means if we really wanted to we could install multiple things at once. Secondly, note it takes a URL to a file and not just a file path. This means it’s more than capable of installing over the internet. Let’s take advantage of the that to install the web console and a http server into the framework. In the console issue the command:</p>
+
+<div>
+  <pre><code class='bash'>felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.webconsole-4.2.0-all.jar</code></pre>
+</div>
+
+
+<p>the web console requires a web server so lets install jetty</p>
+
+<div>
+  <pre><code class='bash'>felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.http.jetty-2.2.0.jar</code></pre>
+</div>
+
+
+<p>Once the download and install is completed, the console should return back a Bundle ID: X (where X is a number). This represent the bundle id that you just installed and will use to find out more information about the bundle and start/stop it. Now do an <strong>felix:lb</strong> and look at your list. You should have two bundles in the installed state.
+In order to start up our console we will first need to start the Jetty bundle then our Web Management Console bundle. To do that type the command <strong>felix:start X</strong> (where x is the number of the Jetty bundle).</p>
+
+<div>
+  <pre><code class='bash'>g! lb
+START LEVEL 1
+   ID|State      |Level|Name
+    0|Active     |    0|System Bundle (4.2.1)
+    1|Active     |    1|Apache Felix Bundle Repository (1.6.6)
+    2|Active     |    1|Apache Felix Gogo Command (0.12.0)
+    3|Active     |    1|Apache Felix Gogo Runtime (0.10.0)
+    4|Active     |    1|Apache Felix Gogo Shell (0.10.0)
+    6|Installed  |    1|Apache Felix Web Management Console (All In One) (4.2.0.all)
+    7|Installed  |    1|Apache Felix Http Jetty (2.2.0)
+g! felix:start 7
+g! [INFO] Started jetty 6.1.x at port(s) HTTP:8080
+
+g! felix:start 6
+g!</code></pre>
+</div>
+
+
+<p>Do the same for the Web Management Console. Then go to <a href="http://localhost:8080">http://localhost:8080</a> and see if you get a subtle Jetty 404 ERROR. Believe it or not, this 404 is actually a good thing. It tells us Jetty is running and we have no pages on the root. We do, however, have servlets in the path /system/console now. So try going to this URL using a username of admin and a password of admin:</p>
+
+<p><a href="http://localhost:8080/system/console/bundles">http://localhost:8080/system/console/bundles</a></p>
+
+<p>After logging in, you should land on the bundles page. This page is probably the most important of the pages on the web console and you will use it more than the others in you quest to become a master bundle developer. The reasoning is simple, this is where you go to upload, start, stop and examine bundles. There are some important OSGi foundational things to take note of on this page so lets review a few of them.</p>
+
+<h3>Every Bundle Has A Unique Id</h3>
+
+<p>Yep. That’s it there in the Id column. They stay pretty simple as integers. Definitely prevents a lot of typing when using the console.</p>
+
+<h3>Bundle 0 belongs to the framework and cannot be stopped or started</h3>
+
+<p>We should have reviewed earlier that bundle 0 belongs to the framework. Heck, it really is the running framework which explains why it doesn’t have a stop button available for it. It’s version number tells you the version of the framework you are running and if you ever see this bundle stopped someone is playing a trick on you because the web console wouldn’t be available if it was.</p>
+
+<h3>Bundle 0 only exports the bare essentials and only the standard Java libraries</h3>
+
+<p>If you click the right arrow expander next to the name you can see a ton of more information (probably more that you’d like) about the system bundle. As you’d expect this bundle exports all of the core Java libraries and a few OSGi specific ones. The best part is that a significant amount of XML libraries are exported to, so always check here before exporting your own.</p>
+
+<h3>Bundle 0 must start first</h3>
+
+<p>Notice the start level field. It’s blank? Yep. That’s because bundle 0 must start first and therefore is really start level 0.</p>
+
+<h3>Bundle 0 must have no dependencies</h3>
+
+<p>Now take a look at the Imported Packaged section. Notice that the system bundle imports nothing. It has no dependencies. At all. None.</p>
+
+<h3>Bundles have states</h3>
+
+<p>So the status column shows what state the entire bundle is in. All of ours should show active at this point.</p>
+
+<h3>Bundles can be started and stopped independently of each other</h3>
+
+<p>Notice the stop button next to each bundle. This is where you can stop, start, or delete them from the framework.</p>
+
+<p><em>NOTE: Bundle 0 has a lot to it. Look around. It also registers two services, they are two interfaces named PackageAdmin and StartLevel.</em></p>
+
+<p>Well there’s the 1 dollar tour of the bundles section of the app. Let’s take a look at the rest of the menu structure
+Under OSGi we get Bundles (which is where we are), Configuration, Log Service and Services (Image 3.11). Ignore the Status and Web Console top level menus for now. They really just drive to informational content anyways. The stock OSGi sections of this menu apply to some UI pieces we haven’t installed yet. If you try to go to Configuration or Log Service you may notice they just tell you they aren’t installed. Let click on Services.</p>
+
+<h2>Add Some More Bundles</h2>
+
+<p>So that really the bare minimum install, however there are some Felix provided bundles you may want to browse yourself and install at will. You can find them at:</p>
+
+<p><a href="http://felix.apache.org/downloads.cgi">http://felix.apache.org/downloads.cgi</a> towards the bottom.</p>
+
+<p>Lets continue our class setup with the following ones (They are mostly to enhance our web console and will provide good practice):</p>
+
+<div>
+  <pre><code class='bash'>felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.configadmin-1.6.0.jar
+felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.log-1.0.1.jar
+felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.metatype-1.0.6.jar
+felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.dependencymanager-3.1.0.jar
+felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.eventadmin-1.3.2.jar
+felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.deploymentadmin-0.9.4.jar
+felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.webconsole.plugins.event-1.0.2.jar
+felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.webconsole.plugins.packageadmin-1.0.0.jar
+felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.scr-1.6.2.jar
+felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.webconsole.plugins.ds-1.0.0.jar</code></pre>
+</div>
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">jeff.downing@latchd.com</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-15T14:20:00-04:00" pubdate data-updated="true">Aug 15<span>th</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/apache-felix/'>Apache Felix</a>, <a class='category' href='/blog/categories/osgi/'>OSGi</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://plasmatrout.github.io/blog/2013/08/15/apache-felix-starting-from-scratch/" data-via="" data-counturl="http://plasmatrout.github.io/blog/2013/08/15/apache-felix-starting-from-scratch/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+      
+        <a class="basic-alignment right" href="/blog/2013/08/15/apache-felix-first-bundle/" title="Next Post: Apache Felix - First Bundle The Programmatic Way">Apache Felix - First Bundle The Programmatic Way &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/08/15/apache-felix-first-bundle/">Apache Felix - First Bundle the Programmatic Way</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/15/apache-felix-starting-from-scratch/">Apache Felix - Starting From Scratch</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - jeff.downing@latchd.com -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

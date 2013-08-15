@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'json'
 
 class ConfigTag < Liquid::Tag
