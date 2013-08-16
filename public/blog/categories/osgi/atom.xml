@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: OSGi | Aggrolearning]]></title>
-  <link href="http://peaceful-shelf-3096.herokuapp.com/blog/categories/osgi/atom.xml" rel="self"/>
-  <link href="http://peaceful-shelf-3096.herokuapp.com/"/>
-  <updated>2013-08-15T17:27:13-04:00</updated>
-  <id>http://peaceful-shelf-3096.herokuapp.com/</id>
+  <title><![CDATA[Category: OSGi | CodeAffectionado]]></title>
+  <link href="http://www.codeaffectionado.com/blog/categories/osgi/atom.xml" rel="self"/>
+  <link href="http://www.codeaffectionado.com/"/>
+  <updated>2013-08-16T19:14:39-04:00</updated>
+  <id>http://www.codeaffectionado.com/</id>
   <author>
     <name><![CDATA[jeff.downing@latchd.com]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Apache Felix - Pax Exam And Unit Testing Felix Bundles]]></title>
-    <link href="http://peaceful-shelf-3096.herokuapp.com/blog/2013/08/15/apache-felix-paxexam-and-unit-testing-felix-bundles/"/>
+    <link href="http://www.codeaffectionado.com/blog/2013/08/15/apache-felix-paxexam-and-unit-testing-felix-bundles/"/>
     <updated>2013-08-15T16:58:00-04:00</updated>
-    <id>http://peaceful-shelf-3096.herokuapp.com/blog/2013/08/15/apache-felix-paxexam-and-unit-testing-felix-bundles</id>
+    <id>http://www.codeaffectionado.com/blog/2013/08/15/apache-felix-paxexam-and-unit-testing-felix-bundles</id>
     <content type="html"><![CDATA[<p>In our previous <a href="/osgi/2013/08/14/apache-felix---modifying-our-first-bundle-for-declaritive-services/">example tutorial</a> we created an OSGi bundle using declarative services. However, to test our bundle we needed to create a Gogo Shell command and run it manually to validate that the bundle was operating correctly. In this tutorial we will remove that command binding and use a unit testing framework to test our bundle.</p>
 
 <p>If you haven&rsquo;t done the first few bundle tutorials mentioned above you can grab the source at:</p>
@@ -498,9 +498,9 @@
   
   <entry>
     <title type="html"><![CDATA[Apache Felix - Modifying Our First Bundle For Declarative Services]]></title>
-    <link href="http://peaceful-shelf-3096.herokuapp.com/blog/2013/08/15/apache-felix-modifying-our-first-bundle-for-declarative-services/"/>
+    <link href="http://www.codeaffectionado.com/blog/2013/08/15/apache-felix-modifying-our-first-bundle-for-declarative-services/"/>
     <updated>2013-08-15T15:53:00-04:00</updated>
-    <id>http://peaceful-shelf-3096.herokuapp.com/blog/2013/08/15/apache-felix-modifying-our-first-bundle-for-declarative-services</id>
+    <id>http://www.codeaffectionado.com/blog/2013/08/15/apache-felix-modifying-our-first-bundle-for-declarative-services</id>
     <content type="html"><![CDATA[<p>In our previous <a href="/blog/2013/08/15/apache-felix-first-bundle/">example tutorial</a> we created an OSGi bundle in a programmatic fashion. In that bundle we registered two services into the service registry. While rather simple in implementation, the solution did depend heavily on use of the Activator class. And since only one Activator can be defined in a bundle, registering even more services would present a significant challenge on readability. We are going to neaten this up a bit and use some features of the R4 compendium known as Declarative Services. We will expound on it a little as we go along, but I encourage you to read the specifications on the <a href="http://www.osgi.org/Download/HomePage">OSGi Alliances Site</a>.</p>
 
 <p>If you haven&rsquo;t done the first bundle tutorial mentioned above you can grab the source at:</p>
@@ -697,9 +697,9 @@ java.lang.IllegalStateException: Invalid BundleContext</em></p>
   
   <entry>
     <title type="html"><![CDATA[Apache Felix - First Bundle The Programmatic Way]]></title>
-    <link href="http://peaceful-shelf-3096.herokuapp.com/blog/2013/08/15/apache-felix-first-bundle/"/>
+    <link href="http://www.codeaffectionado.com/blog/2013/08/15/apache-felix-first-bundle/"/>
     <updated>2013-08-15T14:26:00-04:00</updated>
-    <id>http://peaceful-shelf-3096.herokuapp.com/blog/2013/08/15/apache-felix-first-bundle</id>
+    <id>http://www.codeaffectionado.com/blog/2013/08/15/apache-felix-first-bundle</id>
     <content type="html"><![CDATA[<p>This tutorial is designed to guide the reader through creating a very simple bundle example. For simplicity we will use the commit Greeter/Greet examples that are seen very often in OSGi tutorials. Since this is a classroom taught course, usually done in corporate environments, it&rsquo;s rather targeted on a specific IDE. However, if you wish to use an alternate environment the instructions should be diverse enough to support building on alternate platforms.</p>
 
 <h2>Requirements</h2>
@@ -1250,9 +1250,9 @@ This code shows a programmatic method to call a service from code. We will expou
   
   <entry>
     <title type="html"><![CDATA[Apache Felix - Starting From Scratch]]></title>
-    <link href="http://peaceful-shelf-3096.herokuapp.com/blog/2013/08/14/apache-felix-starting-from-scratch/"/>
+    <link href="http://www.codeaffectionado.com/blog/2013/08/14/apache-felix-starting-from-scratch/"/>
     <updated>2013-08-14T14:20:00-04:00</updated>
-    <id>http://peaceful-shelf-3096.herokuapp.com/blog/2013/08/14/apache-felix-starting-from-scratch</id>
+    <id>http://www.codeaffectionado.com/blog/2013/08/14/apache-felix-starting-from-scratch</id>
     <content type="html"><![CDATA[<p>This tutorial is designed to provide guidance on downloading, installing and configuring Apache Felix for use in other classroom labs. It&rsquo;s designed to give the bare bones and provide a starting point needed in the remainder of the tutorials that will be given on Apache Felix. Its can also easily be adapter for classroom demonstrations and hackathons.</p>
 
 <h2>Audience</h2>

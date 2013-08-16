@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Declarative Services | Aggrolearning]]></title>
-  <link href="http://peaceful-shelf-3096.herokuapp.com/blog/categories/declarative-services/atom.xml" rel="self"/>
-  <link href="http://peaceful-shelf-3096.herokuapp.com/"/>
-  <updated>2013-08-15T17:27:13-04:00</updated>
-  <id>http://peaceful-shelf-3096.herokuapp.com/</id>
+  <title><![CDATA[Category: Declarative Services | CodeAffectionado]]></title>
+  <link href="http://www.codeaffectionado.com/blog/categories/declarative-services/atom.xml" rel="self"/>
+  <link href="http://www.codeaffectionado.com/"/>
+  <updated>2013-08-16T19:14:39-04:00</updated>
+  <id>http://www.codeaffectionado.com/</id>
   <author>
     <name><![CDATA[jeff.downing@latchd.com]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Apache Felix - Modifying Our First Bundle For Declarative Services]]></title>
-    <link href="http://peaceful-shelf-3096.herokuapp.com/blog/2013/08/15/apache-felix-modifying-our-first-bundle-for-declarative-services/"/>
+    <link href="http://www.codeaffectionado.com/blog/2013/08/15/apache-felix-modifying-our-first-bundle-for-declarative-services/"/>
     <updated>2013-08-15T15:53:00-04:00</updated>
-    <id>http://peaceful-shelf-3096.herokuapp.com/blog/2013/08/15/apache-felix-modifying-our-first-bundle-for-declarative-services</id>
+    <id>http://www.codeaffectionado.com/blog/2013/08/15/apache-felix-modifying-our-first-bundle-for-declarative-services</id>
     <content type="html"><![CDATA[<p>In our previous <a href="/blog/2013/08/15/apache-felix-first-bundle/">example tutorial</a> we created an OSGi bundle in a programmatic fashion. In that bundle we registered two services into the service registry. While rather simple in implementation, the solution did depend heavily on use of the Activator class. And since only one Activator can be defined in a bundle, registering even more services would present a significant challenge on readability. We are going to neaten this up a bit and use some features of the R4 compendium known as Declarative Services. We will expound on it a little as we go along, but I encourage you to read the specifications on the <a href="http://www.osgi.org/Download/HomePage">OSGi Alliances Site</a>.</p>
 
 <p>If you haven&rsquo;t done the first bundle tutorial mentioned above you can grab the source at:</p>

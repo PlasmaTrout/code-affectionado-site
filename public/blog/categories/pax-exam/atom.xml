@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Pax Exam | Aggrolearning]]></title>
-  <link href="http://peaceful-shelf-3096.herokuapp.com/blog/categories/pax-exam/atom.xml" rel="self"/>
-  <link href="http://peaceful-shelf-3096.herokuapp.com/"/>
-  <updated>2013-08-15T17:27:13-04:00</updated>
-  <id>http://peaceful-shelf-3096.herokuapp.com/</id>
+  <title><![CDATA[Category: Pax Exam | CodeAffectionado]]></title>
+  <link href="http://www.codeaffectionado.com/blog/categories/pax-exam/atom.xml" rel="self"/>
+  <link href="http://www.codeaffectionado.com/"/>
+  <updated>2013-08-16T19:14:39-04:00</updated>
+  <id>http://www.codeaffectionado.com/</id>
   <author>
     <name><![CDATA[jeff.downing@latchd.com]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Apache Felix - Pax Exam And Unit Testing Felix Bundles]]></title>
-    <link href="http://peaceful-shelf-3096.herokuapp.com/blog/2013/08/15/apache-felix-paxexam-and-unit-testing-felix-bundles/"/>
+    <link href="http://www.codeaffectionado.com/blog/2013/08/15/apache-felix-paxexam-and-unit-testing-felix-bundles/"/>
     <updated>2013-08-15T16:58:00-04:00</updated>
-    <id>http://peaceful-shelf-3096.herokuapp.com/blog/2013/08/15/apache-felix-paxexam-and-unit-testing-felix-bundles</id>
+    <id>http://www.codeaffectionado.com/blog/2013/08/15/apache-felix-paxexam-and-unit-testing-felix-bundles</id>
     <content type="html"><![CDATA[<p>In our previous <a href="/osgi/2013/08/14/apache-felix---modifying-our-first-bundle-for-declaritive-services/">example tutorial</a> we created an OSGi bundle using declarative services. However, to test our bundle we needed to create a Gogo Shell command and run it manually to validate that the bundle was operating correctly. In this tutorial we will remove that command binding and use a unit testing framework to test our bundle.</p>
 
 <p>If you haven&rsquo;t done the first few bundle tutorials mentioned above you can grab the source at:</p>

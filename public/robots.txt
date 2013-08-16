@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://peaceful-shelf-3096.herokuapp.com/sitemap.xml 
+Sitemap: http://www.codeaffectionado.com/sitemap.xml 
