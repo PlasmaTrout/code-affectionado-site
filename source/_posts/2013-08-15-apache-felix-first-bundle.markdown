@@ -30,9 +30,9 @@ Generate A Maven Quickstart Java Project
 -----
 We will use the command line to generate a new maven project(Using the IDE would take too many pictures and overhead from the presentation). First, create a directory that you wish to place the project in, we will just use our $HOME/projects directory in the examples. Then run the following command:
 
-{% highlight bash %}
+{% codeblock Starting A Quick Start Maven Project %}
 mvn archetype:generate -DgroupId=org.bhn.training -DartifactId=greeter-bundle -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-{% endhighlight %}
+{% endcodeblock %}
 
 If you then open up IDEA and import an existing Maven project, you can select the new directory this command creates. At this point you have a very simple hello world application. You can compile and run this if you want, we are going to change it significantly though in the next few sections.
 

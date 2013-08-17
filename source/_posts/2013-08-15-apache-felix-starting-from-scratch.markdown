@@ -3,7 +3,7 @@ layout: post
 title: "Apache Felix - Starting From Scratch"
 date: 2013-08-14 14:20
 comments: true
-categories: [OSGi, Apache Felix]
+categories: [OSGi, Apache Felix, Starting From Scratch]
 ---
 This tutorial is designed to provide guidance on downloading, installing and configuring Apache Felix for use in other classroom labs. It's designed to give the bare bones and provide a starting point needed in the remainder of the tutorials that will be given on Apache Felix. Its can also easily be adapter for classroom demonstrations and hackathons.
 

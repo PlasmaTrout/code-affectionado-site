@@ -4,7 +4,7 @@
   <title><![CDATA[Category: OSGi | CodeAffectionado]]></title>
   <link href="http://www.codeaffectionado.com/blog/categories/osgi/atom.xml" rel="self"/>
   <link href="http://www.codeaffectionado.com/"/>
-  <updated>2013-08-16T19:14:39-04:00</updated>
+  <updated>2013-08-17T14:01:26-04:00</updated>
   <id>http://www.codeaffectionado.com/</id>
   <author>
     <name><![CDATA[jeff.downing@latchd.com]]></name>
@@ -731,10 +731,9 @@ java.lang.IllegalStateException: Invalid BundleContext</em></p>
 
 <p>We will use the command line to generate a new maven project(Using the IDE would take too many pictures and overhead from the presentation). First, create a directory that you wish to place the project in, we will just use our $HOME/projects directory in the examples. Then run the following command:</p>
 
-<p><div>
-  <pre><code class='bash'>mvn archetype:generate -DgroupId=org.bhn.training -DartifactId=greeter-bundle -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false</code></pre>
-</div>
-</p>
+<p><div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Starting A Quick Start Maven Project </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>mvn archetype:generate -DgroupId=org.bhn.training -DartifactId=greeter-bundle -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false</span></code></pre></td></tr></table></div></figure></notextile></div></p>
 
 <p>If you then open up IDEA and import an existing Maven project, you can select the new directory this command creates. At this point you have a very simple hello world application. You can compile and run this if you want, we are going to change it significantly though in the next few sections.</p>
 
