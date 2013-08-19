@@ -1,24 +1,22 @@
 ---
-layout: post
+layout: page
 title: "Apache Felix - Starting From Scratch"
-date: 2013-08-14 14:20
+date: 2013-08-19 13:52
 comments: true
-categories: [OSGi, Apache Felix, Starting From Scratch]
+sharing: true
+footer: true
+indexer: true
 ---
 This tutorial is designed to provide guidance on downloading, installing and configuring Apache Felix for use in other classroom labs. It's designed to give the bare bones and provide a starting point needed in the remainder of the tutorials that will be given on Apache Felix. Its can also easily be adapter for classroom demonstrations and hackathons.
 
+## Table Of Contents
+{{ page.indexer_aside }}
+
 Audience
 -----
-Typically, this is Lab #1 in a classroom environment, however anyone that wishes can use this tutorial to set up their own Apache Felix envinroment for learning OSGi. The typical audience already understands what OSGi is and that Apache Felix is just one implementation of an OSGi framework.
+Typically, this is Lab #1 in a classroom environment, however anyone that wishes can use this tutorial to set up their own Apache Felix environment for learning OSGi. The typical audience already understands what OSGi is and that Apache Felix is just one implementation of an OSGi framework.
 
-What We Are Going To Do
------
- 1. Install Apache Felix
- 1. Start It Up
- 1. Install A Web Console
- 1. Add Some Bundles
-
-Installing Apache Felix
+Install Apache Felix
 -----
 Apache Felix is pretty easy to get started with regardless of what discipline of development you come from. The first step is to get your hands on the binary, which at time of write is found at the following URL:
 
@@ -61,9 +59,9 @@ Welcome to Apache Felix Gogo
 g!
 {% endcodeblock %}
 
-What this? Well by default, all that comes with Felix, as far as administration is concerned, is a console. Now, don’t get the wrong impression, this is one powerful console thats staring back at you. It just doesn’t seem like it right now (especially since the terminal apparently is some sort of strange dance style).
+What this? Well by default, all that comes with Felix, as far as administration is concerned, is a console. Now, don’t get the wrong impression, this is one powerful console that's staring back at you. It just doesn’t seem like it right now (especially since the terminal apparently is some sort of strange dance style).
 
-The GOGO shell (the dance style in question), is a standard Apache shell that you will see on both Felix and Karaf.  Karaf however, does have a ANSI color one which makes it a little more exciting (and by exciting I mean 1990's IRC exciting). The g! prompt is the surefire mechism to recognize this shell over the others.
+The GOGO shell (the dance style in question), is a standard Apache shell that you will see on both Felix and Karaf.  Karaf however, does have a ANSI color one which makes it a little more exciting (and by exciting I mean 1990's IRC exciting). The g! prompt is the surefire mechanism to recognize this shell over the others.
 
 So we came all this way, we might as well issue some commands. Type in the following to the shell:
 
@@ -143,7 +141,7 @@ Thats all there is really to understanding the GOGO shell. Now mastering all of 
 
 Before you install it, take a look at the help on the **felix:install** command.
 
-Installing A Web Console
+Install A Web Console
 -----
 After executing a **help felix:install**, you will notice that the command is scoped to the felix prefix and takes a collection of parameters. This means if we really wanted to we could install multiple things at once. Secondly, note it takes a URL to a file and not just a file path. This means it’s more than capable of installing over the internet. Let’s take advantage of the that to install the web console and a http server into the framework. In the console issue the command:
 
@@ -231,4 +229,3 @@ felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.
 felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.scr-1.6.2.jar
 felix:install http://mirror.switch.ch/mirror/apache/dist/felix/org.apache.felix.webconsole.plugins.ds-1.0.0.jar
 {% endcodeblock %}
-

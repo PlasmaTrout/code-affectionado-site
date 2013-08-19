@@ -1,17 +1,24 @@
 ---
-layout: post
-title: "Apache Felix - Modifying Our First Bundle For Declarative Services"
-date: 2013-08-15 15:53
+layout: page
+title: "Apache Felix - Modifying Our First Bundle for Declarative Services"
+date: 2013-08-19 14:16
+categories: [OSGi]
 comments: true
-categories: [OSGi, Apache Felix, Declarative Services]
+sharing: true
+footer: true
+indexer: true
 ---
-In our previous [example tutorial](/blog/2013/08/15/apache-felix-first-bundle/) we created an OSGi bundle in a programmatic fashion. In that bundle we registered two services into the service registry. While rather simple in implementation, the solution did depend heavily on use of the Activator class. And since only one Activator can be defined in a bundle, registering even more services would present a significant challenge on readability. We are going to neaten this up a bit and use some features of the R4 compendium known as Declarative Services. We will expound on it a little as we go along, but I encourage you to read the specifications on the [OSGi Alliances Site](http://www.osgi.org/Download/HomePage).
+In our previous [example tutorial](/labs-and-tutorials/osgi/apache-felix-programmatic-bundle/) we created an OSGi bundle in a programmatic fashion. In that bundle we registered two services into the service registry. While rather simple in implementation, the solution did depend heavily on use of the Activator class. And since only one Activator can be defined in a bundle, registering even more services would present a significant challenge on readability. We are going to neaten this up a bit and use some features of the R4 compendium known as Declarative Services. We will expound on it a little as we go along, but I encourage you to read the specifications on the [OSGi Alliances Site](http://www.osgi.org/Download/HomePage).
 
 If you haven't done the first bundle tutorial mentioned above you can grab the source at:
 
 {% codeblock Git Hub Quick Start lang:bash https://github.com/PlasmaTrout/greeter-bundle-lab3 GitHub %}
 git clone git@github.com:PlasmaTrout/greeter-bundle-lab3.git
 {% endcodeblock %}
+
+Table Of Contents
+-----
+{{ page.indexer_aside }}
 
 Requirements
 -----
@@ -25,12 +32,7 @@ Audience
 -----
 Typically, this is Lab #3 in a classroom environment, however anyone that wishes can use this tutorial to create a tutorial bundle. The typical audience already understands what OSGi is and that Apache Felix is just one implementation of an OSGi framework.
 
-What We Are Going To Do
------
-1. Remove The Activator From The Project
-1. Add A XML File For The Greeter Service To The Resources Directory
-1. Add Another XML File For The Greet Command To The Resources Directory
-1. Build, Deploy And Test
+
 
 Remove The Activator From The Project
 -----
@@ -108,7 +110,7 @@ So package this guy up with a **mvn package** and then deploy using your method 
 _ERROR: greeter-bundle (15): [GreeterComponent] Cannot register Component
 java.lang.IllegalStateException: Invalid BundleContext_
 
-This occured mainly because I had a typo in one of the component files which confused Felix into writing some properties it shouldn't have. I think the name attribute was missing from one of the properties. However, even after fixing it, the exception stayed there until I restarted the whole framework.
+This occurred mainly because I had a typo in one of the component files which confused Felix into writing some properties it shouldn't have. I think the name attribute was missing from one of the properties. However, even after fixing it, the exception stayed there until I restarted the whole framework.
 
 ### XmlParseExceptions
 Typically they come in a variety of flavors and they are usually due to badly formed xml documents. Mine came from a example in the R4 compendium that had a declarative services entry as the following:

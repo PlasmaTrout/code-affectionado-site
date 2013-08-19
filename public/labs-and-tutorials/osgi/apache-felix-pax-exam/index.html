@@ -9,7 +9,7 @@
   <meta name="author" content="jeff.downing@latchd.com">
 
   
-  <meta name="description" content="In our previous example tutorial we created an OSGi bundle using declarative services. However, to test our bundle we needed to create a Gogo Shell &hellip;">
+  <meta name="description" content="Apache Felix - Pax Exam and Unit Testing Felix Bundles In our previous example tutorial we created an OSGi bundle using declarative services. &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.codeaffectionado.com/blog/2013/08/15/apache-felix-paxexam-and-unit-testing-felix-bundles">
+  <link rel="canonical" href="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-pax-exam">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="CodeAffectionado" type="application/atom+xml">
@@ -68,7 +68,8 @@
 </form>
   
 <ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
+  <li><a href="/">News</a></li>
+  <li><a href="/labs-and-tutorials/">Labs And Tutorials</a></li>
   <li><a href="/blog/archives">Archives</a></li>
 </ul>
 
@@ -76,15 +77,11 @@
   <div id="main">
     <div id="content">
       <div>
-<article class="hentry" role="article">
+<article role="article">
   
   <header>
-    
-      <h1 class="entry-title">Apache Felix - Pax Exam and Unit Testing Felix Bundles</h1>
-    
-    
-      <p class="meta">
-        
+    <h1 class="entry-title">Apache Felix - Pax Exam and Unit Testing Felix Bundles</h1>
+    <p class="meta">
 
 
 
@@ -96,23 +93,24 @@
   
 
 
-<time datetime="2013-08-15T16:58:00-04:00" pubdate data-updated="true">Aug 15<span>th</span>, 2013</time>
-        
-      </p>
-    
+<time datetime="2013-08-19T14:23:00-04:00" pubdate data-updated="true"></time></p>
   </header>
-
-
-<div class="entry-content"><p>In our previous <a href="/osgi/2013/08/14/apache-felix---modifying-our-first-bundle-for-declaritive-services/">example tutorial</a> we created an OSGi bundle using declarative services. However, to test our bundle we needed to create a Gogo Shell command and run it manually to validate that the bundle was operating correctly. In this tutorial we will remove that command binding and use a unit testing framework to test our bundle.</p>
+  
+  <p>In our previous <a href="/osgi/2013/08/14/apache-felix---modifying-our-first-bundle-for-declaritive-services/">example tutorial</a> we created an OSGi bundle using declarative services. However, to test our bundle we needed to create a GOGO Shell command and run it manually to validate that the bundle was operating correctly. In this tutorial we will remove that command binding and use a unit testing framework to test our bundle.</p>
 
 <p>If you haven&rsquo;t done the first few bundle tutorials mentioned above you can grab the source at:</p>
 
-<figure class='code'><figcaption><span>Lab Quick Start Code</span><a href='https://github.com/PlasmaTrout/greeter-bundle-lab4'>GitHub </a></figcaption> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Lab Quick Start Code</span><a href='https://github.com/PlasmaTrout/greeter-bundle-lab4'>GitHub </a></figcaption> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone git@github.com:PlasmaTrout/greeter-bundle-lab4.git
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<h2>Requirements</h2>
+<h2 id="id-052a458ca77a6d742bc477f4c443cff2">1 Table Of Contents</h2>
+
+<ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-052a458ca77a6d742bc477f4c443cff2">Table Of Contents</a></li><li style="list-style:inherit;"><a href="#id-5a2ebfb8baa378cfcfcba58bbb1380c2">Requirements</a></li><li style="list-style:inherit;"><a href="#id-ef1e6887c579ba81dcedc3f4e3793cd2">Audience</a></li><li style="list-style:inherit;"><a href="#id-502fd4927871c5439c74952f6fb9e00f">Remove Our Command Class and Declarative Services XML File</a></li><li style="list-style:inherit;"><a href="#id-881040fee14000fc9cb6c2e7c0592fe9">Add A Few Maven Dependencies</a></li><li style="list-style:inherit;"><a href="#id-412233a407aba8d7c0f9b250c6a52ae4">Retrofit Our Existing JUnit Test To Use PaxRunner</a></li><li style="list-style:inherit;"><a href="#id-fc0ece5d91fb78909fad5b0b1013bdba">Build Our Application and Run Unit Tests</a></li></ol>
+
+
+<h2 id="id-5a2ebfb8baa378cfcfcba58bbb1380c2">2 Requirements</h2>
 
 <ul>
 <li>Apache Felix (See <a href="/osgi/2013/08/09/felix-from-the-ground-up">Starting From Scratch</a>)</li>
@@ -123,27 +121,17 @@
 </ul>
 
 
-<h2>Audience</h2>
+<h2 id="id-ef1e6887c579ba81dcedc3f4e3793cd2">3 Audience</h2>
 
 <p>Typically, this is Lab #4 in a classroom environment, however anyone that wishes can use this tutorial to create a tutorial bundle. The typical audience already understands what OSGi is and that Apache Felix is just one implementation of an OSGi framework.</p>
 
-<h2>What We Are Going To Do</h2>
-
-<ol>
-<li>Remove Our Command Class and Declarative Services XML File</li>
-<li>Add A Few Maven Dependencies</li>
-<li>Retrofit Our Existing JUnit Test To Use PaxRunner</li>
-<li>Build Our Application and Run Unit Tests</li>
-</ol>
-
-
-<h2>Remove Our Command Class and Declarative Services XML File</h2>
+<h2 id="id-502fd4927871c5439c74952f6fb9e00f">4 Remove Our Command Class and Declarative Services XML File</h2>
 
 <p>In this step we are going to find and remove our command package from the project tree. Once we get to Apache Sling (which is where we are going BTW) we can just make some web pages to display our results. So delete the command package and the files in it and remove the greetcommandcomponent.xml file as well. We are done with it for now.</p>
 
 <p>So now our JAR file is a bit smaller. If we take a look we can see the command is no more:</p>
 
-<figure class='code'><figcaption><span>Bundle Jar Contents </span></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Bundle Jar Contents </span></figcaption>
 <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -165,12 +153,12 @@
 </span><span class='line'>0 Wed Aug 14 16:03:34 EDT 2013 org/bhn/training/api/
 </span><span class='line'>155 Wed Aug 14 16:03:32 EDT 2013 org/bhn/training/api/Greeter.class
 </span><span class='line'>0 Wed Aug 14 16:03:34 EDT 2013 org/bhn/training/impl/
-</span><span class='line'>482 Wed Aug 14 16:03:32 EDT 2013 org/bhn/training/impl/SimpleStringGreeterImpl.class</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>482 Wed Aug 14 16:03:32 EDT 2013 org/bhn/training/impl/SimpleStringGreeterImpl.class</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>After your done, take a look at your POM.xml and remove the Service-Component entry for the file you just removed. We also need to add some magical lines for our Pax Exam tests, so it should end up like:</p>
 
-<figure class='code'><figcaption><span>Modifying The Maven Plugin </span></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Modifying The Maven Plugin </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -213,16 +201,16 @@
 </span><span class='line'>        <span class="nt">&lt;/execution&gt;</span>
 </span><span class='line'>    <span class="nt">&lt;/executions&gt;</span>
 </span><span class='line'><span class="nt">&lt;/plugin&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>The new goal is to ensure that the manifest is actually written at a different part of the lifecycle. It&rsquo;s really just to improve the process of testing the bundle. Without this line you would end up with errors indicating that the manifest didn&rsquo;t exist during the testing phase. Putting this line in ensures that it really will exist prior to the test being run.</p>
 
-<h2>Add A Few Maven Dependencies</h2>
+<h2 id="id-881040fee14000fc9cb6c2e7c0592fe9">5 Add A Few Maven Dependencies</h2>
 
 <p>So now we need to add a few Maven dependencies. I won&rsquo;t explain them, just know that they are requirements for Pax Exam and are available in their documentation. We are also going to scope most of them to test only anyways. We won&rsquo;t be deploying them. In your POM.xml add the following dependency chain:</p>
 
-<figure class='code'><figcaption><span>Pax Exam POM Dependencies </span></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Pax Exam POM Dependencies </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -309,18 +297,18 @@
 </span><span class='line'>    <span class="nt">&lt;version&gt;</span>0.9.20<span class="nt">&lt;/version&gt;</span>
 </span><span class='line'>    <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
 </span><span class='line'><span class="nt">&lt;/dependency&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>Thats really all we had to do in this step. Its probably best that we run a <strong>mvn package</strong> or <strong>nv test</strong> just to make sure we have no Maven errors.</p>
 
-<h2>Retrofit Our Existing JUnit Test To Use PaxRunner</h2>
+<h2 id="id-412233a407aba8d7c0f9b250c6a52ae4">6 Retrofit Our Existing JUnit Test To Use PaxRunner</h2>
 
 <p>We already have a unit test that was created with the quick start archetype. Up to now we have been mostly ignoring it. Lets make it do some work. Locate your AppTest.java file and lets rename it to GreetingPaxExamTest.java so it describes itself a bit.</p>
 
-<p>Now lets decorate the top of it with some annotations that will help Pax Exam pick up on its existance (I&rsquo;m omitting the imports that are needed to support these, I&rsquo;m hoping your IDE does some work here):</p>
+<p>Now lets decorate the top of it with some annotations that will help Pax Exam pick up on its existence (I&rsquo;m omitting the imports that are needed to support these, I&rsquo;m hoping your IDE does some work here):</p>
 
-<figure class='code'><figcaption><span>Decorating Our Test Class With Some Annotations </span></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Decorating Our Test Class With Some Annotations </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -331,7 +319,7 @@
 </span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">GreeterPaxExamTest</span>
 </span><span class='line'>    <span class="kd">extends</span> <span class="n">TestCase</span>
 </span><span class='line'><span class="o">{</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>The first is a common annotation to change what runner (test system) that the unit test will run on. Without this annotation, Maven will default to its own runner and we don&rsquo;t want that in this case. We want it to use JUnit 4.8.2&rsquo;s test runner.</p>
@@ -340,7 +328,7 @@
 
 <p>Now we need to setup our class body to support the way unit tests work for our runner. The first thing we need is a configuration section:</p>
 
-<figure class='code'><figcaption><span>Test Class Configuration Method </span></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Test Class Configuration Method </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -357,14 +345,14 @@
 </span><span class='line'>            <span class="n">junitBundles</span><span class="o">()</span>
 </span><span class='line'>    <span class="o">);</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>This method is called by the runner to know how to load the OSGi framework up with bundles prior to the test launching. The syntax is a little strange, but just know that Pax Exam exposed a few static helpers that attempts to make things easier.</p>
 
 <p>Now we need is an actual test, lets modify the create one to look like:</p>
 
-<figure class='code'><figcaption><span>Test Class Test Method </span></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Test Class Test Method </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -373,7 +361,7 @@
 </span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">simpleGreetingImplCheck</span><span class="o">(){</span>
 </span><span class='line'>  <span class="c1">// test will go here  </span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>So far we really aren&rsquo;t testing anything specific, but just to test your setup run <strong>mvn test</strong> and watch what happens now.</p>
@@ -382,19 +370,19 @@
 
 <p>So we want to test our greeter service. We know that typically we ask the context for an instance of the service that implements an interface. So our basic question usually is &ldquo;Hey framework, I need whatever implements this interface.&rdquo; the framework usually responds &ldquo;ok&rdquo; and gives it to you. To do that in our test, we inject a variable. Which is very similar to what you will do in you code in later tutorials actually. Lets create the following field in our test class:</p>
 
-<figure class='code'><figcaption><span>Test Class Injection Example </span></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Test Class Injection Example </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Inject</span>
 </span><span class='line'><span class="kd">private</span> <span class="n">Greeter</span> <span class="n">greeter</span><span class="o">;</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p><em>Note: The import for inject is javax.inject.Inject. Some IDE&rsquo;s will put googles first, just know you want the javax annotation.</em></p>
 
 <p>Now lets use that interface in our test. Notice that I <strong>WILL NOT</strong> instantiate anything the framework will handle that. Change your test to look like:</p>
 
-<figure class='code'><figcaption><span>Test Class Unit Test </span></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Test Class Unit Test </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -407,12 +395,12 @@
 </span><span class='line'>    <span class="n">String</span> <span class="n">testValue</span> <span class="o">=</span> <span class="n">greeter</span><span class="o">.</span><span class="na">greet</span><span class="o">();</span>
 </span><span class='line'>    <span class="n">assertEquals</span><span class="o">(</span><span class="n">testValue</span><span class="o">,</span><span class="s">&quot;Hello World Fail!&quot;</span><span class="o">);</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>Just in case your having trouble, the final test class should look like the following:</p>
 
-<figure class='code'><figcaption><span> (GreeterPaxExamTest.java)</span> <a href='/downloads/code/GreeterPaxExamTest.java'>download</a></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span> (GreeterPaxExamTest.java)</span> <a href='/downloads/code/GreeterPaxExamTest.java'>download</a></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -495,56 +483,43 @@
 </span><span class='line'>        <span class="n">assertEquals</span><span class="o">(</span><span class="n">testValue</span><span class="o">,</span><span class="s">&quot;Hello World Fail!&quot;</span><span class="o">);</span>
 </span><span class='line'>    <span class="o">}</span>
 </span><span class='line'><span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<h2>Build Our Application and Run Unit Tests</h2>
+<h2 id="id-fc0ece5d91fb78909fad5b0b1013bdba">7 Build Our Application and Run Unit Tests</h2>
 
 <p>Now all we have to do is run a <strong>mvn test</strong> and see if we are working properly. This test was designed to fail just to prove that it is actually working. If you scroll up a little in the text you will see the line:</p>
 
-<figure class='code'><figcaption><span>Example Failure Message </span></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Example Failure Message </span></figcaption>
 <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>GreeterPax ExamTest.simpleGreetingImplCheck:39 expected:&lt;Hello World[]!> but was:&lt;Hello World[ Fail]!></span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>GreeterPax ExamTest.simpleGreetingImplCheck:39 expected:&lt;Hello World[]!> but was:&lt;Hello World[ Fail]!></span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>This is due to our test case having the world fail in it. If we change it to just Hello World! it will pass.</p>
-</div>
+
+  
+    <footer>
+      <p class="meta">
+        
+        
 
 
-  <footer>
-    <p class="meta">
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-19T14:23:00-04:00" pubdate data-updated="true"></time>
+        
+      </p>
       
+        <div class="sharing">
   
-
-<span class="byline author vcard">Posted by <span class="fn">jeff.downing@latchd.com</span></span>
-
-      
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-08-15T16:58:00-04:00" pubdate data-updated="true">Aug 15<span>th</span>, 2013</time>
-      
-
-<span class="categories">
-  
-    <a class='category' href='/blog/categories/apache-felix/'>Apache Felix</a>, <a class='category' href='/blog/categories/osgi/'>OSGi</a>, <a class='category' href='/blog/categories/pax-exam/'>Pax Exam</a>
-  
-</span>
-
-
-    </p>
-    
-      <div class="sharing">
-  
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/blog/2013/08/15/apache-felix-paxexam-and-unit-testing-felix-bundles/" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/blog/2013/08/15/apache-felix-paxexam-and-unit-testing-felix-bundles/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-pax-exam/index.html" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-pax-exam/index.html" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -554,16 +529,9 @@
   
 </div>
 
-    
-    <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2013/08/15/apache-felix-modifying-our-first-bundle-for-declarative-services/" title="Previous Post: Apache Felix - Modifying Our First Bundle For Declarative Services">&laquo; Apache Felix - Modifying Our First Bundle For Declarative Services</a>
-      
-      
-        <a class="basic-alignment right" href="/blog/2013/08/17/apache-jackrabbit-starting-out/" title="Next Post: Apache Jackrabbit - Starting From Scratch">Apache Jackrabbit - Starting From Scratch &raquo;</a>
-      
-    </p>
-  </footer>
+    </footer>
+  
 </article>
 
   <section>
@@ -576,63 +544,35 @@
 
 <aside class="sidebar">
   
-    <section>
+    
+  <section>
+  <h1>Tutorial Steps</h1>
+  <ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-052a458ca77a6d742bc477f4c443cff2">Table Of Contents</a></li><li style="list-style:inherit;"><a href="#id-5a2ebfb8baa378cfcfcba58bbb1380c2">Requirements</a></li><li style="list-style:inherit;"><a href="#id-ef1e6887c579ba81dcedc3f4e3793cd2">Audience</a></li><li style="list-style:inherit;"><a href="#id-502fd4927871c5439c74952f6fb9e00f">Remove Our Command Class and Declarative Services XML File</a></li><li style="list-style:inherit;"><a href="#id-881040fee14000fc9cb6c2e7c0592fe9">Add A Few Maven Dependencies</a></li><li style="list-style:inherit;"><a href="#id-412233a407aba8d7c0f9b250c6a52ae4">Retrofit Our Existing JUnit Test To Use PaxRunner</a></li><li style="list-style:inherit;"><a href="#id-fc0ece5d91fb78909fad5b0b1013bdba">Build Our Application and Run Unit Tests</a></li></ol>
+  </section>
+<section>
+	<h1>Lab/Tutorial Sections</h1>
+	<ul id="recent_posts">
+      <li class="post">
+        <a href="/labs-and-tutorials/osgi/">OSGi</a>
+      </li>
+      <li>
+      	<a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a>
+      </li>
+  </ul>
+</section><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2013/08/17/apache-jackrabbit-starting-out/">Apache Jackrabbit - Starting From Scratch</a>
+        <a href="/blog/2013/08/19/newest-osgi-tutorial-additions/">Newest OSGi Additions</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2013/08/15/apache-felix-paxexam-and-unit-testing-felix-bundles/">Apache Felix - Pax Exam and Unit Testing Felix Bundles</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/08/15/apache-felix-modifying-our-first-bundle-for-declarative-services/">Apache Felix - Modifying Our First Bundle for Declarative Services</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/08/15/apache-felix-first-bundle/">Apache Felix - First Bundle the Programmatic Way</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/08/14/apache-felix-starting-from-scratch/">Apache Felix - Starting From Scratch</a>
+        <a href="/blog/2013/08/17/apache-jackrabbit-starting-out/">Apache Jackrabbit - Starting From Scratch Tutorial Up</a>
       </li>
     
   </ul>
 </section>
-
-<section>
-  <h1>GitHub Repos</h1>
-  <ul id="gh_repos">
-    <li class="loading">Status updating...</li>
-  </ul>
-  
-  <a href="https://github.com/PlasmaTrout">@PlasmaTrout</a> on GitHub
-  
-  <script type="text/javascript">
-    $(document).ready(function(){
-        if (!window.jXHR){
-            var jxhr = document.createElement('script');
-            jxhr.type = 'text/javascript';
-            jxhr.src = '/javascripts/libs/jXHR.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(jxhr, s);
-        }
-
-        github.showRepos({
-            user: 'PlasmaTrout',
-            count: 0,
-            skip_forks: true,
-            target: '#gh_repos'
-        });
-    });
-  </script>
-  <script src="/javascripts/github.js" type="text/javascript"> </script>
-</section>
-
-
 
 <section class="googleplus">
   <h1>
@@ -664,8 +604,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://www.codeaffectionado.com/blog/2013/08/15/apache-felix-paxexam-and-unit-testing-felix-bundles/';
-        var disqus_url = 'http://www.codeaffectionado.com/blog/2013/08/15/apache-felix-paxexam-and-unit-testing-felix-bundles/';
+        var disqus_identifier = 'http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-pax-exam/index.html';
+        var disqus_url = 'http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-pax-exam/index.html';
         var disqus_script = 'embed.js';
       
     (function () {

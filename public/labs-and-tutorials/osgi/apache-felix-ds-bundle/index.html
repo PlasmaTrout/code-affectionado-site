@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Apache Felix - Modifying Our First Bundle For Declarative Services - CodeAffectionado</title>
+  <title>Apache Felix - Modifying Our First Bundle for Declarative Services - CodeAffectionado</title>
   <meta name="author" content="jeff.downing@latchd.com">
 
   
-  <meta name="description" content="In our previous example tutorial we created an OSGi bundle in a programmatic fashion. In that bundle we registered two services into the service &hellip;">
+  <meta name="description" content="Apache Felix - Modifying Our First Bundle for Declarative Services In our previous example tutorial we created an OSGi bundle in a programmatic &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.codeaffectionado.com/blog/2013/08/15/apache-felix-modifying-our-first-bundle-for-declarative-services">
+  <link rel="canonical" href="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-ds-bundle">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="CodeAffectionado" type="application/atom+xml">
@@ -68,7 +68,8 @@
 </form>
   
 <ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
+  <li><a href="/">News</a></li>
+  <li><a href="/labs-and-tutorials/">Labs And Tutorials</a></li>
   <li><a href="/blog/archives">Archives</a></li>
 </ul>
 
@@ -76,15 +77,11 @@
   <div id="main">
     <div id="content">
       <div>
-<article class="hentry" role="article">
+<article role="article">
   
   <header>
-    
-      <h1 class="entry-title">Apache Felix - Modifying Our First Bundle for Declarative Services</h1>
-    
-    
-      <p class="meta">
-        
+    <h1 class="entry-title">Apache Felix - Modifying Our First Bundle for Declarative Services</h1>
+    <p class="meta">
 
 
 
@@ -96,23 +93,24 @@
   
 
 
-<time datetime="2013-08-15T15:53:00-04:00" pubdate data-updated="true">Aug 15<span>th</span>, 2013</time>
-        
-      </p>
-    
+<time datetime="2013-08-19T14:16:00-04:00" pubdate data-updated="true"></time></p>
   </header>
-
-
-<div class="entry-content"><p>In our previous <a href="/blog/2013/08/15/apache-felix-first-bundle/">example tutorial</a> we created an OSGi bundle in a programmatic fashion. In that bundle we registered two services into the service registry. While rather simple in implementation, the solution did depend heavily on use of the Activator class. And since only one Activator can be defined in a bundle, registering even more services would present a significant challenge on readability. We are going to neaten this up a bit and use some features of the R4 compendium known as Declarative Services. We will expound on it a little as we go along, but I encourage you to read the specifications on the <a href="http://www.osgi.org/Download/HomePage">OSGi Alliances Site</a>.</p>
+  
+  <p>In our previous <a href="/labs-and-tutorials/osgi/apache-felix-programmatic-bundle/">example tutorial</a> we created an OSGi bundle in a programmatic fashion. In that bundle we registered two services into the service registry. While rather simple in implementation, the solution did depend heavily on use of the Activator class. And since only one Activator can be defined in a bundle, registering even more services would present a significant challenge on readability. We are going to neaten this up a bit and use some features of the R4 compendium known as Declarative Services. We will expound on it a little as we go along, but I encourage you to read the specifications on the <a href="http://www.osgi.org/Download/HomePage">OSGi Alliances Site</a>.</p>
 
 <p>If you haven&rsquo;t done the first bundle tutorial mentioned above you can grab the source at:</p>
 
-<figure class='code'><figcaption><span>Git Hub Quick Start</span><a href='https://github.com/PlasmaTrout/greeter-bundle-lab3'>GitHub </a></figcaption> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Git Hub Quick Start</span><a href='https://github.com/PlasmaTrout/greeter-bundle-lab3'>GitHub </a></figcaption> <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone git@github.com:PlasmaTrout/greeter-bundle-lab3.git
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<h2>Requirements</h2>
+<h2 id="id-052a458ca77a6d742bc477f4c443cff2">1 Table Of Contents</h2>
+
+<ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-052a458ca77a6d742bc477f4c443cff2">Table Of Contents</a></li><li style="list-style:inherit;"><a href="#id-5a2ebfb8baa378cfcfcba58bbb1380c2">Requirements</a></li><li style="list-style:inherit;"><a href="#id-ef1e6887c579ba81dcedc3f4e3793cd2">Audience</a></li><li style="list-style:inherit;"><a href="#id-2b92ceaecdf0127785e53d9afade76a6">Remove The Activator From The Project</a></li><li style="list-style:inherit;"><a href="#id-0130d0d2dd19fe373127e931613d13b7">Add A XML File For The Greeter Service To The Resources Directory</a></li><li style="list-style:inherit;"><a href="#id-bdfec67ed6810228756d5ecd126f21ec">Add Another XML File For The Greet Command To The Resources Directory</a></li><li style="list-style:inherit;"><a href="#id-0175642f575d30aa3cd588b5a750b754">Build, Deploy and Test</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-dd78b7bb872b015719c89fbe09b0ef28">IllegalStateExceptions</a></li> <li style="list-style:inherit;"><a href="#id-a272c69f2891d9cc13e4ab0060fb3cea">XmlParseExceptions</a></li></ul></li></ol>
+
+
+<h2 id="id-5a2ebfb8baa378cfcfcba58bbb1380c2">2 Requirements</h2>
 
 <ul>
 <li>Apache Felix (See <a href="/blog/2013/08/14/apache-felix-starting-from-scratch/">Starting From Scratch</a>)</li>
@@ -123,33 +121,23 @@
 </ul>
 
 
-<h2>Audience</h2>
+<h2 id="id-ef1e6887c579ba81dcedc3f4e3793cd2">3 Audience</h2>
 
 <p>Typically, this is Lab #3 in a classroom environment, however anyone that wishes can use this tutorial to create a tutorial bundle. The typical audience already understands what OSGi is and that Apache Felix is just one implementation of an OSGi framework.</p>
 
-<h2>What We Are Going To Do</h2>
-
-<ol>
-<li>Remove The Activator From The Project</li>
-<li>Add A XML File For The Greeter Service To The Resources Directory</li>
-<li>Add Another XML File For The Greet Command To The Resources Directory</li>
-<li>Build, Deploy And Test</li>
-</ol>
-
-
-<h2>Remove The Activator From The Project</h2>
+<h2 id="id-2b92ceaecdf0127785e53d9afade76a6">4 Remove The Activator From The Project</h2>
 
 <p>So let&rsquo;s delete that Activator now. Just completely wipe it out of the project. When your finished with that edit your POM.xml and completely wipe out this line (we don&rsquo;t need it anymore):</p>
 
-<figure class='code'><figcaption><span>Remove This Activator Line </span></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Remove This Activator Line </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;Bundle-Activator&gt;</span>org.bhn.training.SimpleActivator<span class="nt">&lt;/Bundle-Activator&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>If you have any doubts as to whether its gone after a new build, just peek into the JAR file and make sure its gone. Mine looks something like this now (note no activator is inside the bundle):</p>
 
-<figure class='code'><figcaption><span>Sample JAR Contents Now </span></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Sample JAR Contents Now </span></figcaption>
 <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -167,23 +155,23 @@
 </span><span class='line'>0 Wed Aug 14 11:18:10 EDT 2013 org/bhn/training/commands/
 </span><span class='line'>1132 Wed Aug 14 11:16:32 EDT 2013 org/bhn/training/commands/GreeterCommands.class
 </span><span class='line'>0 Wed Aug 14 11:18:10 EDT 2013 org/bhn/training/impl/
-</span><span class='line'>482 Wed Aug 14 11:16:32 EDT 2013 org/bhn/training/impl/SimpleStringGreeterImpl.class</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>482 Wed Aug 14 11:16:32 EDT 2013 org/bhn/training/impl/SimpleStringGreeterImpl.class</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<h2>Add A XML File For The Greeter Service To The Resources Directory</h2>
+<h2 id="id-0130d0d2dd19fe373127e931613d13b7">5 Add A XML File For The Greeter Service To The Resources Directory</h2>
 
 <p>Because we are using maven, we need to make some new directories and maven knows about so we can include resources into our project. Make a resources dir under main and then put a new dir under the resources dir called OSGI-INF. Our new directories path should look like:</p>
 
-<figure class='code'><figcaption><span>Add A New Resource Path </span></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Add A New Resource Path </span></figcaption>
 <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;&lt;Project>>/src/main/resources/OSGI-INF</span></code></pre></td></tr></table></div></figure>
+</pre></td><td class='code'><pre><code class=''><span class='line'>&lt;&lt;Project>>/src/main/resources/OSGI-INF</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>Now in the OSGI-INF directory, lets create a new file called greetercomponent.xml. The name is somewhat irrelevant, however I would name it something that indicates what component it is for. The reason is, each service will be in its own xml file. After a while component1, component2 and component3 won&rsquo;t help developers quickly find its configuration.</p>
 
 <p>Now we are going to do the same job that we did in the Activator in a declarative manner. Modify your greetercomponent.xml file to look like the following:</p>
 
-<figure class='code'><figcaption><span>Add A Declarative Services Component File (greetercomponent.xml)</span> <a href='/downloads/code/greetercomponent.xml'>download</a></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Add A Declarative Services Component File (greetercomponent.xml)</span> <a href='/downloads/code/greetercomponent.xml'>download</a></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -200,7 +188,7 @@
 </span><span class='line'>        <span class="nt">&lt;scr:provide</span> <span class="na">interface=</span><span class="s">&quot;org.bhn.training.api.Greeter&quot;</span><span class="nt">/&gt;</span>
 </span><span class='line'>    <span class="nt">&lt;/service&gt;</span>
 </span><span class='line'><span class="nt">&lt;/scr:component&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>So interpreting this file is rather straight-forward. We are first declaring a component. What&rsquo;s a component. Well a component is really just a Java class that is declared in an XML document. Very similar to the concepts of beans if you are used to other Java terminologies. It has a name just for management in the framework. You can install other web consoles that help manage them by their component name.</p>
@@ -209,28 +197,28 @@
 
 <p>Then we create a service and tell it what interface to provide, that is, register for us. That&rsquo;s all there really is to a simple service. However, before we can use this xml file, we need to tell the maven plugin to add a manifest entry for where to find it. That entry is known as the Service-Component entry. In our POM in the instructions for our bundle plugin lets add the following line:</p>
 
-<figure class='code'><figcaption><span>Tell The Bundle The File Exists </span></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Tell The Bundle The File Exists </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;Service-Component&gt;</span>OSGI-INF/greetercomponent.xml<span class="nt">&lt;/Service-Component&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>With this line in the file you are ready to deploy to your framework. But before you do, you need to make sure another specific bundle is installed in the container. It&rsquo;s called the SCR Declarative Services bundle and it should be running. If not not sweat, pull up your OSGi console and enter:</p>
 
-<figure class='code'><figcaption><span>Install Service Component Registry Bundle </span></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Install Service Component Registry Bundle </span></figcaption>
 <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class=''><span class='line'>felix:install http://mirror.sdunix.com/apache//felix/org.apache.felix.scr-1.6.2.jar
-</span><span class='line'>felix:start X (where x is the number of the bundle)</span></code></pre></td></tr></table></div></figure>
+</span><span class='line'>felix:start X (where x is the number of the bundle)</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>After you deploy your bundle. Pull up the <a href="http://localhost:8080/system/console">web console</a> and expand it. You should see your new manifest entry is present and you should have a new service id registered. This is a pretty good indication that everything went as planned, but lets add our command otherwise testing it won&rsquo;t be too easy.</p>
 
-<h2>Add Another XML File For The Greet Command To The Resources Directory</h2>
+<h2 id="id-bdfec67ed6810228756d5ecd126f21ec">6 Add Another XML File For The Greet Command To The Resources Directory</h2>
 
 <p>So lets add one more component file to the OSGI-INF directory. Lets add a greetcommandcomponent.xml file. And do something similar as the above example to register it. However, in this component, we need properties to set upon activation so we have some new elements to add to the definition:</p>
 
-<figure class='code'><figcaption><span>Add A Command Declarative Services Component File (greetcommandcomponent.xml)</span> <a href='/downloads/code/greetcommandcomponent.xml'>download</a></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Add A Command Declarative Services Component File (greetcommandcomponent.xml)</span> <a href='/downloads/code/greetcommandcomponent.xml'>download</a></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
@@ -253,60 +241,55 @@
 </span><span class='line'>        <span class="nt">&lt;/scr:provide&gt;</span>
 </span><span class='line'>    <span class="nt">&lt;/service&gt;</span>
 </span><span class='line'><span class="nt">&lt;/scr:component&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>Then we just add this to our manifest by changing our Service-Component entry to:</p>
 
-<figure class='code'><figcaption><span>Add A Second Component File To The Maven Plugin </span></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Add A Second Component File To The Maven Plugin </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 </pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;Service-Component&gt;</span>OSGI-INF/greetercomponent.xml,
 </span><span class='line'>            OSGI-INF/greetcommandcomponent.xml<span class="nt">&lt;/Service-Component&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<h2>Build, Deploy and Test</h2>
+<h2 id="id-0175642f575d30aa3cd588b5a750b754">7 Build, Deploy and Test</h2>
 
 <p>So package this guy up with a <strong>mvn package</strong> and then deploy using your method of choice (for this one I used the web console personally). After its deployed and started you should see a new command in our console for <strong>tutorialds:greet</strong> and be able to call it. I did have some exceptions during the making of this tutorial and you may experience the same. The few things that happened to me were:</p>
 
-<h3>IllegalStateExceptions</h3>
+<h3 id="id-dd78b7bb872b015719c89fbe09b0ef28">7.1 IllegalStateExceptions</h3>
 
 <p><em>ERROR: greeter-bundle (15): [GreeterComponent] Cannot register Component
 java.lang.IllegalStateException: Invalid BundleContext</em></p>
 
-<p>This occured mainly because I had a typo in one of the component files which confused Felix into writing some properties it shouldn&rsquo;t have. I think the name attribute was missing from one of the properties. However, even after fixing it, the exception stayed there until I restarted the whole framework.</p>
+<p>This occurred mainly because I had a typo in one of the component files which confused Felix into writing some properties it shouldn&rsquo;t have. I think the name attribute was missing from one of the properties. However, even after fixing it, the exception stayed there until I restarted the whole framework.</p>
 
-<h3>XmlParseExceptions</h3>
+<h3 id="id-a272c69f2891d9cc13e4ab0060fb3cea">7.2 XmlParseExceptions</h3>
 
 <p>Typically they come in a variety of flavors and they are usually due to badly formed xml documents. Mine came from a example in the R4 compendium that had a declarative services entry as the following:</p>
 
-<figure class='code'><figcaption><span>Malformed Header </span></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Malformed Header </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;xml</span> <span class="na">version=</span><span class="s">&quot;1.0&quot;</span> <span class="na">encoding=</span><span class="s">&quot;UTF-8&quot;</span><span class="nt">&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>Which I pasted and didn&rsquo;t check, but its really supposed to be:</p>
 
-<figure class='code'><figcaption><span>Standard Header </span></figcaption>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Standard Header </span></figcaption>
  <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>In the next tutorial I think we will kill the command on this bundle and then add PaxExam so we can unit test our product. Generating commands for each bundle to test them is not a feasible option for long term sustainability. PaxExam will allow us to run Felix as a part of our Maven test lifecycle and test our bundle.</p>
-</div>
 
-
-  <footer>
-    <p class="meta">
-      
   
-
-<span class="byline author vcard">Posted by <span class="fn">jeff.downing@latchd.com</span></span>
-
-      
+    <footer>
+      <p class="meta">
+        
+        
 
 
 
@@ -318,21 +301,21 @@ java.lang.IllegalStateException: Invalid BundleContext</em></p>
   
 
 
-<time datetime="2013-08-15T15:53:00-04:00" pubdate data-updated="true">Aug 15<span>th</span>, 2013</time>
-      
+<time datetime="2013-08-19T14:16:00-04:00" pubdate data-updated="true"></time>
+        
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/apache-felix/'>Apache Felix</a>, <a class='category' href='/blog/categories/declarative-services/'>Declarative Services</a>, <a class='category' href='/blog/categories/osgi/'>OSGi</a>
+    <a class='category' href='/blog/categories/osgi/'>OSGi</a>
   
 </span>
 
 
-    </p>
-    
-      <div class="sharing">
+      </p>
+      
+        <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/blog/2013/08/15/apache-felix-modifying-our-first-bundle-for-declarative-services/" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/blog/2013/08/15/apache-felix-modifying-our-first-bundle-for-declarative-services/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-ds-bundle/index.html" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-ds-bundle/index.html" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -342,16 +325,9 @@ java.lang.IllegalStateException: Invalid BundleContext</em></p>
   
 </div>
 
-    
-    <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2013/08/15/apache-felix-first-bundle/" title="Previous Post: Apache Felix - First Bundle The Programmatic Way">&laquo; Apache Felix - First Bundle The Programmatic Way</a>
-      
-      
-        <a class="basic-alignment right" href="/blog/2013/08/15/apache-felix-paxexam-and-unit-testing-felix-bundles/" title="Next Post: Apache Felix - Pax Exam And Unit Testing Felix Bundles">Apache Felix - Pax Exam And Unit Testing Felix Bundles &raquo;</a>
-      
-    </p>
-  </footer>
+    </footer>
+  
 </article>
 
   <section>
@@ -364,63 +340,35 @@ java.lang.IllegalStateException: Invalid BundleContext</em></p>
 
 <aside class="sidebar">
   
-    <section>
+    
+  <section>
+  <h1>Tutorial Steps</h1>
+  <ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-052a458ca77a6d742bc477f4c443cff2">Table Of Contents</a></li><li style="list-style:inherit;"><a href="#id-5a2ebfb8baa378cfcfcba58bbb1380c2">Requirements</a></li><li style="list-style:inherit;"><a href="#id-ef1e6887c579ba81dcedc3f4e3793cd2">Audience</a></li><li style="list-style:inherit;"><a href="#id-2b92ceaecdf0127785e53d9afade76a6">Remove The Activator From The Project</a></li><li style="list-style:inherit;"><a href="#id-0130d0d2dd19fe373127e931613d13b7">Add A XML File For The Greeter Service To The Resources Directory</a></li><li style="list-style:inherit;"><a href="#id-bdfec67ed6810228756d5ecd126f21ec">Add Another XML File For The Greet Command To The Resources Directory</a></li><li style="list-style:inherit;"><a href="#id-0175642f575d30aa3cd588b5a750b754">Build, Deploy and Test</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-dd78b7bb872b015719c89fbe09b0ef28">IllegalStateExceptions</a></li> <li style="list-style:inherit;"><a href="#id-a272c69f2891d9cc13e4ab0060fb3cea">XmlParseExceptions</a></li></ul></li></ol>
+  </section>
+<section>
+	<h1>Lab/Tutorial Sections</h1>
+	<ul id="recent_posts">
+      <li class="post">
+        <a href="/labs-and-tutorials/osgi/">OSGi</a>
+      </li>
+      <li>
+      	<a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a>
+      </li>
+  </ul>
+</section><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
     
       <li class="post">
-        <a href="/blog/2013/08/17/apache-jackrabbit-starting-out/">Apache Jackrabbit - Starting From Scratch</a>
+        <a href="/blog/2013/08/19/newest-osgi-tutorial-additions/">Newest OSGi Additions</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2013/08/15/apache-felix-paxexam-and-unit-testing-felix-bundles/">Apache Felix - Pax Exam and Unit Testing Felix Bundles</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/08/15/apache-felix-modifying-our-first-bundle-for-declarative-services/">Apache Felix - Modifying Our First Bundle for Declarative Services</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/08/15/apache-felix-first-bundle/">Apache Felix - First Bundle the Programmatic Way</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/08/14/apache-felix-starting-from-scratch/">Apache Felix - Starting From Scratch</a>
+        <a href="/blog/2013/08/17/apache-jackrabbit-starting-out/">Apache Jackrabbit - Starting From Scratch Tutorial Up</a>
       </li>
     
   </ul>
 </section>
-
-<section>
-  <h1>GitHub Repos</h1>
-  <ul id="gh_repos">
-    <li class="loading">Status updating...</li>
-  </ul>
-  
-  <a href="https://github.com/PlasmaTrout">@PlasmaTrout</a> on GitHub
-  
-  <script type="text/javascript">
-    $(document).ready(function(){
-        if (!window.jXHR){
-            var jxhr = document.createElement('script');
-            jxhr.type = 'text/javascript';
-            jxhr.src = '/javascripts/libs/jXHR.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(jxhr, s);
-        }
-
-        github.showRepos({
-            user: 'PlasmaTrout',
-            count: 0,
-            skip_forks: true,
-            target: '#gh_repos'
-        });
-    });
-  </script>
-  <script src="/javascripts/github.js" type="text/javascript"> </script>
-</section>
-
-
 
 <section class="googleplus">
   <h1>
@@ -452,8 +400,8 @@ java.lang.IllegalStateException: Invalid BundleContext</em></p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://www.codeaffectionado.com/blog/2013/08/15/apache-felix-modifying-our-first-bundle-for-declarative-services/';
-        var disqus_url = 'http://www.codeaffectionado.com/blog/2013/08/15/apache-felix-modifying-our-first-bundle-for-declarative-services/';
+        var disqus_identifier = 'http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-ds-bundle/index.html';
+        var disqus_url = 'http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-ds-bundle/index.html';
         var disqus_script = 'embed.js';
       
     (function () {

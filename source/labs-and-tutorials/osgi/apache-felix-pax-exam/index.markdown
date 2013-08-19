@@ -1,17 +1,23 @@
 ---
-layout: post
+layout: page
 title: "Apache Felix - Pax Exam And Unit Testing Felix Bundles"
-date: 2013-08-15 16:58
+date: 2013-08-19 14:23
 comments: true
-categories: [OSGi, Apache Felix, Pax Exam]
+sharing: true
+footer: true
+indexer: true
 ---
-In our previous [example tutorial](/osgi/2013/08/14/apache-felix---modifying-our-first-bundle-for-declaritive-services/) we created an OSGi bundle using declarative services. However, to test our bundle we needed to create a Gogo Shell command and run it manually to validate that the bundle was operating correctly. In this tutorial we will remove that command binding and use a unit testing framework to test our bundle.
+In our previous [example tutorial](/osgi/2013/08/14/apache-felix---modifying-our-first-bundle-for-declaritive-services/) we created an OSGi bundle using declarative services. However, to test our bundle we needed to create a GOGO Shell command and run it manually to validate that the bundle was operating correctly. In this tutorial we will remove that command binding and use a unit testing framework to test our bundle.
 
 If you haven't done the first few bundle tutorials mentioned above you can grab the source at:
 
 {% codeblock Lab Quick Start Code lang:bash https://github.com/PlasmaTrout/greeter-bundle-lab4 GitHub %}
 git clone git@github.com:PlasmaTrout/greeter-bundle-lab4.git
 {% endcodeblock %}
+
+Table Of Contents
+-----
+{{ page.indexer_aside }}
 
 Requirements
 -----
@@ -24,13 +30,6 @@ Requirements
 Audience
 -----
 Typically, this is Lab #4 in a classroom environment, however anyone that wishes can use this tutorial to create a tutorial bundle. The typical audience already understands what OSGi is and that Apache Felix is just one implementation of an OSGi framework.
-
-What We Are Going To Do
------
-1. Remove Our Command Class and Declarative Services XML File
-1. Add A Few Maven Dependencies
-1. Retrofit Our Existing JUnit Test To Use PaxRunner
-1. Build Our Application and Run Unit Tests
 
 Remove Our Command Class and Declarative Services XML File
 -----
@@ -136,7 +135,7 @@ Retrofit Our Existing JUnit Test To Use PaxRunner
 -----
 We already have a unit test that was created with the quick start archetype. Up to now we have been mostly ignoring it. Lets make it do some work. Locate your AppTest.java file and lets rename it to GreetingPaxExamTest.java so it describes itself a bit.
 
-Now lets decorate the top of it with some annotations that will help Pax Exam pick up on its existance (I'm omitting the imports that are needed to support these, I'm hoping your IDE does some work here):
+Now lets decorate the top of it with some annotations that will help Pax Exam pick up on its existence (I'm omitting the imports that are needed to support these, I'm hoping your IDE does some work here):
 
 {% codeblock Decorating Our Test Class With Some Annotations lang:java %}
 @RunWith(JUnit4TestRunner.class)

@@ -1,0 +1,473 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Apache Jackrabbit - Starting From Scratch - CodeAffectionado</title>
+  <meta name="author" content="jeff.downing@latchd.com">
+
+  
+  <meta name="description" content="Apache Jackrabbit - Starting From Scratch This tutorial was designed to get the reader using JSR-170&rsquo;s an JSR-283&rsquo;s core APIs by using &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/starting-from-scratch">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="CodeAffectionado" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43174506-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">CodeAffectionado</a></h1>
+  
+    <h2>Aggressive learning for code enthusiasts</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.codeaffectionado.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">News</a></li>
+  <li><a href="/labs-and-tutorials/">Labs And Tutorials</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article role="article">
+  
+  <header>
+    <h1 class="entry-title">Apache Jackrabbit - Starting From Scratch</h1>
+    <p class="meta">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-19T14:31:00-04:00" pubdate data-updated="true"></time></p>
+  </header>
+  
+  <p>This tutorial was designed to get the reader using JSR-170&rsquo;s an JSR-283&rsquo;s core APIs by using Apache Jackrabbit. These series of tutorials build on one another, so this one will form the foundation of the tutorials to come.</p>
+
+<h2 id="id-052a458ca77a6d742bc477f4c443cff2">1 Table Of Contents</h2>
+
+<ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-052a458ca77a6d742bc477f4c443cff2">Table Of Contents</a></li><li style="list-style:inherit;"><a href="#id-ef1e6887c579ba81dcedc3f4e3793cd2">Audience</a></li><li style="list-style:inherit;"><a href="#id-5a2ebfb8baa378cfcfcba58bbb1380c2">Requirements</a></li><li style="list-style:inherit;"><a href="#id-261addf78c7b2c961032b3dd08ba0b1f">Purpose</a></li><li style="list-style:inherit;"><a href="#id-7c96364be95a3c7e4269e8b7dc11fdff">Generate A Quick Start Project With Maven</a></li><li style="list-style:inherit;"><a href="#id-545932df6dd549e517dfb368af7acdba">Add Some Dependencies To The POM</a></li><li style="list-style:inherit;"><a href="#id-4800e6240ae5ed51fdbde8a336f2f320">Start The Repository For The First Time</a></li><li style="list-style:inherit;"><a href="#id-09dfef00949278d7e86cdd37f8b6f707">Ask The Repository About Some Of Its Features</a></li></ol>
+
+
+<h2 id="id-ef1e6887c579ba81dcedc3f4e3793cd2">2 Audience</h2>
+
+<p>Typically, this is Lab #1 in a classroom environment, however anyone that wishes can use this tutorial. Most people performing this tutorial have already had some presented instruction and an overview of Apache Jackrabbit and the JCR specifications.</p>
+
+<h2 id="id-5a2ebfb8baa378cfcfcba58bbb1380c2">3 Requirements</h2>
+
+<ul>
+<li>Apache Maven</li>
+<li>IDE Of Choice (Preferably IntelliJ IDEA)</li>
+<li>Internet Connection (For Maven Repositories)</li>
+</ul>
+
+
+<h2 id="id-261addf78c7b2c961032b3dd08ba0b1f">4 Purpose</h2>
+
+<p>Our intent with this lab section is just to get you started on your exploration of Apache Jackrabbit. Before we begin, it’s important to note that Jackrabbit is not your typical server platform. In a typical database platform you would download some packages and run them which would start up a server. Then in a different project you’d probably fire up some JDBC driver and write code that connects to that server and does stuff. Jackrabbit wasn’t exactly built this way, its really an API that abstracts away how things are stored and only concentrates on hierarchical content management.</p>
+
+<h2 id="id-7c96364be95a3c7e4269e8b7dc11fdff">5 Generate A Quick Start Project With Maven</h2>
+
+<p>Just like our usual lab series, we are going to start with a quick start project and modify it to support what we need it to do. The goal is to get you comfortable with Maven and building out your own project structures. To get started with a basic quick start project lets use the following command line:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>New Maven Quick Start</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mvn archetype:generate -DgroupId<span class="o">=</span>org.codeaffectionado.training -DartifactId<span class="o">=</span>jackrabbit-tutorial -DarchetypeArtifactId<span class="o">=</span>maven-archetype-quickstart -DinteractiveMode<span class="o">=</span><span class="nb">false</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Now lets open up our IDE of choice and import this project. Before we get to deep into this tutorial lets add a plugin that will allow us to run our project using Maven. This will just speed some things up for us later. In our POM lets add the following section to the root of the project:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Maven Execute Plugin</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;build&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;plugins&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;plugin&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;groupId&gt;</span>org.codehaus.mojo<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;artifactId&gt;</span>exec-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;version&gt;</span>1.2.1<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;executions&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;execution&gt;</span>
+</span><span class='line'>                      <span class="nt">&lt;goals&gt;</span>
+</span><span class='line'>                          <span class="nt">&lt;goal&gt;</span>java<span class="nt">&lt;/goal&gt;</span>
+</span><span class='line'>                      <span class="nt">&lt;/goals&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;/execution&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;/executions&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;configuration&gt;</span>
+</span><span class='line'>                  <span class="nt">&lt;mainClass&gt;</span>org.codeaffectionado.training.App<span class="nt">&lt;/mainClass&gt;</span>
+</span><span class='line'>              <span class="nt">&lt;/configuration&gt;</span>
+</span><span class='line'>          <span class="nt">&lt;/plugin&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;/plugins&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/build&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Now if go to the command line and do a <strong>mvn compile exec:java</strong> we can run our application and watch it happily report:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>INFO<span class="o">]</span> --- <span class="nb">exec</span>-maven-plugin:1.2.1:java <span class="o">(</span>default-cli<span class="o">)</span> @ jackrabbit-tutorial ---
+</span><span class='line'>Hello World!
+</span><span class='line'><span class="o">[</span>INFO<span class="o">]</span> ------------------------------------------------------------------------
+</span><span class='line'><span class="o">[</span>INFO<span class="o">]</span> BUILD SUCCESS
+</span><span class='line'><span class="o">[</span>INFO<span class="o">]</span> ------------------------------------------------------------------------
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>This is important because running java classes or jar projects can be quite a chore when we are using Maven as our build lifecycle. This keeps us from having to go to our target directory and run our jars by hand, even though you are more than welcome to so if you wish. It will require you to further bundle your dependencies in the jar so you don&rsquo;t have to worry about classpath problems.</p>
+
+<h2 id="id-545932df6dd549e517dfb368af7acdba">6 Add Some Dependencies To The POM</h2>
+
+<p>All we really need to perform some JCR programming is include two new dependencies into our POM like so:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Dependencies Needed For Apache Jackrabbit</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;groupId&gt;</span>javax.jcr<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;artifactId&gt;</span>jcr<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;version&gt;</span>2.0<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'><span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'><span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>org.apache.jackrabbit<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>jackrabbit-core<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;version&gt;</span>2.5.0<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'><span class="nt">&lt;/dependency&gt;</span>
+</span><span class='line'><span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>org.slf4j<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>slf4j-log4j12<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;version&gt;</span>1.6.1<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'><span class="nt">&lt;/dependency&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2 id="id-4800e6240ae5ed51fdbde8a336f2f320">7 Start The Repository For The First Time</h2>
+
+<p>So starting the repository may not be that obvious at present time, but its really easy to do. Let&rsquo;s go into our main method and add the following lines to the main method:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Starting Up Our Repository</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span> <span class="o">)</span> <span class="kd">throws</span> <span class="n">RepositoryException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Repository</span> <span class="n">repository</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TransientRepository</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Session</span> <span class="n">session</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="na">login</span><span class="o">(</span>
+</span><span class='line'>            <span class="k">new</span> <span class="nf">SimpleCredentials</span><span class="o">(</span><span class="s">&quot;admin&quot;</span><span class="o">,</span><span class="s">&quot;admin&quot;</span><span class="o">.</span><span class="na">toCharArray</span><span class="o">()));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Hello World!&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">session</span><span class="o">.</span><span class="na">logout</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>So whats all this? Well its really pretty easy to explain. We talk about in class that the standard flow of calling the JCR revolves around:</p>
+
+<ol>
+<li>Getting a reference to the Repository</li>
+<li>Using the Repository to login and get a Session</li>
+<li>Use The Session To Get A Node or The Root Node</li>
+<li>Do Some Work</li>
+<li>Save The Session</li>
+<li>Logout</li>
+</ol>
+
+
+<p>In our code above we just did 1,2 and 6. Just enough to get us a repository built. But lets look at what we accomplished in this code.</p>
+
+<blockquote><p>Repository repository = new TransientRepository();</p></blockquote>
+
+
+<p>Apache Jackrabbit has an implementation of <a href="http://www.day.com/maven/javax.jcr/javadocs/jcr-2.0/javax/jcr/Repository.html?is-external=true">Repository</a> (which is an interface BTW) called <a href="http://jackrabbit.apache.org/api/2.2/org/apache/jackrabbit/core/TransientRepository.html">TransientRepository</a>. It&rsquo;s considered Transient because it starts up when its needed and shuts down where there are no more sessions connected to it. This is the primary repository we will be using with our samples and represents the most common repository used with other applications.</p>
+
+<blockquote><p>Session session = repository.login(<br/>            new SimpleCredentials("admin","admin".toCharArray()));</p></blockquote>
+
+
+<p>Here we are using the repository to login. Our login is just using a set of Credentials (another interface). Currently there are only guest and simple credentials included with the version we are using. That&rsquo;s ok though, most of the time the JCR is a part of another application or framework. It isn&rsquo;t connected to from the outside often.</p>
+
+<blockquote><p>session.logout();</p></blockquote>
+
+
+<p>Self explanitory, but this is us logging out of our session. It&rsquo;s somewhat redundant here, but good practice. Because, when the primary thread dies it will expires anyway and the repository will shutdown.</p>
+
+<p>Now run it with our new Maven sequence <strong>mvn compile exec:java</strong> and notice the results that stream by. When it finishes refresh the root of your project in your IDE and take a look now. It appears some directories were created for you and some new config files where put down automatically. Basically Jackrabbit created a repository in your project root and set it up for you. This includes storing everything in an Apache Derby database instance it created for you.</p>
+
+<h2 id="id-09dfef00949278d7e86cdd37f8b6f707">8 Ask The Repository About Some Of Its Features</h2>
+
+<p>So lets ask the repository about some of its features. To get information about the repository and what it supports back. The Repository interface contains some constants that can be used to query information from the repository. Lets modify our example and just ask some questions to the repository itself. Primarily lets see what its vendor, name and version are:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Asking The Repository For Information</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">String</span> <span class="n">vendor</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="na">getDescriptor</span><span class="o">(</span><span class="n">Repository</span><span class="o">.</span><span class="na">REP_VENDOR_DESC</span><span class="o">);</span>
+</span><span class='line'><span class="n">String</span> <span class="n">product</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="na">getDescriptor</span><span class="o">(</span><span class="n">Repository</span><span class="o">.</span><span class="na">REP_NAME_DESC</span><span class="o">);</span>
+</span><span class='line'><span class="n">String</span> <span class="n">version</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="na">getDescriptor</span><span class="o">(</span><span class="n">Repository</span><span class="o">.</span><span class="na">REP_VERSION_DESC</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;We Are Using &quot;</span><span class="o">+</span><span class="n">vendor</span><span class="o">+</span><span class="s">&quot; &quot;</span><span class="o">+</span><span class="n">product</span><span class="o">+</span><span class="s">&quot; version &quot;</span><span class="o">+</span><span class="n">version</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Now run your <strong>mvn compile exec:java</strong> again and watch the repositories response:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>We Are Using Apache Software Foundation Jackrabbit version 2.5.0
+</span><span class='line'><span class="o">[</span>INFO<span class="o">]</span> ------------------------------------------------------------------------
+</span><span class='line'><span class="o">[</span>INFO<span class="o">]</span> BUILD SUCCESS
+</span><span class='line'><span class="o">[</span>INFO<span class="o">]</span> ------------------------------------------------------------------------
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>There are some other things that the repository can tell you. I would highly recommend checking out the <a href="http://www.day.com/maven/javax.jcr/javadocs/jcr-2.0/javax/jcr/Repository.html?is-external=true">Repository&rsquo;s interface documentation</a> and trying some of the other constants. Experiment and get comfortable with this flow. We will be using it more and more as time goes on.</p>
+
+  
+    <footer>
+      <p class="meta">
+        
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-19T14:31:00-04:00" pubdate data-updated="true"></time>
+        
+      </p>
+      
+        <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/starting-from-scratch/index.html" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/starting-from-scratch/index.html" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+      
+    </footer>
+  
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  <section>
+  <h1>Tutorial Steps</h1>
+  <ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-052a458ca77a6d742bc477f4c443cff2">Table Of Contents</a></li><li style="list-style:inherit;"><a href="#id-ef1e6887c579ba81dcedc3f4e3793cd2">Audience</a></li><li style="list-style:inherit;"><a href="#id-5a2ebfb8baa378cfcfcba58bbb1380c2">Requirements</a></li><li style="list-style:inherit;"><a href="#id-261addf78c7b2c961032b3dd08ba0b1f">Purpose</a></li><li style="list-style:inherit;"><a href="#id-7c96364be95a3c7e4269e8b7dc11fdff">Generate A Quick Start Project With Maven</a></li><li style="list-style:inherit;"><a href="#id-545932df6dd549e517dfb368af7acdba">Add Some Dependencies To The POM</a></li><li style="list-style:inherit;"><a href="#id-4800e6240ae5ed51fdbde8a336f2f320">Start The Repository For The First Time</a></li><li style="list-style:inherit;"><a href="#id-09dfef00949278d7e86cdd37f8b6f707">Ask The Repository About Some Of Its Features</a></li></ol>
+  </section>
+<section>
+	<h1>Lab/Tutorial Sections</h1>
+	<ul id="recent_posts">
+      <li class="post">
+        <a href="/labs-and-tutorials/osgi/">OSGi</a>
+      </li>
+      <li>
+      	<a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a>
+      </li>
+  </ul>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/08/19/newest-osgi-tutorial-additions/">Newest OSGi Additions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/17/apache-jackrabbit-starting-out/">Apache Jackrabbit - Starting From Scratch Tutorial Up</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/114996005873710645329?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - jeff.downing@latchd.com -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'aggrolearning';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/starting-from-scratch/index.html';
+        var disqus_url = 'http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/starting-from-scratch/index.html';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

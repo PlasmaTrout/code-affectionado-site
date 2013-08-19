@@ -1,0 +1,672 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Apache Jackrabbit - Manipulating Nodes In The Repository - CodeAffectionado</title>
+  <meta name="author" content="jeff.downing@latchd.com">
+
+  
+  <meta name="description" content="Apache Jackrabbit - Manipulating Nodes in the Repository In our first tutorial we learned how to setup our maven dependencies and write code against &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/manipulating-nodes">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="CodeAffectionado" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43174506-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">CodeAffectionado</a></h1>
+  
+    <h2>Aggressive learning for code enthusiasts</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.codeaffectionado.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">News</a></li>
+  <li><a href="/labs-and-tutorials/">Labs And Tutorials</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article role="article">
+  
+  <header>
+    <h1 class="entry-title">Apache Jackrabbit - Manipulating Nodes in the Repository</h1>
+    <p class="meta">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-19T15:05:00-04:00" pubdate data-updated="true"></time></p>
+  </header>
+  
+  <p>In our <a href="/labs-and-tutorials/apache-jackrabbit/starting-from-scratch/">first tutorial</a> we learned how to setup our maven dependencies and write code against a TransientRepository. We need to continue that tradition and learn how to use the JCR APIs to get, add and remove nodes.</p>
+
+<h2 id="id-052a458ca77a6d742bc477f4c443cff2">1 Table Of Contents</h2>
+
+<ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-052a458ca77a6d742bc477f4c443cff2">Table Of Contents</a></li><li style="list-style:inherit;"><a href="#id-610dc640e6b25b5e6025faff865cc78d">Getting The GitHub Project</a></li><li style="list-style:inherit;"><a href="#id-2e796e62ccc3faadb0e2489d1cf6c8b8">Quick Word Before We Start Adding Stuff</a></li><li style="list-style:inherit;"><a href="#id-04a6af1c9646041a96975c3d7b1aab25">Wipe Our Our Previous Code</a></li><li style="list-style:inherit;"><a href="#id-e474292ae180499b1c107ea9b1f90af3">Adding A Try Catch To Our Work</a></li><li style="list-style:inherit;"><a href="#id-2fb8502948ef9908e51addea5e93fc11">Add A Node</a></li><li style="list-style:inherit;"><a href="#id-27269959b12c7d0f4a407783820aedc3">Getting A Node From A Path</a></li><li style="list-style:inherit;"><a href="#id-a62ce199de22b7da51491bb9dcb20eee">Getting Properties</a></li><li style="list-style:inherit;"><a href="#id-31ccd0c31679b49921fcc69d2148694d">Removing Nodes</a></li><li style="list-style:inherit;"><a href="#id-ae8e909ce36f7594749c2a184fdef7ae">Running Our App</a></li><li style="list-style:inherit;"><a href="#id-44943007815fdadd3ffafecbf2cbf10d">A Better View Of Whats Going On</a></li></ol>
+
+
+<h2 id="id-610dc640e6b25b5e6025faff865cc78d">2 Getting The GitHub Project</h2>
+
+<p>If you came directly into this tutorial and didn&rsquo;t do the first one, don&rsquo;t fret. The starter project is on GitHub. The following clone should get you started from where we left off:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting The Previous Lab</span><a href='https://github.com/PlasmaTrout/jackrabbit-training-lab1'>GitHub</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone git@github.com:PlasmaTrout/jackrabbit-training-lab1.git
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2 id="id-2e796e62ccc3faadb0e2489d1cf6c8b8">3 Quick Word Before We Start Adding Stuff</h2>
+
+<p>Working with Jackrabbit in code can make it a bit tough to visualize what you have saved, deleted or updated. In other frameworks, such as Sling, there will be visual viewers that help you see the node trees a bit better. We will create a console method to &ldquo;dump the tree&rdquo; as a reference to make sure thing did work, but there is a possibility that you may end up creating a bunch of garbage and want to start all over again. Fortunately, that&rsquo;s really easy to do. Just go into your project directory and blow out repository directory and all of its contents and re-run your project again.</p>
+
+<p>You can&rsquo;t hurt your application by removing the repository directory, the repository.xml files or the derby.log file. If you want a fresh start, kill em. The next time you <strong>mvn compile exec:java</strong> you app they will be reproduced.</p>
+
+<h2 id="id-04a6af1c9646041a96975c3d7b1aab25">4 Wipe Our Our Previous Code</h2>
+
+<p>We previously just made some called to getDescriptor a few times. Let&rsquo;s get that out of the way so we end up with a fresh start that looks something like:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Main Starting Point</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span> <span class="o">)</span> <span class="kd">throws</span> <span class="n">RepositoryException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Repository</span> <span class="n">repository</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TransientRepository</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Session</span> <span class="n">session</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="na">login</span><span class="o">(</span>
+</span><span class='line'>        <span class="k">new</span> <span class="nf">SimpleCredentials</span><span class="o">(</span><span class="s">&quot;admin&quot;</span><span class="o">,</span><span class="s">&quot;admin&quot;</span><span class="o">.</span><span class="na">toCharArray</span><span class="o">()));</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">// Put Our New Stuff Here</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">session</span><span class="o">.</span><span class="na">logout</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2 id="id-e474292ae180499b1c107ea9b1f90af3">5 Adding A Try Catch To Our Work</h2>
+
+<p>We are going to start doing some additions and deletions of nodes in this section. This has the potential to cause some exceptions thus killing our application. When an application dies, what happens to the session, can be hard to determine. If there are other sessions open, the repository itself won&rsquo;t necessarily expire the sessions and its possible that your last one may stay open after your code threw and exited.</p>
+
+<p>This won&rsquo;t be that big of a deal in our examples, since they are just command line tinkering. However, in a much larger application having sessions logged in as &ldquo;admin&rdquo; just hovering about may not be a good idea. In order to combat this, lets add a simple pattern to guarantee that the session gets logged out when this happens:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Session Logout Exception Handling Style</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span> <span class="o">)</span> <span class="kd">throws</span> <span class="n">RepositoryException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Repository</span> <span class="n">repository</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TransientRepository</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Session</span> <span class="n">session</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="na">login</span><span class="o">(</span>
+</span><span class='line'>            <span class="k">new</span> <span class="nf">SimpleCredentials</span><span class="o">(</span><span class="s">&quot;admin&quot;</span><span class="o">,</span><span class="s">&quot;admin&quot;</span><span class="o">.</span><span class="na">toCharArray</span><span class="o">()));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">try</span><span class="o">{</span>
+</span><span class='line'>        <span class="c1">// code goes here</span>
+</span><span class='line'>    <span class="o">}</span><span class="k">finally</span><span class="o">{</span>
+</span><span class='line'>        <span class="n">session</span><span class="o">.</span><span class="na">logout</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>There, now our super secure, un-guessable admin/admin login is protected.</p>
+
+<h2 id="id-2fb8502948ef9908e51addea5e93fc11">6 Add A Node</h2>
+
+<p>Generally the first thing one does after a login to a repository is get a node. There are a few ways to accommodate that. But for starters lets get into the habit of getting the root node. When we first login, it&rsquo;s the only node that guaranteed to be there anyways. Remember to put this in your try section:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting The Root Node</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Node</span> <span class="n">root</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="na">getRootNode</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>There. Simple enough. Now lets add two nodes and a property and save it:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Adding Two New Nodes</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Node</span> <span class="n">hello</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">addNode</span><span class="o">(</span><span class="s">&quot;nodeA&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">Node</span> <span class="n">world</span> <span class="o">=</span> <span class="n">hello</span><span class="o">.</span><span class="na">addNode</span><span class="o">(</span><span class="s">&quot;nodeB&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">world</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;message&quot;</span><span class="o">,</span><span class="s">&quot;Hello, World&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">session</span><span class="o">.</span><span class="na">save</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Notice how each addNode returns back the node that was added. Seems to reason that we could probably chain this whole statement. We could refactor this to:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Adding Two Nodes Chain style</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">root</span><span class="o">.</span><span class="na">addNode</span><span class="o">(</span><span class="s">&quot;nodeA&quot;</span><span class="o">).</span><span class="na">addNode</span><span class="o">(</span><span class="s">&quot;nodeB&quot;</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;message&quot;</span><span class="o">,</span><span class="s">&quot;Hello World&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">session</span><span class="o">.</span><span class="na">save</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Don&rsquo;t run this just yet. If you do you may end up with a new node each time your run it since Jackrabbit has duplicate nodes turned on by default. Let&rsquo;s finish all of these sections before we run it.</p>
+
+<h2 id="id-27269959b12c7d0f4a407783820aedc3">7 Getting A Node From A Path</h2>
+
+<p>So there are a few ways to get the node back that you just created. The first is to use the root node to get the information back. Let&rsquo;s get the the node you just created and saved.</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting A Node From The Root Node</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Node</span> <span class="n">ourNode</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">getNode</span><span class="o">(</span><span class="s">&quot;nodeA/NodeB&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">ourNode</span><span class="o">.</span><span class="na">getPath</span><span class="o">());</span>
+</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">ourNode</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;message&quot;</span><span class="o">).</span><span class="na">getString</span><span class="o">());</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>To do this not using the root node is pretty simple as well, you can just use the session to find the correct item and cast it back like so:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting A Node Without The Root Node</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Node</span> <span class="n">ourNodeAgain</span> <span class="o">=</span> <span class="o">(</span><span class="n">Node</span><span class="o">)</span> <span class="n">session</span><span class="o">.</span><span class="na">getItem</span><span class="o">(</span><span class="s">&quot;/nodeA/nodeB&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">ourNodeAgain</span><span class="o">.</span><span class="na">getPath</span><span class="o">());</span>
+</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">ourNodeAgain</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;message&quot;</span><span class="o">).</span><span class="na">getString</span><span class="o">());</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>The first question after seeing this might be, &ldquo;Why&rsquo;d you have to cast that?&rdquo;. Well getItem returns an Item. <a href="http://www.day.com/maven/jsr170/javadocs/jcr-1.0/javax/jcr/Item.html">Item</a> is an interface that both Node and Property inherit. This allows you to use it for either Nodes or Properties, thus having to cast. Wait, should session have its own mechanism then to get the Node back. Sure it looks like the following:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting A Node Without The Root Node Again</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Node</span> <span class="n">oneMoreTime</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="na">getNode</span><span class="o">(</span><span class="s">&quot;/nodeA/nodeB&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">oneMoreTime</span><span class="o">.</span><span class="na">getPath</span><span class="o">());</span>
+</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">oneMoreTime</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;message&quot;</span><span class="o">).</span><span class="na">getString</span><span class="o">());</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>So with either an absolute path or a relative from the node reference you have, you can find any node in the system.</p>
+
+<h2 id="id-a62ce199de22b7da51491bb9dcb20eee">8 Getting Properties</h2>
+
+<p>We didn&rsquo;t mention it at the time, but all of our print lines above are getting the property message back from the node. A call to getProperty returns back a <a href="http://www.day.com/maven/javax.jcr/javadocs/jcr-2.0/javax/jcr/Property.html">Property</a> object.  Once you get this back, you ask it for what data type you want and it tries to coerce that type back for you. For instance if you store an long and you call getString on the property. It will try to coerce that value back for you.</p>
+
+<h2 id="id-31ccd0c31679b49921fcc69d2148694d">9 Removing Nodes</h2>
+
+<p>Removing nodes is really easy in the API. All it takes is the following code added to the bottom of your try block:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Deleting A Node</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">root</span><span class="o">.</span><span class="na">getNode</span><span class="o">(</span><span class="s">&quot;nodeA&quot;</span><span class="o">).</span><span class="na">remove</span><span class="o">();</span>
+</span><span class='line'><span class="n">session</span><span class="o">.</span><span class="na">save</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Remember to call save on the session every time your modify something. Your changes only go into a transient storage location without it and get lost when your session expires.</p>
+
+<h2 id="id-ae8e909ce36f7594749c2a184fdef7ae">10 Running Our App</h2>
+
+<p>So we should have an application now that looks something like the following:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Full Example</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span> <span class="o">)</span> <span class="kd">throws</span> <span class="n">RepositoryException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Repository</span> <span class="n">repository</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TransientRepository</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Session</span> <span class="n">session</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="na">login</span><span class="o">(</span>
+</span><span class='line'>            <span class="k">new</span> <span class="nf">SimpleCredentials</span><span class="o">(</span><span class="s">&quot;admin&quot;</span><span class="o">,</span><span class="s">&quot;admin&quot;</span><span class="o">.</span><span class="na">toCharArray</span><span class="o">()));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">try</span><span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">Node</span> <span class="n">root</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="na">getRootNode</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">root</span><span class="o">.</span><span class="na">addNode</span><span class="o">(</span><span class="s">&quot;nodeA&quot;</span><span class="o">).</span><span class="na">addNode</span><span class="o">(</span><span class="s">&quot;nodeB&quot;</span><span class="o">)</span>
+</span><span class='line'>                <span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;message&quot;</span><span class="o">,</span> <span class="s">&quot;Hello World!&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">session</span><span class="o">.</span><span class="na">save</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">Node</span> <span class="n">ourNode</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">getNode</span><span class="o">(</span><span class="s">&quot;nodeA/nodeB&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">ourNode</span><span class="o">.</span><span class="na">getPath</span><span class="o">());</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">ourNode</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;message&quot;</span><span class="o">).</span><span class="na">getString</span><span class="o">());</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">Node</span> <span class="n">ourNodeAgain</span> <span class="o">=</span> <span class="o">(</span><span class="n">Node</span><span class="o">)</span> <span class="n">session</span><span class="o">.</span><span class="na">getItem</span><span class="o">(</span><span class="s">&quot;/nodeA/nodeB&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">ourNodeAgain</span><span class="o">.</span><span class="na">getPath</span><span class="o">());</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">ourNodeAgain</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;message&quot;</span><span class="o">).</span><span class="na">getString</span><span class="o">());</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">Node</span> <span class="n">oneMoreTime</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="na">getNode</span><span class="o">(</span><span class="s">&quot;/nodeA/nodeB&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">oneMoreTime</span><span class="o">.</span><span class="na">getPath</span><span class="o">());</span>
+</span><span class='line'>        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">oneMoreTime</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;message&quot;</span><span class="o">).</span><span class="na">getString</span><span class="o">());</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">root</span><span class="o">.</span><span class="na">getNode</span><span class="o">(</span><span class="s">&quot;nodeA&quot;</span><span class="o">).</span><span class="na">remove</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">session</span><span class="o">.</span><span class="na">save</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">}</span><span class="k">finally</span><span class="o">{</span>
+</span><span class='line'>        <span class="n">session</span><span class="o">.</span><span class="na">logout</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Let&rsquo;s execute this with a <strong>mvn compile exec:java</strong> and see what we get. We should get:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Our First Output</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/nodeA/nodeB
+</span><span class='line'>Hello World!
+</span><span class='line'>/nodeA/nodeB
+</span><span class='line'>Hello World!
+</span><span class='line'>/nodeA/nodeB
+</span><span class='line'>Hello World!
+</span><span class='line'><span class="o">[</span>INFO<span class="o">]</span> ------------------------------------------------------------------------
+</span><span class='line'><span class="o">[</span>INFO<span class="o">]</span> BUILD SUCCESS
+</span><span class='line'><span class="o">[</span>INFO<span class="o">]</span> ------------------------------------------------------------------------
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2 id="id-44943007815fdadd3ffafecbf2cbf10d">11 A Better View Of Whats Going On</h2>
+
+<p>Let&rsquo;s create a static method really fast in our project that will dump all of the nodes and properties. This will show a few ways to iterate the nodes. Paste this under you main method:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Dumping Out A Node Structure</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">dumpToConsole</span><span class="o">(</span><span class="n">Node</span> <span class="n">node</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">RepositoryException</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">node</span><span class="o">.</span><span class="na">getPath</span><span class="o">());</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span><span class="o">(</span><span class="n">node</span><span class="o">.</span><span class="na">hasProperties</span><span class="o">()){</span>
+</span><span class='line'>        <span class="n">PropertyIterator</span> <span class="n">props</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="na">getProperties</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">while</span><span class="o">(</span><span class="n">props</span><span class="o">.</span><span class="na">hasNext</span><span class="o">()){</span>
+</span><span class='line'>            <span class="n">Property</span> <span class="n">property</span> <span class="o">=</span> <span class="o">(</span><span class="n">Property</span><span class="o">)</span> <span class="n">props</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">if</span><span class="o">(</span><span class="n">property</span><span class="o">.</span><span class="na">isMultiple</span><span class="o">()){</span>
+</span><span class='line'>                <span class="n">Value</span><span class="o">[]</span> <span class="n">values</span> <span class="o">=</span> <span class="n">property</span><span class="o">.</span><span class="na">getValues</span><span class="o">();</span>
+</span><span class='line'>                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">property</span><span class="o">.</span><span class="na">getPath</span><span class="o">()+</span><span class="s">&quot;=&quot;</span><span class="o">+</span><span class="s">&quot;[&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="k">for</span><span class="o">(</span><span class="n">Value</span> <span class="n">value</span> <span class="o">:</span> <span class="n">values</span><span class="o">){</span>
+</span><span class='line'>                    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="n">value</span><span class="o">.</span><span class="na">getString</span><span class="o">()+</span><span class="s">&quot;,&quot;</span><span class="o">);</span>
+</span><span class='line'>                <span class="o">}</span>
+</span><span class='line'>                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;]&quot;</span><span class="o">);</span>
+</span><span class='line'>            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>                <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">property</span><span class="o">.</span><span class="na">getPath</span><span class="o">()+</span> <span class="s">&quot;=&quot;</span><span class="o">+</span><span class="n">property</span><span class="o">.</span><span class="na">getString</span><span class="o">());</span>
+</span><span class='line'>            <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">NodeIterator</span> <span class="n">iterator</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="na">getNodes</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">while</span><span class="o">(</span><span class="n">iterator</span><span class="o">.</span><span class="na">hasNext</span><span class="o">()){</span>
+</span><span class='line'>        <span class="n">Node</span> <span class="n">next</span> <span class="o">=</span> <span class="o">(</span><span class="n">Node</span><span class="o">)</span> <span class="n">iterator</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">dumpToConsole</span><span class="o">(</span><span class="n">next</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Now we can make our main method look like:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Cleaning Up Our Example</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span> <span class="o">)</span> <span class="kd">throws</span> <span class="n">RepositoryException</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">Repository</span> <span class="n">repository</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TransientRepository</span><span class="o">();</span>
+</span><span class='line'>    <span class="n">Session</span> <span class="n">session</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="na">login</span><span class="o">(</span>
+</span><span class='line'>            <span class="k">new</span> <span class="nf">SimpleCredentials</span><span class="o">(</span><span class="s">&quot;admin&quot;</span><span class="o">,</span><span class="s">&quot;admin&quot;</span><span class="o">.</span><span class="na">toCharArray</span><span class="o">()));</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">try</span><span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">Node</span> <span class="n">root</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="na">getRootNode</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">root</span><span class="o">.</span><span class="na">addNode</span><span class="o">(</span><span class="s">&quot;nodeA&quot;</span><span class="o">).</span><span class="na">addNode</span><span class="o">(</span><span class="s">&quot;nodeB&quot;</span><span class="o">)</span>
+</span><span class='line'>                <span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;message&quot;</span><span class="o">,</span> <span class="s">&quot;Hello World!&quot;</span><span class="o">);</span>
+</span><span class='line'>        <span class="n">session</span><span class="o">.</span><span class="na">save</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">dumpToConsole</span><span class="o">(</span><span class="n">root</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">root</span><span class="o">.</span><span class="na">getNode</span><span class="o">(</span><span class="s">&quot;nodeA&quot;</span><span class="o">).</span><span class="na">remove</span><span class="o">();</span>
+</span><span class='line'>        <span class="n">session</span><span class="o">.</span><span class="na">save</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="o">}</span><span class="k">finally</span><span class="o">{</span>
+</span><span class='line'>        <span class="n">session</span><span class="o">.</span><span class="na">logout</span><span class="o">();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>What we see now is really interesting. Along with our nodes at the bottom we see a ton of jcr:system nodes (akin to system level settings) and some policy nodes (similar to ACL permissions). They are found off of the root and typically stay out of sight and out of mind. However, at the end of all of the spamming we see:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Our Node Dumper</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/nodeA
+</span><span class='line'>/nodeA/jcr:primaryType<span class="o">=</span>nt:unstructured
+</span><span class='line'>/nodeA/nodeB
+</span><span class='line'>/nodeA/nodeB/message<span class="o">=</span>Hello World!
+</span><span class='line'>/nodeA/nodeB/jcr:primaryType<span class="o">=</span>nt:unstructured
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>That&rsquo;s what we were looking for so lets add a statement just under the printing of the node path of our dump method to ignore properties on jcr:system nodes:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Ignoring System Properties</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">if</span><span class="o">(</span><span class="n">node</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;jcr:system&quot;</span><span class="o">)</span> <span class="o">||</span> <span class="n">node</span><span class="o">.</span><span class="na">getName</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="s">&quot;rep:policy&quot;</span><span class="o">)){</span>
+</span><span class='line'>    <span class="k">return</span><span class="o">;</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>This will at least let us see the nodes, but not kill us the plethora of properties that they contain.</p>
+
+<p>We will use this dump method a few times throughout these tutorials so keep it on hand. I will try to keep the <a href="https://gist.github.com/PlasmaTrout/6274163">GIST</a> updated on GitHub.</p>
+
+  
+    <footer>
+      <p class="meta">
+        
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-19T15:05:00-04:00" pubdate data-updated="true"></time>
+        
+      </p>
+      
+        <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/manipulating-nodes/index.html" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/manipulating-nodes/index.html" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+      
+    </footer>
+  
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  <section>
+  <h1>Tutorial Steps</h1>
+  <ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-052a458ca77a6d742bc477f4c443cff2">Table Of Contents</a></li><li style="list-style:inherit;"><a href="#id-610dc640e6b25b5e6025faff865cc78d">Getting The GitHub Project</a></li><li style="list-style:inherit;"><a href="#id-2e796e62ccc3faadb0e2489d1cf6c8b8">Quick Word Before We Start Adding Stuff</a></li><li style="list-style:inherit;"><a href="#id-04a6af1c9646041a96975c3d7b1aab25">Wipe Our Our Previous Code</a></li><li style="list-style:inherit;"><a href="#id-e474292ae180499b1c107ea9b1f90af3">Adding A Try Catch To Our Work</a></li><li style="list-style:inherit;"><a href="#id-2fb8502948ef9908e51addea5e93fc11">Add A Node</a></li><li style="list-style:inherit;"><a href="#id-27269959b12c7d0f4a407783820aedc3">Getting A Node From A Path</a></li><li style="list-style:inherit;"><a href="#id-a62ce199de22b7da51491bb9dcb20eee">Getting Properties</a></li><li style="list-style:inherit;"><a href="#id-31ccd0c31679b49921fcc69d2148694d">Removing Nodes</a></li><li style="list-style:inherit;"><a href="#id-ae8e909ce36f7594749c2a184fdef7ae">Running Our App</a></li><li style="list-style:inherit;"><a href="#id-44943007815fdadd3ffafecbf2cbf10d">A Better View Of Whats Going On</a></li></ol>
+  </section>
+<section>
+	<h1>Lab/Tutorial Sections</h1>
+	<ul id="recent_posts">
+      <li class="post">
+        <a href="/labs-and-tutorials/osgi/">OSGi</a>
+      </li>
+      <li>
+      	<a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a>
+      </li>
+  </ul>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/08/19/newest-osgi-tutorial-additions/">Newest OSGi Additions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/17/apache-jackrabbit-starting-out/">Apache Jackrabbit - Starting From Scratch Tutorial Up</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/114996005873710645329?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - jeff.downing@latchd.com -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'aggrolearning';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/manipulating-nodes/index.html';
+        var disqus_url = 'http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/manipulating-nodes/index.html';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

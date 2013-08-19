@@ -1,15 +1,17 @@
 ---
-layout: post
+layout: page
 title: "Apache Felix - First Bundle The Programmatic Way"
-date: 2013-08-15 14:26
+date: 2013-08-19 13:59
 comments: true
-categories: [OSGi, Apache Felix]
+sharing: true
+footer: true
+indexer: true
 ---
 This tutorial is designed to guide the reader through creating a very simple bundle example. For simplicity we will use the commit Greeter/Greet examples that are seen very often in OSGi tutorials. Since this is a classroom taught course, usually done in corporate environments, it's rather targeted on a specific IDE. However, if you wish to use an alternate environment the instructions should be diverse enough to support building on alternate platforms.
 
 Requirements
 -----
--	Apache Felix (See [Starting From Scratch](/blog/2013/08/15/apache-felix-starting-from-scratch/))
+-	Apache Felix (See [Starting From Scratch](/labs-and-tutorials/osgi/apache-felix-from-scratch))
 -	Apache Maven
 -	IDE Of Choice (Preferably IntelliJ IDEA)
 -   Internet Connection (For Maven Repositories)
@@ -20,11 +22,7 @@ Typically, this is Lab #2 in a classroom environment, however anyone that wishes
 
 What We Are Going To Do
 -----
-1. Generate A Maven Quickstart Java Project
-1. Change The POM
-1. Add Some Code
-1. Build And Deploy Our Bundle To Apache-Felix
-1. Create A Gogo Command To Test The Code
+{{ page.indexer_aside }}
 
 Generate A Maven Quickstart Java Project
 -----
@@ -122,7 +120,7 @@ Notice the extra entries? These will be become crucial to understand later, but 
 
 Add Some Code
 -----
-Now that we can build like a bundle, we should be writing some code to act like one. First lets create two new packages, lets create a org.bhn.training.api and an org.bhn.training.impl. This will allow us to minimally keep our APIs and Implementations seperate for organizational purposes only. In a perfect world these really will be seperate bundles, but thats out of scope for this tutorial.
+Now that we can build like a bundle, we should be writing some code to act like one. First lets create two new packages, lets create a org.bhn.training.api and an org.bhn.training.impl. This will allow us to minimally keep our APIs and Implementations separate for organizational purposes only. In a perfect world these really will be separate bundles, but that's out of scope for this tutorial.
 
 In our **api** package lets create an interface called Greeter. Greeter should look like the following:
 
@@ -151,9 +149,9 @@ public class SimpleStringGreeterImpl implements Greeter {
 
 Now that we have an implementation of a simple service. What we need to do is write some code to register that service in whats called a service registry. Then anyone who needs to be greeted can simple use the interface to get an instance to the service. 
 
-The programmatic way to do this is to create an Activator. An activator in a bundle is represented as a class that implements the interface [BundleActivator](http://www.osgi.org/javadoc/r4v43/core/org/osgi/framework/BundleActivator.html). When the bundle is activated it calls methods found in the class dynamically. This exposes two methods that allow us to register and unregister services programmtically. Lets change that App.java class that sits in the main level to be our Activator.
+The programmatic way to do this is to create an Activator. An activator in a bundle is represented as a class that implements the interface [BundleActivator](http://www.osgi.org/javadoc/r4v43/core/org/osgi/framework/BundleActivator.html). When the bundle is activated it calls methods found in the class dynamically. This exposes two methods that allow us to register and un-register services programmatically. Lets change that App.java class that sits in the main level to be our Activator.
 
-First rename App.java to SimpleActivator.java (It should be SimpleStringGreeterActivator buts thats too verbose for the tutorial right now). Then change it to looks like the following:
+First rename App.java to SimpleActivator.java (It should be SimpleStringGreeterActivator buts that's too verbose for the tutorial right now). Then change it to looks like the following:
 
 {% codeblock Greeter Activator Class lang:java %}
 package org.bhn.training;
@@ -196,7 +194,7 @@ Good, we can see our Activator in there, lets put some code in it. The steps inv
 
 1. We get a reference to the BundleContext
 1. We use registerService to keep the ServiceRegistration
-1. When done we use the ServiceRegistration to unregister the service.
+1. When done we use the ServiceRegistration to un-register the service.
 
 {% codeblock Fully Functioning Activator lang:java %}
 package org.bhn.training;
@@ -263,7 +261,7 @@ public void start(BundleContext bundleContext) throws Exception {
 }
 {% endcodeblock %}
 
-Using these two properties, you can expose any class method as a Gogo shell command. The first specifies the scope of the command, which is just a clever way to avoid conflicts with other command named the same. The second is the method to call and command name wrapped it one. So calling **tutorial:greet** should cause a hello world to appear. Lets **mvn package** again then run an update on our bundle. My bundle was 13 so typing **update 13** will reinstall from the installed location. Now if you look at your command list by typing **help** you should have a **tutorial:greet** command visible. Type it and see what happens:
+Using these two properties, you can expose any class method as a GOGO shell command. The first specifies the scope of the command, which is just a clever way to avoid conflicts with other command named the same. The second is the method to call and command name wrapped it one. So calling **tutorial:greet** should cause a hello world to appear. Lets **mvn package** again then run an update on our bundle. My bundle was 13 so typing **update 13** will reinstall from the installed location. Now if you look at your command list by typing **help** you should have a **tutorial:greet** command visible. Type it and see what happens:
 
 {% codeblock Executing Our New Command %}
 g! tutorial:greet
@@ -322,4 +320,4 @@ public void start(BundleContext bundleContext) throws Exception {
 
 Now after an **felix:update** you can call your command again and witness that its actually calling the service using the OSGi API. 
 
-_Note: After looking at the Activator imagine you have more than two services to register. Now picture 10 or more. It can get a little verbose to register all these programmatically. Let's fix that. In the next tutorial we will convert this to use an xml file to declare the service components. This will improve the readability considerably._
+_Note: After looking at the Activator imagine you have more than two services to register. Now picture 10 or more. It can get a little verbose to register all these in code. Let's fix that. In the next tutorial we will convert this to use an xml file to declare the service components. This will improve the readability considerably._
