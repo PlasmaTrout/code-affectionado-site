@@ -9,7 +9,7 @@
   <meta name="author" content="jeff.downing@latchd.com">
 
   
-  <meta name="description" content="Apache Jackrabbit - Starting From Scratch This tutorial was designed to get the reader using JSR-170&rsquo;s an JSR-283&rsquo;s core APIs by using &hellip;">
+  <meta name="description" content="Apache Jackrabbit - Starting From Scratch 1 Purpose This lab demonstrates JSR-170&rsquo;s an JSR-283&rsquo;s core APIs by using Apache Jackrabbit &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -96,40 +96,32 @@
 <time datetime="2013-08-19T14:31:00-04:00" pubdate data-updated="true"></time></p>
   </header>
   
-  <p>This tutorial was designed to get the reader using JSR-170&rsquo;s an JSR-283&rsquo;s core APIs by using Apache Jackrabbit. These series of tutorials build on one another, so this one will form the foundation of the tutorials to come.</p>
+  <h2 id="id-261addf78c7b2c961032b3dd08ba0b1f">1 Purpose</h2>
 
-<h2 id="id-052a458ca77a6d742bc477f4c443cff2">1 Table Of Contents</h2>
+<p>This lab demonstrates JSR-170&rsquo;s an JSR-283&rsquo;s core APIs by using Apache Jackrabbit and Java. Adobe CQ and similar content management systems use these JSR specifications to store content. It&rsquo;s common to see design issues and code complexity develop in systems that use it mainly due to the scarcity of good educational resources. Having just basic knowledge of the JCR specification can make decisions much more solid on platforms that use it.</p>
 
-<ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-052a458ca77a6d742bc477f4c443cff2">Table Of Contents</a></li><li style="list-style:inherit;"><a href="#id-ef1e6887c579ba81dcedc3f4e3793cd2">Audience</a></li><li style="list-style:inherit;"><a href="#id-5a2ebfb8baa378cfcfcba58bbb1380c2">Requirements</a></li><li style="list-style:inherit;"><a href="#id-261addf78c7b2c961032b3dd08ba0b1f">Purpose</a></li><li style="list-style:inherit;"><a href="#id-7c96364be95a3c7e4269e8b7dc11fdff">Generate A Quick Start Project With Maven</a></li><li style="list-style:inherit;"><a href="#id-545932df6dd549e517dfb368af7acdba">Add Some Dependencies To The POM</a></li><li style="list-style:inherit;"><a href="#id-4800e6240ae5ed51fdbde8a336f2f320">Start The Repository For The First Time</a></li><li style="list-style:inherit;"><a href="#id-09dfef00949278d7e86cdd37f8b6f707">Ask The Repository About Some Of Its Features</a></li></ol>
-
+<p>The larger the system that uses the JCR, the more layers of framework are put on top of the product. This means developer decisions on how to access a specific feature may be confusing or provide too many options to them. The purpose with this tutorial series is to show off the core features in a JSR compliant way hoping that knowing the standard way you will be less like to use a way that attach you to a specific product.</p>
 
 <h2 id="id-ef1e6887c579ba81dcedc3f4e3793cd2">2 Audience</h2>
 
-<p>Typically, this is Lab #1 in a classroom environment, however anyone that wishes can use this tutorial. Most people performing this tutorial have already had some presented instruction and an overview of Apache Jackrabbit and the JCR specifications.</p>
+<p>The core audience is seated in a classroom environment. Readers performing this tutorial have just finished an overview of Apache Jackrabbit and the JCR specifications and are looking for examples of how to use them. Most will be at work or seated in an place where they can read from the tutorial page and code in their own editor.</p>
 
-<h2 id="id-5a2ebfb8baa378cfcfcba58bbb1380c2">3 Requirements</h2>
+<h2 id="id-3b878279a04dc47d60932cb294d96259">3 Overview</h2>
 
-<ul>
-<li>Apache Maven</li>
-<li>IDE Of Choice (Preferably IntelliJ IDEA)</li>
-<li>Internet Connection (For Maven Repositories)</li>
-</ul>
+<p>The intent with this lab (and the ones that follow) is to get everyone comfortable exploring Apache Jackrabbit. Apache Jackrabbit seems different from common server platforms in that using typical platforms you would download some packages and run them which would start up a server. In a different project you’d probably fire up some  drivers and/or write code that connects to that server to store data. Jackrabbit is really just an API that abstracts away how things are stored and only concentrates on hierarchical content storage.</p>
 
+<p>Apache Jackrabbit is designed to be included with your project and not an appliance that stands on its own. It leaves up to the developer how to best use its API. Knowing that, let&rsquo;s start with a generic quick start project and include Apache Jackrabbit into a simple console application.</p>
 
-<h2 id="id-261addf78c7b2c961032b3dd08ba0b1f">4 Purpose</h2>
+<h2 id="id-7c96364be95a3c7e4269e8b7dc11fdff">4 Generate A Quick Start Project With Maven</h2>
 
-<p>Our intent with this lab section is just to get you started on your exploration of Apache Jackrabbit. Before we begin, it’s important to note that Jackrabbit is not your typical server platform. In a typical database platform you would download some packages and run them which would start up a server. Then in a different project you’d probably fire up some JDBC driver and write code that connects to that server and does stuff. Jackrabbit wasn’t exactly built this way, its really an API that abstracts away how things are stored and only concentrates on hierarchical content management.</p>
-
-<h2 id="id-7c96364be95a3c7e4269e8b7dc11fdff">5 Generate A Quick Start Project With Maven</h2>
-
-<p>Just like our usual lab series, we are going to start with a quick start project and modify it to support what we need it to do. The goal is to get you comfortable with Maven and building out your own project structures. To get started with a basic quick start project lets use the following command line:</p>
+<p>Quick start projects are great starting points. Let&rsquo;s create one and modify it to support what we need it to do instead of using a pre-built archetype. This will help get us comfortable with Maven and building out your own project structures. To get started with a basic quick start project lets use the following command line:</p>
 
 <div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>New Maven Quick Start</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>mvn archetype:generate -DgroupId<span class="o">=</span>org.codeaffectionado.training -DartifactId<span class="o">=</span>jackrabbit-tutorial -DarchetypeArtifactId<span class="o">=</span>maven-archetype-quickstart -DinteractiveMode<span class="o">=</span><span class="nb">false</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<p>Now lets open up our IDE of choice and import this project. Before we get to deep into this tutorial lets add a plugin that will allow us to run our project using Maven. This will just speed some things up for us later. In our POM lets add the following section to the root of the project:</p>
+<p>Now lets open up our IDE and import this project (use whatever you like). In order to execute the main method of our console application in Maven, we will need to add a plugin that will allow us to run our project using Maven. This will just speed some things up for us later. In our POM lets add the following section to the root of the project:</p>
 
 <div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Maven Execute Plugin</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -187,11 +179,11 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<p>This is important because running java classes or jar projects can be quite a chore when we are using Maven as our build lifecycle. This keeps us from having to go to our target directory and run our jars by hand, even though you are more than welcome to so if you wish. It will require you to further bundle your dependencies in the jar so you don&rsquo;t have to worry about classpath problems.</p>
+<p>Running java classes or jar projects can be quite a chore when we are using Maven as our build tool. This keeps us from having to go to our target directory and run our jars by hand, however if you are more comfortable running them that way, it should be fine.</p>
 
-<h2 id="id-545932df6dd549e517dfb368af7acdba">6 Add Some Dependencies To The POM</h2>
+<h2 id="id-545932df6dd549e517dfb368af7acdba">5 Add Some Dependencies To The POM</h2>
 
-<p>All we really need to perform some JCR programming is include two new dependencies into our POM like so:</p>
+<p>All we really need to perform some JCR programming is include three new dependencies into our POM like so:</p>
 
 <div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Dependencies Needed For Apache Jackrabbit</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -226,7 +218,9 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<h2 id="id-4800e6240ae5ed51fdbde8a336f2f320">7 Start The Repository For The First Time</h2>
+<p><em>The javax.jcr library is needed to write code against the JCR. The jackrabbit-core library is the actual Jackrabbit software itself and slf4j is a requirements of Jackrabbit and is used for logging.</em></p>
+
+<h2 id="id-4800e6240ae5ed51fdbde8a336f2f320">6 Start The Repository For The First Time</h2>
 
 <p>So starting the repository may not be that obvious at present time, but its really easy to do. Let&rsquo;s go into our main method and add the following lines to the main method:</p>
 
@@ -238,16 +232,14 @@
 <span class='line-number'>6</span>
 <span class='line-number'>7</span>
 <span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span> <span class="o">)</span> <span class="kd">throws</span> <span class="n">RepositoryException</span> <span class="o">{</span>
-</span><span class='line'>    <span class="n">Repository</span> <span class="n">repository</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TransientRepository</span><span class="o">();</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'>    <span class="n">Repository</span> <span class="n">repository</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TransientRepository</span><span class="o">();</span>
+</span><span class='line'>
 </span><span class='line'>    <span class="n">Session</span> <span class="n">session</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="na">login</span><span class="o">(</span>
 </span><span class='line'>            <span class="k">new</span> <span class="nf">SimpleCredentials</span><span class="o">(</span><span class="s">&quot;admin&quot;</span><span class="o">,</span><span class="s">&quot;admin&quot;</span><span class="o">.</span><span class="na">toCharArray</span><span class="o">()));</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Hello World!&quot;</span><span class="o">);</span>
 </span><span class='line'>
 </span><span class='line'>    <span class="n">session</span><span class="o">.</span><span class="na">logout</span><span class="o">();</span>
-</span><span class='line'><span class="o">}</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
@@ -265,26 +257,41 @@
 
 <p>In our code above we just did 1,2 and 6. Just enough to get us a repository built. But lets look at what we accomplished in this code.</p>
 
-<blockquote><p>Repository repository = new TransientRepository();</p></blockquote>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Repository</span> <span class="n">repository</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TransientRepository</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
 <p>Apache Jackrabbit has an implementation of <a href="http://www.day.com/maven/javax.jcr/javadocs/jcr-2.0/javax/jcr/Repository.html?is-external=true">Repository</a> (which is an interface BTW) called <a href="http://jackrabbit.apache.org/api/2.2/org/apache/jackrabbit/core/TransientRepository.html">TransientRepository</a>. It&rsquo;s considered Transient because it starts up when its needed and shuts down where there are no more sessions connected to it. This is the primary repository we will be using with our samples and represents the most common repository used with other applications.</p>
 
-<blockquote><p>Session session = repository.login(<br/>            new SimpleCredentials("admin","admin".toCharArray()));</p></blockquote>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Session</span> <span class="n">session</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="na">login</span><span class="o">(</span><span class="k">new</span> <span class="n">SimpleCredentials</span><span class="o">(</span><span class="s">&quot;admin&quot;</span><span class="o">,</span><span class="s">&quot;admin&quot;</span><span class="o">.</span><span class="na">toCharArray</span><span class="o">()));</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<p>Here we are using the repository to login. Our login is just using a set of Credentials (another interface). Currently there are only guest and simple credentials included with the version we are using. That&rsquo;s ok though, most of the time the JCR is a part of another application or framework. It isn&rsquo;t connected to from the outside often.</p>
+<p>Here we are using the repository to login. Our login is using a set of Credentials (another interface) called SimpleCredentials. Currently there are only guest and simple credentials included with the version we are using. That&rsquo;s ok though, most of the time the JCR is a part of another application or framework. It isn&rsquo;t connected to from the outside.</p>
 
-<blockquote><p>session.logout();</p></blockquote>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">session</span><span class="o">.</span><span class="na">logout</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<p>Self explanitory, but this is us logging out of our session. It&rsquo;s somewhat redundant here, but good practice. Because, when the primary thread dies it will expires anyway and the repository will shutdown.</p>
+<p>Self explanatory, but this is how we log out of a session. It&rsquo;s somewhat redundant here, but good practice.</p>
 
-<p>Now run it with our new Maven sequence <strong>mvn compile exec:java</strong> and notice the results that stream by. When it finishes refresh the root of your project in your IDE and take a look now. It appears some directories were created for you and some new config files where put down automatically. Basically Jackrabbit created a repository in your project root and set it up for you. This includes storing everything in an Apache Derby database instance it created for you.</p>
+<h2 id="id-5504ec425a0580c6bb6220a26ce270d9">7 First Run</h2>
+
+<p>Now run the application with the modified Maven command:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">mvn</span> <span class="n">compile</span> <span class="nl">exec:</span><span class="n">java</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Notice the results that stream by? When it finishes refresh the root of your project in your IDE and take a look now. It appears some directories were created for you and some new config files where placed in the root of the project automatically. Apache Jackrabbit created a repository in your project root, set it up for you and ran it.</p>
 
 <h2 id="id-09dfef00949278d7e86cdd37f8b6f707">8 Ask The Repository About Some Of Its Features</h2>
 
-<p>So lets ask the repository about some of its features. To get information about the repository and what it supports back. The Repository interface contains some constants that can be used to query information from the repository. Lets modify our example and just ask some questions to the repository itself. Primarily lets see what its vendor, name and version are:</p>
+<p>So let&rsquo;s ask the repository for some of its information. To get questions about the repository and what it supports back we use a method called getDescriptor. The <a href="http://www.day.com/maven/javax.jcr/javadocs/jcr-2.0/javax/jcr/Repository.html?is-external=true">Repository interface</a> contains some constants that can be used to query information using this method. Lets modify our example and just ask some questions to the repository itself. Primarily lets see what its vendor, name and version are:</p>
 
 <div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Asking The Repository For Information</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -313,6 +320,10 @@
 
 
 <p>There are some other things that the repository can tell you. I would highly recommend checking out the <a href="http://www.day.com/maven/javax.jcr/javadocs/jcr-2.0/javax/jcr/Repository.html?is-external=true">Repository&rsquo;s interface documentation</a> and trying some of the other constants. Experiment and get comfortable with this flow. We will be using it more and more as time goes on.</p>
+
+<h3 id="id-793c8ed2513e8123735dfd0bca74580b">8.1 GitHub Location</h3>
+
+<p>If you get lost during the tutorial, you can get the code for this example on <a href="https://github.com/PlasmaTrout/jackrabbit-training-lab1">GitHub</a>.</p>
 
   
     <footer>
@@ -364,7 +375,7 @@
     
   <section>
   <h1>Tutorial Steps</h1>
-  <ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-052a458ca77a6d742bc477f4c443cff2">Table Of Contents</a></li><li style="list-style:inherit;"><a href="#id-ef1e6887c579ba81dcedc3f4e3793cd2">Audience</a></li><li style="list-style:inherit;"><a href="#id-5a2ebfb8baa378cfcfcba58bbb1380c2">Requirements</a></li><li style="list-style:inherit;"><a href="#id-261addf78c7b2c961032b3dd08ba0b1f">Purpose</a></li><li style="list-style:inherit;"><a href="#id-7c96364be95a3c7e4269e8b7dc11fdff">Generate A Quick Start Project With Maven</a></li><li style="list-style:inherit;"><a href="#id-545932df6dd549e517dfb368af7acdba">Add Some Dependencies To The POM</a></li><li style="list-style:inherit;"><a href="#id-4800e6240ae5ed51fdbde8a336f2f320">Start The Repository For The First Time</a></li><li style="list-style:inherit;"><a href="#id-09dfef00949278d7e86cdd37f8b6f707">Ask The Repository About Some Of Its Features</a></li></ol>
+  <ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-261addf78c7b2c961032b3dd08ba0b1f">Purpose</a></li><li style="list-style:inherit;"><a href="#id-ef1e6887c579ba81dcedc3f4e3793cd2">Audience</a></li><li style="list-style:inherit;"><a href="#id-3b878279a04dc47d60932cb294d96259">Overview</a></li><li style="list-style:inherit;"><a href="#id-7c96364be95a3c7e4269e8b7dc11fdff">Generate A Quick Start Project With Maven</a></li><li style="list-style:inherit;"><a href="#id-545932df6dd549e517dfb368af7acdba">Add Some Dependencies To The POM</a></li><li style="list-style:inherit;"><a href="#id-4800e6240ae5ed51fdbde8a336f2f320">Start The Repository For The First Time</a></li><li style="list-style:inherit;"><a href="#id-5504ec425a0580c6bb6220a26ce270d9">First Run</a></li><li style="list-style:inherit;"><a href="#id-09dfef00949278d7e86cdd37f8b6f707">Ask The Repository About Some Of Its Features</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-793c8ed2513e8123735dfd0bca74580b">GitHub Location</a></li></ul></li></ol>
   </section>
 <section>
 	<h1>Lab/Tutorial Sections</h1>
