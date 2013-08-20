@@ -7,24 +7,25 @@ sharing: true
 footer: true
 indexer: true
 ---
-In our [first tutorial](/labs-and-tutorials/apache-jackrabbit/starting-from-scratch/) we learned how to setup our maven dependencies and write code against a TransientRepository. We need to continue that tradition and learn how to use the JCR APIs to get, add and remove nodes.
+The purpose of this lab is to enhance our [previous tutorial](/labs-and-tutorials/apache-jackrabbit/starting-from-scratch/). In that lab we learned how to setup our maven dependencies and write code against a TransientRepository. The purpose of this lab is to to continue exploration of the JCR APIs and see how node manipulation is done in Apache Jackrabbit.
 
-## Table Of Contents
-{{ page.indexer_aside }}
+## Audience
+The core audience is seated in a classroom environment. Readers performing this tutorial have just finished previous tutorials and should be familiar with how the lab will work. Most will be at work or seated in a place where they can read from the tutorial page and code in their own editor.
 
-## Getting The GitHub Project
-If you came directly into this tutorial and didn't do the first one, don't fret. The starter project is on GitHub. The following clone should get you started from where we left off:
+## Overview
+Working with Apache Jackrabbit only in code form can make it a bit tough to visualize the changes you are making to the node repository. There are visual tools in products such as Apache Sling and CRX which take care of this from their perspective. But, we will need to create a console method to "dump the node tree" to help us visualize what is happening.
+
+Because it's difficult to see your changes, you may end up creating a bunch of garbage and want to start all over again. That's really easy to do. Just go into your project directory and remove the repository directory and all of its contents and re-run your project again. If the repository does not exist, It will be re-built each time you run the application.
+
+_You can't hurt your application by removing the repository directory, the repository.Xml files or the derby.log file. If you want a fresh start, kill em. The next time you **mvn compile exec:java** you app they will be reproduced._
+
+Lastly, if you came directly into this tutorial and didn't do the first one, don't fret. The starter project is on GitHub. The following clone should get you started from where we left off:
 
 ``` bash Getting The Previous Lab https://github.com/PlasmaTrout/jackrabbit-training-lab1 GitHub
 git clone git@github.com:PlasmaTrout/jackrabbit-training-lab1.git
 ```
 
-## Quick Word Before We Start Adding Stuff
-Working with Jackrabbit in code can make it a bit tough to visualize what you have saved, deleted or updated. In other frameworks, such as Sling, there will be visual viewers that help you see the node trees a bit better. We will create a console method to "dump the tree" as a reference to make sure thing did work, but there is a possibility that you may end up creating a bunch of garbage and want to start all over again. Fortunately, that's really easy to do. Just go into your project directory and blow out repository directory and all of its contents and re-run your project again.
-
-You can't hurt your application by removing the repository directory, the repository.xml files or the derby.log file. If you want a fresh start, kill em. The next time you **mvn compile exec:java** you app they will be reproduced. 
-
-## Wipe Our Our Previous Code
+## Wipe Our Previous Code
 We previously just made some called to getDescriptor a few times. Let's get that out of the way so we end up with a fresh start that looks something like:
 
 ``` java Main Starting Point
@@ -40,7 +41,7 @@ public static void main( String[] args ) throws RepositoryException {
 ```
 
 ## Adding A Try Catch To Our Work
-We are going to start doing some additions and deletions of nodes in this section. This has the potential to cause some exceptions thus killing our application. When an application dies, what happens to the session, can be hard to determine. If there are other sessions open, the repository itself won't necessarily expire the sessions and its possible that your last one may stay open after your code threw and exited.
+The JCR is all about the manipulation of nodes and properties. Due to safety in the API, the methods that do this have the potential to cause some exceptions that may cause your application to close. It's hard to determine what will happen to the session when the application dies. If there are other sessions open, the repository won't necessarily expire the sessions. The last session may stay open after your code threw an exception and exited. On the other hand, the application may have only session open. When the application dies, the repository will just simply expire the session shut down.
 
 This won't be that big of a deal in our examples, since they are just command line tinkering. However, in a much larger application having sessions logged in as "admin" just hovering about may not be a good idea. In order to combat this, lets add a simple pattern to guarantee that the session gets logged out when this happens:
 
@@ -58,16 +59,19 @@ public static void main( String[] args ) throws RepositoryException {
 }
 ```
 
-There, now our super secure, un-guessable admin/admin login is protected.
+Of course having a password of admin:admin is not the most secure method either. We won't dive into changing this just yet.
 
-## Add A Node
-Generally the first thing one does after a login to a repository is get a node. There are a few ways to accommodate that. But for starters lets get into the habit of getting the root node. When we first login, it's the only node that guaranteed to be there anyways. Remember to put this in your try section:
+## Getting The Root Node
+After a login to a repository, a coder may have a specific place in the hierarchy they would like to start from. They need to get a reference to a node to get started. There are a few ways to accommodate that. One of which is to get the root node, that is the first and most top level node in the tree. When we first login, it's the only node that guaranteed to be there anyway. Remember to put this in your try section:
 
 ``` java Getting The Root Node
 Node root = session.getRootNode();
 ```
 
-There. Simple enough. Now lets add two nodes and a property and save it:
+This convenient method always allows us to get the root rather quickly. Now let's add some nodes to the root node.
+
+## Adding Some Nodes
+Adding nodes, once you have a reference to a node your would like to add them to, is pretty simple. Let's add two nodes to our root node.
 
 ``` java Adding Two New Nodes
 Node hello = root.addNode("nodeA");
@@ -76,7 +80,7 @@ world.setProperty("message","Hello, World");
 session.save();
 ```
 
-Notice how each addNode returns back the node that was added. Seems to reason that we could probably chain this whole statement. We could refactor this to:
+Notice how each addNode returns back the node that was added. This means we can chain this whole statement into one statement such as:
 
 ``` java Adding Two Nodes Chain style
 root.addNode("nodeA").addNode("nodeB")
@@ -87,8 +91,8 @@ session.save();
 
 Don't run this just yet. If you do you may end up with a new node each time your run it since Jackrabbit has duplicate nodes turned on by default. Let's finish all of these sections before we run it.
 
-## Getting A Node From A Path
-So there are a few ways to get the node back that you just created. The first is to use the root node to get the information back. Let's get the the node you just created and saved.
+## Getting A Node From A Node
+There are a few ways to get the node back that you just created. The first is to use the root node to get the information back. Then we only have to worry about the path relative from root such as:
 
 ``` java Getting A Node From The Root Node
 Node ourNode = root.getNode("nodeA/NodeB");
@@ -97,7 +101,16 @@ System.out.println(ourNode.getPath());
 System.out.println(ourNode.getProperty("message").getString());
 ```
 
-To do this not using the root node is pretty simple as well, you can just use the session to find the correct item and cast it back like so:
+## Getting A Node From The Session
+We could use the session to get Nodes as well. One approach could be use to the session to just get the node like our top example:
+
+``` java Getting A Node Without The Root Node Again
+Node oneMoreTime = session.getNode("/nodeA/nodeB");
+System.out.println(oneMoreTime.getPath());
+System.out.println(oneMoreTime.getProperty("message").getString());
+```
+
+Another method is to use the session to find the correct item and cast it back. Lets add another set of lines:
 
 ``` java Getting A Node Without The Root Node
 Node ourNodeAgain = (Node) session.getItem("/nodeA/nodeB");
@@ -106,31 +119,46 @@ System.out.println(ourNodeAgain.getPath());
 System.out.println(ourNodeAgain.getProperty("message").getString());
 ```
 
-The first question after seeing this might be, "Why'd you have to cast that?". Well getItem returns an Item. [Item](http://www.day.com/maven/jsr170/javadocs/jcr-1.0/javax/jcr/Item.html) is an interface that both Node and Property inherit. This allows you to use it for either Nodes or Properties, thus having to cast. Wait, should session have its own mechanism then to get the Node back. Sure it looks like the following:
+The first question after seeing this might be, "Whats an Item and how'd that cast work?". [Item](http://www.day.com/maven/jsr170/javadocs/jcr-1.0/javax/jcr/Item.html) is an interface that both Node and Property as sub-interfaces of. This allows you to use it for either Nodes or Properties directly from the session, but makes you cast.
 
-``` java Getting A Node Without The Root Node Again
-Node oneMoreTime = session.getNode("/nodeA/nodeB");
-System.out.println(oneMoreTime.getPath());
-System.out.println(oneMoreTime.getProperty("message").getString());
-```
+Which one should you use? Well, it's really up to your preferences, but getItem comes with a warning in the javadocs:
 
-So with either an absolute path or a relative from the node reference you have, you can find any node in the system.
+
+> This method should only be used if the application does not know whether the item at the indicated path is property or node. In cases where the application has this information, either getNode(java.lang.String) or getProperty(java.lang.String) should be used, as appropriate. In many repository implementations the node and property-specific methods are likely to be more efficient than getItem.
+
+
+
 
 ## Getting Properties
-We didn't mention it at the time, but all of our print lines above are getting the property message back from the node. A call to getProperty returns back a [Property](http://www.day.com/maven/javax.jcr/javadocs/jcr-2.0/javax/jcr/Property.html) object.  Once you get this back, you ask it for what data type you want and it tries to coerce that type back for you. For instance if you store an long and you call getString on the property. It will try to coerce that value back for you.
+Getting a property from a node takes two forms. One is really just a shortcut for another. We won't code the following examples as they point to a node named myNode and we haven't created it, so just look at them for now:
+
+``` java Getting A Property Using The Value Shortcut Method
+Property property = myNode.getProperty("message");
+String message = property.getString();
+```
+
+Notice how getProperty returns back a property. That property object is used to coerce the value back out. But everything is not as it seems with that example. There is a special [Value](http://www.day.com/maven/javax.jcr/javadocs/jcr-2.0/javax/jcr/Value.html) object for the values contained in the property and really that code was just a shortcut for:
+
+``` java Getting A Property The Long Way
+Property property = myNode.getProperty("message");
+Value propValue = property.getValue();
+String message = propValue.getString();
+```
+
+We didn't mention it at the time, but all of our prints in the getting nodes section are retrieving the property back from the node. A call to getProperty returns back a [Property](http://www.day.com/maven/javax.jcr/javadocs/jcr-2.0/javax/jcr/Property.html) object.  Once you get this back, you ask it for what data type you want and it tries to coerce that type back for you. For instance if you store a long and call getString on the property containing it, it, it will try to coerce a string back for you.
 
 ## Removing Nodes
-Removing nodes is really easy in the API. All it takes is the following code added to the bottom of your try block:
+Removing nodes is easy in the API. All it takes is the following code added to the bottom of your try block:
 
 ``` java Deleting A Node
 root.getNode("nodeA").remove();
 session.save();
 ```
 
-Remember to call save on the session every time your modify something. Your changes only go into a transient storage location without it and get lost when your session expires.
+Remember to call save on the session every time your modify something. When you are modifying nodes, you changes are going in a special transient storage location. Until saved it called, they haven't happened in the workspace. If your session dies, your changes may die with it.
 
 ## Running Our App
-So we should have an application now that looks something like the following:
+We should have a main method now that looks something like the following:
 
 ``` java Full Example
 public static void main( String[] args ) throws RepositoryException {
@@ -246,7 +274,7 @@ public static void main( String[] args ) throws RepositoryException {
 }
 ```
 
-What we see now is really interesting. Along with our nodes at the bottom we see a ton of jcr:system nodes (akin to system level settings) and some policy nodes (similar to ACL permissions). They are found off of the root and typically stay out of sight and out of mind. However, at the end of all of the spamming we see:
+When we run this now, we can see that along with our nodes at the bottom we see some of the of jcr:system nodes (akin to system level settings) and some policy nodes (similar to ACL permissions). They are found off of the root and typically stay out of sight and out of mind. Our nodes are at the end of this print out:
 
 ``` bash Our Node Dumper
 /nodeA
@@ -256,7 +284,7 @@ What we see now is really interesting. Along with our nodes at the bottom we see
 /nodeA/nodeB/jcr:primaryType=nt:unstructured
 ```
 
-That's what we were looking for so lets add a statement just under the printing of the node path of our dump method to ignore properties on jcr:system nodes:
+We should add some code to ignore properties on jcr:system and rep:policy node types. This will reduce the clutter:
 
 ``` java Ignoring System Properties
 if(node.getName().equals("jcr:system") || node.getName().equals("rep:policy")){
@@ -264,6 +292,6 @@ if(node.getName().equals("jcr:system") || node.getName().equals("rep:policy")){
 }
 ```
 
-This will at least let us see the nodes, but not kill us the plethora of properties that they contain. 
+Now when we run again, we can see our changes without a plethora of properties that belong to the system.
 
 We will use this dump method a few times throughout these tutorials so keep it on hand. I will try to keep the [GIST](https://gist.github.com/PlasmaTrout/6274163) updated on GitHub.

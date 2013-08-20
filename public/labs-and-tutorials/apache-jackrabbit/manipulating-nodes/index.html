@@ -9,7 +9,7 @@
   <meta name="author" content="jeff.downing@latchd.com">
 
   
-  <meta name="description" content="Apache Jackrabbit - Manipulating Nodes in the Repository In our first tutorial we learned how to setup our maven dependencies and write code against &hellip;">
+  <meta name="description" content="Apache Jackrabbit - Manipulating Nodes in the Repository The purpose of this lab is to enhance our previous tutorial. In that lab we learned how to &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -96,29 +96,28 @@
 <time datetime="2013-08-19T15:05:00-04:00" pubdate data-updated="true"></time></p>
   </header>
   
-  <p>In our <a href="/labs-and-tutorials/apache-jackrabbit/starting-from-scratch/">first tutorial</a> we learned how to setup our maven dependencies and write code against a TransientRepository. We need to continue that tradition and learn how to use the JCR APIs to get, add and remove nodes.</p>
+  <p>The purpose of this lab is to enhance our <a href="/labs-and-tutorials/apache-jackrabbit/starting-from-scratch/">previous tutorial</a>. In that lab we learned how to setup our maven dependencies and write code against a TransientRepository. The purpose of this lab is to to continue exploration of the JCR APIs and see how node manipulation is done in Apache Jackrabbit.</p>
 
-<h2 id="id-052a458ca77a6d742bc477f4c443cff2">1 Table Of Contents</h2>
+<h2 id="id-ef1e6887c579ba81dcedc3f4e3793cd2">1 Audience</h2>
 
-<ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-052a458ca77a6d742bc477f4c443cff2">Table Of Contents</a></li><li style="list-style:inherit;"><a href="#id-610dc640e6b25b5e6025faff865cc78d">Getting The GitHub Project</a></li><li style="list-style:inherit;"><a href="#id-2e796e62ccc3faadb0e2489d1cf6c8b8">Quick Word Before We Start Adding Stuff</a></li><li style="list-style:inherit;"><a href="#id-04a6af1c9646041a96975c3d7b1aab25">Wipe Our Our Previous Code</a></li><li style="list-style:inherit;"><a href="#id-e474292ae180499b1c107ea9b1f90af3">Adding A Try Catch To Our Work</a></li><li style="list-style:inherit;"><a href="#id-2fb8502948ef9908e51addea5e93fc11">Add A Node</a></li><li style="list-style:inherit;"><a href="#id-27269959b12c7d0f4a407783820aedc3">Getting A Node From A Path</a></li><li style="list-style:inherit;"><a href="#id-a62ce199de22b7da51491bb9dcb20eee">Getting Properties</a></li><li style="list-style:inherit;"><a href="#id-31ccd0c31679b49921fcc69d2148694d">Removing Nodes</a></li><li style="list-style:inherit;"><a href="#id-ae8e909ce36f7594749c2a184fdef7ae">Running Our App</a></li><li style="list-style:inherit;"><a href="#id-44943007815fdadd3ffafecbf2cbf10d">A Better View Of Whats Going On</a></li></ol>
+<p>The core audience is seated in a classroom environment. Readers performing this tutorial have just finished previous tutorials and should be familiar with how the lab will work. Most will be at work or seated in a place where they can read from the tutorial page and code in their own editor.</p>
 
+<h2 id="id-3b878279a04dc47d60932cb294d96259">2 Overview</h2>
 
-<h2 id="id-610dc640e6b25b5e6025faff865cc78d">2 Getting The GitHub Project</h2>
+<p>Working with Apache Jackrabbit only in code form can make it a bit tough to visualize the changes you are making to the node repository. There are visual tools in products such as Apache Sling and CRX which take care of this from their perspective. But, we will need to create a console method to &ldquo;dump the node tree&rdquo; to help us visualize what is happening.</p>
 
-<p>If you came directly into this tutorial and didn&rsquo;t do the first one, don&rsquo;t fret. The starter project is on GitHub. The following clone should get you started from where we left off:</p>
+<p>Because it&rsquo;s difficult to see your changes, you may end up creating a bunch of garbage and want to start all over again. That&rsquo;s really easy to do. Just go into your project directory and remove the repository directory and all of its contents and re-run your project again. If the repository does not exist, It will be re-built each time you run the application.</p>
+
+<p><em>You can&rsquo;t hurt your application by removing the repository directory, the repository.Xml files or the derby.log file. If you want a fresh start, kill em. The next time you <strong>mvn compile exec:java</strong> you app they will be reproduced.</em></p>
+
+<p>Lastly, if you came directly into this tutorial and didn&rsquo;t do the first one, don&rsquo;t fret. The starter project is on GitHub. The following clone should get you started from where we left off:</p>
 
 <div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting The Previous Lab</span><a href='https://github.com/PlasmaTrout/jackrabbit-training-lab1'>GitHub</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone git@github.com:PlasmaTrout/jackrabbit-training-lab1.git
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<h2 id="id-2e796e62ccc3faadb0e2489d1cf6c8b8">3 Quick Word Before We Start Adding Stuff</h2>
-
-<p>Working with Jackrabbit in code can make it a bit tough to visualize what you have saved, deleted or updated. In other frameworks, such as Sling, there will be visual viewers that help you see the node trees a bit better. We will create a console method to &ldquo;dump the tree&rdquo; as a reference to make sure thing did work, but there is a possibility that you may end up creating a bunch of garbage and want to start all over again. Fortunately, that&rsquo;s really easy to do. Just go into your project directory and blow out repository directory and all of its contents and re-run your project again.</p>
-
-<p>You can&rsquo;t hurt your application by removing the repository directory, the repository.xml files or the derby.log file. If you want a fresh start, kill em. The next time you <strong>mvn compile exec:java</strong> you app they will be reproduced.</p>
-
-<h2 id="id-04a6af1c9646041a96975c3d7b1aab25">4 Wipe Our Our Previous Code</h2>
+<h2 id="id-b18ba6f0139d0c1f8ceb43f86aff1e20">3 Wipe Our Previous Code</h2>
 
 <p>We previously just made some called to getDescriptor a few times. Let&rsquo;s get that out of the way so we end up with a fresh start that looks something like:</p>
 
@@ -143,9 +142,9 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<h2 id="id-e474292ae180499b1c107ea9b1f90af3">5 Adding A Try Catch To Our Work</h2>
+<h2 id="id-e474292ae180499b1c107ea9b1f90af3">4 Adding A Try Catch To Our Work</h2>
 
-<p>We are going to start doing some additions and deletions of nodes in this section. This has the potential to cause some exceptions thus killing our application. When an application dies, what happens to the session, can be hard to determine. If there are other sessions open, the repository itself won&rsquo;t necessarily expire the sessions and its possible that your last one may stay open after your code threw and exited.</p>
+<p>The JCR is all about the manipulation of nodes and properties. Due to safety in the API, the methods that do this have the potential to cause some exceptions that may cause your application to close. It&rsquo;s hard to determine what will happen to the session when the application dies. If there are other sessions open, the repository won&rsquo;t necessarily expire the sessions. The last session may stay open after your code threw an exception and exited. On the other hand, the application may have only session open. When the application dies, the repository will just simply expire the session shut down.</p>
 
 <p>This won&rsquo;t be that big of a deal in our examples, since they are just command line tinkering. However, in a much larger application having sessions logged in as &ldquo;admin&rdquo; just hovering about may not be a good idea. In order to combat this, lets add a simple pattern to guarantee that the session gets logged out when this happens:</p>
 
@@ -174,18 +173,22 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<p>There, now our super secure, un-guessable admin/admin login is protected.</p>
+<p>Of course having a password of admin:admin is not the most secure method either. We won&rsquo;t dive into changing this just yet.</p>
 
-<h2 id="id-2fb8502948ef9908e51addea5e93fc11">6 Add A Node</h2>
+<h2 id="id-ab9ac6965559fce1c1cd9e6c623c5aac">5 Getting The Root Node</h2>
 
-<p>Generally the first thing one does after a login to a repository is get a node. There are a few ways to accommodate that. But for starters lets get into the habit of getting the root node. When we first login, it&rsquo;s the only node that guaranteed to be there anyways. Remember to put this in your try section:</p>
+<p>After a login to a repository, a coder may have a specific place in the hierarchy they would like to start from. They need to get a reference to a node to get started. There are a few ways to accommodate that. One of which is to get the root node, that is the first and most top level node in the tree. When we first login, it&rsquo;s the only node that guaranteed to be there anyway. Remember to put this in your try section:</p>
 
 <div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting The Root Node</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Node</span> <span class="n">root</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="na">getRootNode</span><span class="o">();</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<p>There. Simple enough. Now lets add two nodes and a property and save it:</p>
+<p>This convenient method always allows us to get the root rather quickly. Now let&rsquo;s add some nodes to the root node.</p>
+
+<h2 id="id-ef757eb615d28f3f9bb68d9b758eec49">6 Adding Some Nodes</h2>
+
+<p>Adding nodes, once you have a reference to a node your would like to add them to, is pretty simple. Let&rsquo;s add two nodes to our root node.</p>
 
 <div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Adding Two New Nodes</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -198,7 +201,7 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<p>Notice how each addNode returns back the node that was added. Seems to reason that we could probably chain this whole statement. We could refactor this to:</p>
+<p>Notice how each addNode returns back the node that was added. This means we can chain this whole statement into one statement such as:</p>
 
 <div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Adding Two Nodes Chain style</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -213,9 +216,9 @@
 
 <p>Don&rsquo;t run this just yet. If you do you may end up with a new node each time your run it since Jackrabbit has duplicate nodes turned on by default. Let&rsquo;s finish all of these sections before we run it.</p>
 
-<h2 id="id-27269959b12c7d0f4a407783820aedc3">7 Getting A Node From A Path</h2>
+<h2 id="id-04f577850754c55fb860844293920d01">7 Getting A Node From A Node</h2>
 
-<p>So there are a few ways to get the node back that you just created. The first is to use the root node to get the information back. Let&rsquo;s get the the node you just created and saved.</p>
+<p>There are a few ways to get the node back that you just created. The first is to use the root node to get the information back. Then we only have to worry about the path relative from root such as:</p>
 
 <div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting A Node From The Root Node</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -228,7 +231,20 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<p>To do this not using the root node is pretty simple as well, you can just use the session to find the correct item and cast it back like so:</p>
+<h2 id="id-86895179922f435aaf4e0b744643d1ed">8 Getting A Node From The Session</h2>
+
+<p>We could use the session to get Nodes as well. One approach could be use to the session to just get the node like our top example:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting A Node Without The Root Node Again</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Node</span> <span class="n">oneMoreTime</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="na">getNode</span><span class="o">(</span><span class="s">&quot;/nodeA/nodeB&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">oneMoreTime</span><span class="o">.</span><span class="na">getPath</span><span class="o">());</span>
+</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">oneMoreTime</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;message&quot;</span><span class="o">).</span><span class="na">getString</span><span class="o">());</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Another method is to use the session to find the correct item and cast it back. Lets add another set of lines:</p>
 
 <div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting A Node Without The Root Node</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -241,26 +257,39 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<p>The first question after seeing this might be, &ldquo;Why&rsquo;d you have to cast that?&rdquo;. Well getItem returns an Item. <a href="http://www.day.com/maven/jsr170/javadocs/jcr-1.0/javax/jcr/Item.html">Item</a> is an interface that both Node and Property inherit. This allows you to use it for either Nodes or Properties, thus having to cast. Wait, should session have its own mechanism then to get the Node back. Sure it looks like the following:</p>
+<p>The first question after seeing this might be, &ldquo;Whats an Item and how&rsquo;d that cast work?&rdquo;. <a href="http://www.day.com/maven/jsr170/javadocs/jcr-1.0/javax/jcr/Item.html">Item</a> is an interface that both Node and Property as sub-interfaces of. This allows you to use it for either Nodes or Properties directly from the session, but makes you cast.</p>
 
-<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting A Node Without The Root Node Again</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<p>Which one should you use? Well, it&rsquo;s really up to your preferences, but getItem comes with a warning in the javadocs:</p>
+
+<blockquote><p>This method should only be used if the application does not know whether the item at the indicated path is property or node. In cases where the application has this information, either getNode(java.lang.String) or getProperty(java.lang.String) should be used, as appropriate. In many repository implementations the node and property-specific methods are likely to be more efficient than getItem.</p></blockquote>
+
+<h2 id="id-a62ce199de22b7da51491bb9dcb20eee">9 Getting Properties</h2>
+
+<p>Getting a property from a node takes two forms. One is really just a shortcut for another. We won&rsquo;t code the following examples as they point to a node named myNode and we haven&rsquo;t created it, so just look at them for now:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting A Property Using The Value Shortcut Method</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Node</span> <span class="n">oneMoreTime</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="na">getNode</span><span class="o">(</span><span class="s">&quot;/nodeA/nodeB&quot;</span><span class="o">);</span>
-</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">oneMoreTime</span><span class="o">.</span><span class="na">getPath</span><span class="o">());</span>
-</span><span class='line'><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">oneMoreTime</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;message&quot;</span><span class="o">).</span><span class="na">getString</span><span class="o">());</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Property</span> <span class="n">property</span> <span class="o">=</span> <span class="n">myNode</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;message&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">String</span> <span class="n">message</span> <span class="o">=</span> <span class="n">property</span><span class="o">.</span><span class="na">getString</span><span class="o">();</span>
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<p>So with either an absolute path or a relative from the node reference you have, you can find any node in the system.</p>
+<p>Notice how getProperty returns back a property. That property object is used to coerce the value back out. But everything is not as it seems with that example. There is a special <a href="http://www.day.com/maven/javax.jcr/javadocs/jcr-2.0/javax/jcr/Value.html">Value</a> object for the values contained in the property and really that code was just a shortcut for:</p>
 
-<h2 id="id-a62ce199de22b7da51491bb9dcb20eee">8 Getting Properties</h2>
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting A Property The Long Way</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Property</span> <span class="n">property</span> <span class="o">=</span> <span class="n">myNode</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;message&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">Value</span> <span class="n">propValue</span> <span class="o">=</span> <span class="n">property</span><span class="o">.</span><span class="na">getValue</span><span class="o">();</span>
+</span><span class='line'><span class="n">String</span> <span class="n">message</span> <span class="o">=</span> <span class="n">propValue</span><span class="o">.</span><span class="na">getString</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
 
-<p>We didn&rsquo;t mention it at the time, but all of our print lines above are getting the property message back from the node. A call to getProperty returns back a <a href="http://www.day.com/maven/javax.jcr/javadocs/jcr-2.0/javax/jcr/Property.html">Property</a> object.  Once you get this back, you ask it for what data type you want and it tries to coerce that type back for you. For instance if you store an long and you call getString on the property. It will try to coerce that value back for you.</p>
 
-<h2 id="id-31ccd0c31679b49921fcc69d2148694d">9 Removing Nodes</h2>
+<p>We didn&rsquo;t mention it at the time, but all of our prints in the getting nodes section are retrieving the property back from the node. A call to getProperty returns back a <a href="http://www.day.com/maven/javax.jcr/javadocs/jcr-2.0/javax/jcr/Property.html">Property</a> object.  Once you get this back, you ask it for what data type you want and it tries to coerce that type back for you. For instance if you store a long and call getString on the property containing it, it, it will try to coerce a string back for you.</p>
 
-<p>Removing nodes is really easy in the API. All it takes is the following code added to the bottom of your try block:</p>
+<h2 id="id-31ccd0c31679b49921fcc69d2148694d">10 Removing Nodes</h2>
+
+<p>Removing nodes is easy in the API. All it takes is the following code added to the bottom of your try block:</p>
 
 <div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Deleting A Node</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -269,11 +298,11 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<p>Remember to call save on the session every time your modify something. Your changes only go into a transient storage location without it and get lost when your session expires.</p>
+<p>Remember to call save on the session every time your modify something. When you are modifying nodes, you changes are going in a special transient storage location. Until saved it called, they haven&rsquo;t happened in the workspace. If your session dies, your changes may die with it.</p>
 
-<h2 id="id-ae8e909ce36f7594749c2a184fdef7ae">10 Running Our App</h2>
+<h2 id="id-ae8e909ce36f7594749c2a184fdef7ae">11 Running Our App</h2>
 
-<p>So we should have an application now that looks something like the following:</p>
+<p>We should have a main method now that looks something like the following:</p>
 
 <div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Full Example</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -365,7 +394,7 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<h2 id="id-44943007815fdadd3ffafecbf2cbf10d">11 A Better View Of Whats Going On</h2>
+<h2 id="id-44943007815fdadd3ffafecbf2cbf10d">12 A Better View Of Whats Going On</h2>
 
 <p>Let&rsquo;s create a static method really fast in our project that will dump all of the nodes and properties. This will show a few ways to iterate the nodes. Paste this under you main method:</p>
 
@@ -483,7 +512,7 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<p>What we see now is really interesting. Along with our nodes at the bottom we see a ton of jcr:system nodes (akin to system level settings) and some policy nodes (similar to ACL permissions). They are found off of the root and typically stay out of sight and out of mind. However, at the end of all of the spamming we see:</p>
+<p>When we run this now, we can see that along with our nodes at the bottom we see some of the of jcr:system nodes (akin to system level settings) and some policy nodes (similar to ACL permissions). They are found off of the root and typically stay out of sight and out of mind. Our nodes are at the end of this print out:</p>
 
 <div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Our Node Dumper</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -498,7 +527,7 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<p>That&rsquo;s what we were looking for so lets add a statement just under the printing of the node path of our dump method to ignore properties on jcr:system nodes:</p>
+<p>We should add some code to ignore properties on jcr:system and rep:policy node types. This will reduce the clutter:</p>
 
 <div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Ignoring System Properties</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -509,7 +538,7 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<p>This will at least let us see the nodes, but not kill us the plethora of properties that they contain.</p>
+<p>Now when we run again, we can see our changes without a plethora of properties that belong to the system.</p>
 
 <p>We will use this dump method a few times throughout these tutorials so keep it on hand. I will try to keep the <a href="https://gist.github.com/PlasmaTrout/6274163">GIST</a> updated on GitHub.</p>
 
@@ -563,7 +592,7 @@
     
   <section>
   <h1>Tutorial Steps</h1>
-  <ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-052a458ca77a6d742bc477f4c443cff2">Table Of Contents</a></li><li style="list-style:inherit;"><a href="#id-610dc640e6b25b5e6025faff865cc78d">Getting The GitHub Project</a></li><li style="list-style:inherit;"><a href="#id-2e796e62ccc3faadb0e2489d1cf6c8b8">Quick Word Before We Start Adding Stuff</a></li><li style="list-style:inherit;"><a href="#id-04a6af1c9646041a96975c3d7b1aab25">Wipe Our Our Previous Code</a></li><li style="list-style:inherit;"><a href="#id-e474292ae180499b1c107ea9b1f90af3">Adding A Try Catch To Our Work</a></li><li style="list-style:inherit;"><a href="#id-2fb8502948ef9908e51addea5e93fc11">Add A Node</a></li><li style="list-style:inherit;"><a href="#id-27269959b12c7d0f4a407783820aedc3">Getting A Node From A Path</a></li><li style="list-style:inherit;"><a href="#id-a62ce199de22b7da51491bb9dcb20eee">Getting Properties</a></li><li style="list-style:inherit;"><a href="#id-31ccd0c31679b49921fcc69d2148694d">Removing Nodes</a></li><li style="list-style:inherit;"><a href="#id-ae8e909ce36f7594749c2a184fdef7ae">Running Our App</a></li><li style="list-style:inherit;"><a href="#id-44943007815fdadd3ffafecbf2cbf10d">A Better View Of Whats Going On</a></li></ol>
+  <ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-ef1e6887c579ba81dcedc3f4e3793cd2">Audience</a></li><li style="list-style:inherit;"><a href="#id-3b878279a04dc47d60932cb294d96259">Overview</a></li><li style="list-style:inherit;"><a href="#id-b18ba6f0139d0c1f8ceb43f86aff1e20">Wipe Our Previous Code</a></li><li style="list-style:inherit;"><a href="#id-e474292ae180499b1c107ea9b1f90af3">Adding A Try Catch To Our Work</a></li><li style="list-style:inherit;"><a href="#id-ab9ac6965559fce1c1cd9e6c623c5aac">Getting The Root Node</a></li><li style="list-style:inherit;"><a href="#id-ef757eb615d28f3f9bb68d9b758eec49">Adding Some Nodes</a></li><li style="list-style:inherit;"><a href="#id-04f577850754c55fb860844293920d01">Getting A Node From A Node</a></li><li style="list-style:inherit;"><a href="#id-86895179922f435aaf4e0b744643d1ed">Getting A Node From The Session</a></li><li style="list-style:inherit;"><a href="#id-a62ce199de22b7da51491bb9dcb20eee">Getting Properties</a></li><li style="list-style:inherit;"><a href="#id-31ccd0c31679b49921fcc69d2148694d">Removing Nodes</a></li><li style="list-style:inherit;"><a href="#id-ae8e909ce36f7594749c2a184fdef7ae">Running Our App</a></li><li style="list-style:inherit;"><a href="#id-44943007815fdadd3ffafecbf2cbf10d">A Better View Of Whats Going On</a></li></ol>
   </section>
 <section>
 	<h1>Lab/Tutorial Sections</h1>
