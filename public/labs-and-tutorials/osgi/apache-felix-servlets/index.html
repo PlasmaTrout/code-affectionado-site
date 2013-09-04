@@ -1,0 +1,382 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>apache-felix-servlets - CodeAffectionado</title>
+  <meta name="author" content="jeff.downing@latchd.com">
+
+  
+  <meta name="description" content="Apache-felix-servlets OSGi has been a mature framework for building modular applications for quite some time. It has however, not not been embraced &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-servlets">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="CodeAffectionado" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43174506-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">CodeAffectionado</a></h1>
+  
+    <h2>Shared learning for code enthusiasts</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.codeaffectionado.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">News</a></li>
+  <li><a href="/labs-and-tutorials/">Labs And Tutorials</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article role="article">
+  
+  <header>
+    <h1 class="entry-title">Apache-felix-servlets</h1>
+    <p class="meta">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-22T14:16:00-04:00" pubdate data-updated="true"></time></p>
+  </header>
+  
+  <p>OSGi has been a mature framework for building modular applications for quite some time. It has however, not not been embraced fully by the development community. The primary reason it stays unpopular in the development arena lies in its lack of beginning level tutorials or classes. This tutorial begins a series of labs to demystify the OSGi framework and begin familiarity with Apache Felix.</p>
+
+<p>This lab improves upon our SCR annotated example and adds a new servlet component so the reader can become comfortable with the Reference annotation.</p>
+
+<h2>Audience</h2>
+
+<p>The core audience is seated in a comfortable classroom or conference room environment. Readers performing this tutorial have received an overview of OSGi and completed a previous lab in which we setup a framework for use. A reader performing this tutorial would have a printed version of this media or the web site up on one screen while they work on code in another. The audience can be made up of developers from different disciplines but knowledge and understanding of the Java language is assumed.</p>
+
+<h2>Getting Started</h2>
+
+<p>In our previous <a href="/labs-and-tutorials/osgi/apache-felix-scr-annotations/">example tutorial</a> we used SCR annotations and pax exam to unit test a bundle done using declarative services. In this tutorial we are going to register a servlet and call our service using it.</p>
+
+<p>If you haven&rsquo;t done the first bundle tutorial mentioned above you can grab the source at:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Git Hub Quick Start</span><a href='https://github.com/PlasmaTrout/greeter-bundle-lab6'>GitHub</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone git@github.com:PlasmaTrout/greeter-bundle-lab6.git
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2>Installing Felix Bundles</h2>
+
+<p>Two bundles will be needed to be installed in Felix for this to work. That is, on top of the ones we did in the very first tutorial. They are:</p>
+
+<blockquote><p>felix:install <a href="http://www.poolsaboveground.com/apache//felix/org.apache.felix.http.bundle-2.2.0.jar">http://www.poolsaboveground.com/apache//felix/org.apache.felix.http.bundle-2.2.0.jar</a></p></blockquote>
+
+<p>and</p>
+
+<blockquote><p>felix:install <a href="http://www.poolsaboveground.com/apache//felix/org.apache.felix.http.whiteboard-2.2.0.jar">http://www.poolsaboveground.com/apache//felix/org.apache.felix.http.whiteboard-2.2.0.jar</a></p></blockquote>
+
+<p>For reference my current felix bundle list looks like:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Installed Bundles</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>g! lb
+</span><span class='line'>START LEVEL 1
+</span><span class='line'>   ID|State      |Level|Name
+</span><span class='line'>    0|Active     |    0|System Bundle <span class="o">(</span>4.2.1<span class="o">)</span>
+</span><span class='line'>    1|Active     |    1|Apache Felix Bundle Repository <span class="o">(</span>1.6.6<span class="o">)</span>
+</span><span class='line'>    2|Active     |    1|Apache Felix Gogo Command <span class="o">(</span>0.12.0<span class="o">)</span>
+</span><span class='line'>    3|Active     |    1|Apache Felix Gogo Runtime <span class="o">(</span>0.10.0<span class="o">)</span>
+</span><span class='line'>    4|Active     |    1|Apache Felix Gogo Shell <span class="o">(</span>0.10.0<span class="o">)</span>
+</span><span class='line'>    6|Active     |    1|Apache Felix Web Management Console <span class="o">(</span>All In One<span class="o">)</span> <span class="o">(</span>4.2.0.all<span class="o">)</span>
+</span><span class='line'>    7|Active     |    1|Apache Felix Http Jetty <span class="o">(</span>2.2.0<span class="o">)</span>
+</span><span class='line'>   14|Active     |    1|Apache Felix Shell Service <span class="o">(</span>1.4.3<span class="o">)</span>
+</span><span class='line'>   16|Active     |    1|Apache Felix Declarative Services <span class="o">(</span>1.6.2<span class="o">)</span>
+</span><span class='line'>   17|Active     |    1|Apache Felix Web Console Service Component Runtime/Declarative Services Plugin <span class="o">(</span>1.0.0<span class="o">)</span>
+</span><span class='line'>   18|Active     |    1|Apache Felix Configuration Admin Service <span class="o">(</span>1.6.0<span class="o">)</span>
+</span><span class='line'>   19|Active     |    1|Apache Felix Metatype Service <span class="o">(</span>1.0.6<span class="o">)</span>
+</span><span class='line'>   22|Active     |    1|greeter-bundle <span class="o">(</span>1.0.0.SNAPSHOT<span class="o">)</span>
+</span><span class='line'>   23|Active     |    1|Apache Felix Http Bundle <span class="o">(</span>2.2.0<span class="o">)</span>
+</span><span class='line'>   24|Active     |    1|Apache Felix Http Whiteboard <span class="o">(</span>2.2.0<span class="o">)</span>
+</span><span class='line'>g!
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>If you don&rsquo;t have all of these, get them now from the <a href="http://felix.apache.org/downloads.cgi">Apache Download Page</a>.</p>
+
+<h2>Add A Dependency To Maven</h2>
+
+<p>To get a servlet up and running we need access to the servlet api. This can be done simply in Maven by adding the following dependency:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>javax.servlet.api</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;dependency&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;groupId&gt;</span>javax.servlet<span class="nt">&lt;/groupId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;artifactId&gt;</span>servlet-api<span class="nt">&lt;/artifactId&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;version&gt;</span>2.5<span class="nt">&lt;/version&gt;</span>
+</span><span class='line'><span class="nt">&lt;/dependency&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2>Create A New Servlet</h2>
+
+<p>Lets add a new package under org.bhn.training called servlets and create a new file named GreeterServlet.java. We will make it look like the following annotated class:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Our Test Servlet</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Component</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;Greeter Servlet&quot;</span><span class="o">,</span> <span class="n">immediate</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+</span><span class='line'><span class="nd">@Service</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="n">javax</span><span class="o">.</span><span class="na">servlet</span><span class="o">.</span><span class="na">Servlet</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="nd">@Properties</span><span class="o">({</span>
+</span><span class='line'>        <span class="nd">@Property</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;servlet-name&quot;</span><span class="o">,</span> <span class="n">value</span><span class="o">=</span><span class="s">&quot;Greeter Servlet&quot;</span><span class="o">),</span>
+</span><span class='line'>        <span class="nd">@Property</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">&quot;alias&quot;</span><span class="o">,</span> <span class="n">value</span><span class="o">=</span><span class="s">&quot;/greeter&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="o">})</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">GreeterServlet</span> <span class="kd">extends</span> <span class="n">HttpServlet</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doGet</span><span class="o">(</span><span class="n">HttpServletRequest</span> <span class="n">req</span><span class="o">,</span> <span class="n">HttpServletResponse</span> <span class="n">resp</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">ServletException</span><span class="o">,</span> <span class="n">IOException</span> <span class="o">{</span>
+</span><span class='line'>        <span class="n">resp</span><span class="o">.</span><span class="na">getWriter</span><span class="o">().</span><span class="na">write</span><span class="o">(</span><span class="s">&quot;Servlet Is Bound!&quot;</span><span class="o">);</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>You should now be able to build and deploy this bundle to felix and hit <a href="http://localhost:8080/greeter">http://localhost:8080/greeter</a> and see our test message. If so we are ready to modify our servlet to call our greeter service.</p>
+
+<h2>Get Service And Call It</h2>
+
+  
+    <footer>
+      <p class="meta">
+        
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-22T14:16:00-04:00" pubdate data-updated="true"></time>
+        
+      </p>
+      
+        <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-servlets/index.html" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-servlets/index.html" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+      
+    </footer>
+  
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  
+<section>
+	<h1>Lab/Tutorial Sections</h1>
+	<ul id="recent_posts">
+      <li class="post">
+        <a href="/labs-and-tutorials/osgi/">OSGi</a>
+      </li>
+      <li>
+      	<a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a>
+      </li>
+  </ul>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/09/03/labs-and-tutorials-slash-apache-jackrabbit-slash-importing-xml/">The Most Important JavaScript Videos You Might Watch This Year</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/19/newest-osgi-tutorial-additions/">Newest OSGi Additions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/17/apache-jackrabbit-starting-out/">Apache Jackrabbit - Starting From Scratch Tutorial Up</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/114996005873710645329?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - jeff.downing@latchd.com -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'aggrolearning';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-servlets/index.html';
+        var disqus_url = 'http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-servlets/index.html';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

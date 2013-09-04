@@ -10,12 +10,14 @@ indexer: true
 ---
 OSGi has been a mature framework for building modular applications for quite some time. It has however, not not been embraced fully by the development community. The primary reason it stays unpopular in the development arena lies in its lack of beginning level tutorials or classes. This tutorial begins a series of labs to demystify the OSGi framework and begin familiarity with Apache Felix.
 
+This tutorial shows how to use declarative services in lieu of manual coding. It purpose it to demonstrate another way bundles can be done and improve the readers confidence level with OSGi.
+
 Audience
 -----
 The core audience is seated in a comfortable classroom or conference room environment. Readers performing this tutorial have received an overview of OSGi and completed a previous lab in which we setup a framework for use. A reader performing this tutorial would have a printed version of this media or the web site up on one screen while they work on code in another. The audience can be made up of developers from different disciplines but knowledge and understanding of the Java language is assumed.
 
 ## Getting Started
-In our previous [example tutorial](/labs-and-tutorials/osgi/apache-felix-programmatic-bundle/) we created an OSGi bundle in a programmatic fashion. In that bundle, we registered two services into the service registry. While rather simple in implementation, the solution did depend heavily on use of the Activator class. And since only one Activator can be defined in a bundle, registering even more services would present a significant challenge on readability. We are going to neaten this up a bit and use some features of the R4 compendium known as Declarative Services. We will expound on it a little as we go along, but I encourage you to read the specifications on the [OSGi Alliances Site](http://www.osgi.org/Download/HomePage).
+In our previous [example tutorial](/labs-and-tutorials/osgi/apache-felix-programmatic-bundle/) we created an OSGi bundle in a programmatic fashion. In that bundle, we registered two services into the service registry. While rather simple in implementation, the solution did depend on use of the Activator class. And since only one Activator can be defined in a bundle, registering even more services would present a significant challenge on readability. We are going to neaten this up a bit and use some features of the R4 compendium known as Declarative Services. We will expound on it a little as we go along, but I encourage you to read the specifications on the [OSGi Alliances Site](http://www.osgi.org/Download/HomePage).
 
 If you haven't done the first bundle tutorial mentioned above you can grab the source at:
 
@@ -23,15 +25,15 @@ If you haven't done the first bundle tutorial mentioned above you can grab the s
 git clone git@github.com:PlasmaTrout/greeter-bundle-lab3.git
 ```
 
-Remove The Activator From The Project
+Remove The Previous Activator From The Project
 -----
-Let's delete the Activator from the previous project. Just completely wipe it out of the project. When your finished with that edit your POM.xml and completely wipe out this line (we don't need it anymore):
+Go ahead and delete the Activator from the previous project. Just completely wipe it out. When your finished with that edit your POM.xml and completely wipe out this line (we don't need it anymore):
 
 ```xml Remove This Activator Line
 <Bundle-Activator>org.bhn.training.SimpleActivator</Bundle-Activator>
 ```
 
-If you have any doubts as to whether its gone after a new build, just peek into the JAR file and make sure. Mine looks something like this now (note no activator is inside the bundle):
+If you have any doubts as to whether its gone after a new build, just peek into the JAR file. Mine looked something like this after I finished (note no activator is inside the bundle):
 
 ```bash Sample JAR Contents Now
 0 Wed Aug 14 11:18:10 EDT 2013 org/
@@ -55,7 +57,7 @@ Because we are using maven, we need to make some new directories and maven knows
 
 Now in the OSGI-INF directory, lets create a new file called greetercomponent.xml.
 
-_Note: The name is somewhat irrelevant, however I would name it something that indicates what component it is for. The reason is, each service will be in its own xml file. After a while component1, component2 and component3 won't help developers quickly find its configuration._
+_Note: The name is somewhat irrelevant, however I would name it something that indicates what component it is for. The reason is, each service will be in its own xml file. After a while name these like component1, component2 and component3 won't help developers quickly find a configuration._
 
 Now we are going to do the same job that that the Activator did, just in a declarative manner. Modify your greetercomponent.xml file to look like the following:
 
@@ -72,7 +74,7 @@ Then we create a service and tell it what interface to provide, that is, registe
 ```
 
 ## Install SCR Declarative Services Into Framework
-Before you deploy this example, make sure the SCR Declarative Services bundle and it should be running. If not not sweat, pull up your OSGi console and enter:
+Before you deploy this example, make sure the SCR Declarative Services bundle into your running framework and start it up. If not not sweat, pull up your OSGi console and enter:
 
 ```bash Install Service Component Registry Bundle
 felix:install http://mirror.sdunix.com/apache//felix/org.apache.felix.scr-1.6.2.jar
@@ -97,6 +99,9 @@ Then we just add this one to our manifest by changing our Service-Component entr
 Build, Deploy and Test
 -----
 So package this guy up with a **mvn package** and then deploy using your method of choice (for this one I used the web console personally). After its deployed and started you should see a new command in our console for **tutorialds:greet** and be able to call it. 
+
+#What Did We Just Do
+We removed the need for an activator class and instead replaced all of its logic with XML files that accomplished a similar thing. Now some be thinking that we could use this XML files for injection or other clever uses, but we actually can't. If we want to use injection or a similar feature we need to use Blueprint to do it. We will demonstrate this much later.
 
 ## A Quick Note On Exceptions
 

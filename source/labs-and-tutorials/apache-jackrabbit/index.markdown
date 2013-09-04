@@ -10,3 +10,4 @@ he following Apache Jackrabbit labs are normally done in order, however frequent
 
 1. [Starting From Scratch](/labs-and-tutorials/apache-jackrabbit/starting-from-scratch/)
 2. [Manipulating Nodes](/labs-and-tutorials/apache-jackrabbit/manipulating-nodes)
+3. [Importing XML](/labs-and-tutorials/apache-jackrabbit/importing-xml)

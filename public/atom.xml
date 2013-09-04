@@ -4,7 +4,7 @@
   <title><![CDATA[CodeAffectionado]]></title>
   <link href="http://www.codeaffectionado.com/atom.xml" rel="self"/>
   <link href="http://www.codeaffectionado.com/"/>
-  <updated>2013-08-21T16:29:07-04:00</updated>
+  <updated>2013-09-04T11:25:27-04:00</updated>
   <id>http://www.codeaffectionado.com/</id>
   <author>
     <name><![CDATA[jeff.downing@latchd.com]]></name>
@@ -12,6 +12,24 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[The Most Important JavaScript Videos You Might Watch This Year]]></title>
+    <link href="http://www.codeaffectionado.com/blog/2013/09/03/labs-and-tutorials-slash-apache-jackrabbit-slash-importing-xml/"/>
+    <updated>2013-09-03T10:54:00-04:00</updated>
+    <id>http://www.codeaffectionado.com/blog/2013/09/03/labs-and-tutorials-slash-apache-jackrabbit-slash-importing-xml</id>
+    <content type="html"><![CDATA[<p>I love to watch programming related presentations online, it&rsquo;s sad, but I love it. I typically put these on during my hour commute to and from work and just listen. I did however, run across a presentation from a google conference a few years ago that made me go home and actually watch the presentation. It was Douglas Crockford&rsquo;s &ldquo;JavaScript: The Good Parts&rdquo; presentation. The reason I started over was I didn&rsquo;t get very far into listening when I realized I had a problem.</p>
+
+<p>Early into &ldquo;The Good Parts&rdquo; Doug said something to the extent of &ldquo;JavaScript is a language that people jump in and think they know, but don&rsquo;t&rdquo;. Only a few minutes later into the presentation after some examples, I had an epiphany. I was one of those people. I had just jumped into the language and treated it like Java. It&rsquo;s an utter miracle that my stuff every worked. I decided to start over and take the language and patterns very, very seriously.</p>
+
+<p>Here is a compiled playlist of the important sections of his talks starting from the very origins of JavaScript all the way to advanced usages.</p>
+
+<iframe width="640" height="315" src="http://www.codeaffectionado.com//www.youtube.com/embed/videoseries?list=PLla7Y38jCBmN_N0BgfyKCy9zJrf3HeWYv" frameborder="0" allowfullscreen></iframe>
+
+
+<p>Take the time to watch this whole playlist. I promise you it will make you better in the long run. If at the very least at code reviews.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Newest OSGi Additions]]></title>

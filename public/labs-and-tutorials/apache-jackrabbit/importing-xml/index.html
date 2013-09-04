@@ -1,0 +1,1487 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Apache Jackrabbit - Importing XML - CodeAffectionado</title>
+  <meta name="author" content="jeff.downing@latchd.com">
+
+  
+  <meta name="description" content="Apache Jackrabbit - Importing XML The purpose of this lab is to enhance our previous tutorial. In that tutorial we learned how to create nodes &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/importing-xml">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="CodeAffectionado" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43174506-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">CodeAffectionado</a></h1>
+  
+    <h2>Shared learning for code enthusiasts</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.codeaffectionado.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">News</a></li>
+  <li><a href="/labs-and-tutorials/">Labs And Tutorials</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article role="article">
+  
+  <header>
+    <h1 class="entry-title">Apache Jackrabbit - Importing XML</h1>
+    <p class="meta">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-03T10:55:00-04:00" pubdate data-updated="true"></time></p>
+  </header>
+  
+  <p>The purpose of this lab is to enhance our <a href="/labs-and-tutorials/apache-jackrabbit/manipulating-nodes/">previous tutorial</a>. In that tutorial we learned how to create nodes programmatically. While easy to do, creating a large set of nodes can be somewhat tedious using code. If we have a pre-existing XML file or export of our structure, we can use the importer to do our dirty work for us.</p>
+
+<h2 id="id-ef1e6887c579ba81dcedc3f4e3793cd2">1 Audience</h2>
+
+<p>The core audience is seated in a classroom environment. Readers performing this tutorial have just finished previous tutorials and should be familiar with how the labs will work. Most will be at work or seated in a place where they can read from the tutorial page and code in their own editor.</p>
+
+<h2 id="id-3b878279a04dc47d60932cb294d96259">2 Overview</h2>
+
+<p>It&rsquo;s very common that a developer will have a significant amount of data that needs to be put into the JCR prior to actual development beginning. Writing Java import routines is definitely one way to solve the problem, but doing this node by node in code can be a bit extreme.</p>
+
+<p>If we think about some of the JCR&rsquo;s core features like having a single root node and the ability to have children, it&rsquo;s easy to see that the JCRs node structure is very closely related to XML. This being the case, it&rsquo;s very easy to import data from XML documents into the JCR. In this tutorial we will be doing just that.</p>
+
+<p>Lastly, if you came directly into this tutorial and didn&rsquo;t do the first one, don&rsquo;t fret. The starter project is on GitHub and the most recent tutorial can be found working the branch lab2-nodemanip. The following clone should get you started from where we left off:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting The Previous Lab</span><a href='https://github.com/PlasmaTrout/jackrabbit-training-lab1'>GitHub</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone git@github.com:PlasmaTrout/jackrabbit-training-lab1.git
+</span><span class='line'>git checkout lab2-nodemanip
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2 id="id-22cdc801dc611a924fba896ae226c781">3 Getting Some Test Data</h2>
+
+<p>Before we get started, download some test data (or make some of your own). Make sure to place this file in the root of your project and name it test.xml.</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Test Data  (test.xml)</span> <a href='/downloads/code/jackrabbit/test.xml'>download</a></figcaption>
+ <div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;catalog&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;book</span> <span class="na">id=</span><span class="s">&quot;bk101&quot;</span> <span class="na">author=</span><span class="s">&quot;Gambardella, Matthew&quot;</span> <span class="na">title=</span><span class="s">&quot;XML Developer&#39;s Guide&quot;</span> <span class="na">genre=</span><span class="s">&quot;Computer&quot;</span>
+</span><span class='line'>          <span class="na">publish_date=</span><span class="s">&quot;2000-10-01&quot;</span> <span class="na">description=</span><span class="s">&quot;An in-depth look at creating applications</span>
+</span><span class='line'><span class="s">            with XML.&quot;</span> <span class="na">price=</span><span class="s">&quot;44.95&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/book&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;book</span> <span class="na">id=</span><span class="s">&quot;bk102&quot;</span> <span class="na">author=</span><span class="s">&quot;Ralls, Kim&quot;</span> <span class="na">title=</span><span class="s">&quot;Midnight Rain&quot;</span> <span class="na">genre=</span><span class="s">&quot;Fantasy&quot;</span> <span class="na">publish_date=</span><span class="s">&quot;2000-12-16&quot;</span> <span class="na">description=</span><span class="s">&quot;A former architect battles corporate zombies,</span>
+</span><span class='line'><span class="s">            an evil sorceress, and her own childhood to become queen</span>
+</span><span class='line'><span class="s">            of the world.&quot;</span> <span class="na">price=</span><span class="s">&quot;5.95&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/book&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;book</span> <span class="na">id=</span><span class="s">&quot;bk103&quot;</span> <span class="na">author=</span><span class="s">&quot;Corets, Eva&quot;</span> <span class="na">title=</span><span class="s">&quot;Maeve Ascendant&quot;</span> <span class="na">genre=</span><span class="s">&quot;Fantasy&quot;</span> <span class="na">publish_date=</span><span class="s">&quot;2000-11-17&quot;</span>
+</span><span class='line'>          <span class="na">description=</span><span class="s">&quot;After the collapse of a nanotechnology</span>
+</span><span class='line'><span class="s">            society in England, the young survivors lay the</span>
+</span><span class='line'><span class="s">            foundation for a new society.&quot;</span> <span class="na">price=</span><span class="s">&quot;5.95&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/book&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;book</span> <span class="na">id=</span><span class="s">&quot;bk104&quot;</span> <span class="na">author=</span><span class="s">&quot;Corets, Eva&quot;</span> <span class="na">title=</span><span class="s">&quot;Oberon&#39;s Legacy&quot;</span> <span class="na">genre=</span><span class="s">&quot;Fantasy&quot;</span> <span class="na">publish_date=</span><span class="s">&quot;2001-03-10&quot;</span>
+</span><span class='line'>          <span class="na">description=</span><span class="s">&quot;In post-apocalypse England, the mysterious</span>
+</span><span class='line'><span class="s">            agent known only as Oberon helps to create a new life</span>
+</span><span class='line'><span class="s">            for the inhabitants of London. Sequel to Maeve</span>
+</span><span class='line'><span class="s">            Ascendant.&quot;</span> <span class="na">price=</span><span class="s">&quot;5.95&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/book&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;book</span> <span class="na">id=</span><span class="s">&quot;bk105&quot;</span> <span class="na">author=</span><span class="s">&quot;Corets, Eva&quot;</span> <span class="na">title=</span><span class="s">&quot;The Sundered Grail&quot;</span> <span class="na">genre=</span><span class="s">&quot;Fantasy&quot;</span> <span class="na">publish_date=</span><span class="s">&quot;2001-09-10&quot;</span>
+</span><span class='line'>          <span class="na">description=</span><span class="s">&quot;The two daughters of Maeve, half-sisters,</span>
+</span><span class='line'><span class="s">            battle one another for control of England. Sequel to</span>
+</span><span class='line'><span class="s">            Oberon&#39;s Legacy.&quot;</span> <span class="na">price=</span><span class="s">&quot;5.95&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/book&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;book</span> <span class="na">id=</span><span class="s">&quot;bk106&quot;</span> <span class="na">author=</span><span class="s">&quot;Randall, Cynthia&quot;</span> <span class="na">title=</span><span class="s">&quot;Lover Birds&quot;</span> <span class="na">genre=</span><span class="s">&quot;Romance&quot;</span> <span class="na">publish_date=</span><span class="s">&quot;2000-09-02&quot;</span>
+</span><span class='line'>          <span class="na">description=</span><span class="s">&quot;When Carla meets Paul at an ornithology</span>
+</span><span class='line'><span class="s">            conference, tempers fly as feathers get ruffled.&quot;</span> <span class="na">price=</span><span class="s">&quot;4.95&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/book&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;book</span> <span class="na">id=</span><span class="s">&quot;bk107&quot;</span> <span class="na">author=</span><span class="s">&quot;Thurman, Paula&quot;</span> <span class="na">title=</span><span class="s">&quot;Splish Splash&quot;</span> <span class="na">genre=</span><span class="s">&quot;Romance&quot;</span> <span class="na">publish_date=</span><span class="s">&quot;2000-11-02&quot;</span>
+</span><span class='line'>          <span class="na">description=</span><span class="s">&quot;A deep sea diver finds true love twenty</span>
+</span><span class='line'><span class="s">            thousand leagues beneath the sea.&quot;</span> <span class="na">price=</span><span class="s">&quot;4.95&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/book&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;book</span> <span class="na">id=</span><span class="s">&quot;bk108&quot;</span> <span class="na">author=</span><span class="s">&quot;Knorr, Stefan&quot;</span> <span class="na">title=</span><span class="s">&quot;Creepy Crawlies&quot;</span> <span class="na">genre=</span><span class="s">&quot;Horror&quot;</span> <span class="na">publish_date=</span><span class="s">&quot;2000-12-06&quot;</span>
+</span><span class='line'>          <span class="na">description=</span><span class="s">&quot;An anthology of horror stories about roaches,</span>
+</span><span class='line'><span class="s">            centipedes, scorpions  and other insects.&quot;</span> <span class="na">price=</span><span class="s">&quot;4.95&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/book&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;book</span> <span class="na">id=</span><span class="s">&quot;bk109&quot;</span> <span class="na">author=</span><span class="s">&quot;Kress, Peter&quot;</span> <span class="na">title=</span><span class="s">&quot;Paradox Lost&quot;</span> <span class="na">genre=</span><span class="s">&quot;Science Fiction&quot;</span> <span class="na">publish_date=</span><span class="s">&quot;2000-11-02&quot;</span>
+</span><span class='line'>          <span class="na">description=</span><span class="s">&quot;After an inadvertant trip through a Heisenberg</span>
+</span><span class='line'><span class="s">            Uncertainty Device, James Salway discovers the problems</span>
+</span><span class='line'><span class="s">            of being quantum.&quot;</span> <span class="na">price=</span><span class="s">&quot;6.95&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/book&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;book</span> <span class="na">id=</span><span class="s">&quot;bk110&quot;</span> <span class="na">author=</span><span class="s">&quot;O&#39;Brien, Tim&quot;</span> <span class="na">title=</span><span class="s">&quot;Microsoft .NET: The Programming Bible&quot;</span> <span class="na">genre=</span><span class="s">&quot;Computer&quot;</span>
+</span><span class='line'>          <span class="na">publish_date=</span><span class="s">&quot;2000-12-09&quot;</span> <span class="na">description=</span><span class="s">&quot;Microsoft&#39;s .NET initiative is explored in</span>
+</span><span class='line'><span class="s">            detail in this deep programmer&#39;s reference.&quot;</span> <span class="na">price=</span><span class="s">&quot;36.95&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/book&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;book</span> <span class="na">id=</span><span class="s">&quot;bk111&quot;</span> <span class="na">author=</span><span class="s">&quot;O&#39;Brien, Tim&quot;</span> <span class="na">title=</span><span class="s">&quot;MSXML3: A Comprehensive Guide&quot;</span> <span class="na">genre=</span><span class="s">&quot;Computer&quot;</span>
+</span><span class='line'>          <span class="na">publish_date=</span><span class="s">&quot;2000-12-01&quot;</span> <span class="na">description=</span><span class="s">&quot;The Microsoft MSXML3 parser is covered in</span>
+</span><span class='line'><span class="s">            detail, with attention to XML DOM interfaces, XSLT processing,</span>
+</span><span class='line'><span class="s">            SAX and more.&quot;</span> <span class="na">price=</span><span class="s">&quot;36.95&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/book&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;book</span> <span class="na">id=</span><span class="s">&quot;bk112&quot;</span> <span class="na">author=</span><span class="s">&quot;Galos, Mike&quot;</span> <span class="na">title=</span><span class="s">&quot;Visual Studio 7: A Comprehensive Guide&quot;</span> <span class="na">genre=</span><span class="s">&quot;Computer&quot;</span>
+</span><span class='line'>          <span class="na">publish_date=</span><span class="s">&quot;2001-04-16&quot;</span> <span class="na">description=</span><span class="s">&quot;Microsoft Visual Studio 7 is explored in depth,</span>
+</span><span class='line'><span class="s">            looking at how Visual Basic, Visual C++, C#, and ASP+ are</span>
+</span><span class='line'><span class="s">            integrated into a comprehensive development</span>
+</span><span class='line'><span class="s">            environment.&quot;</span> <span class="na">price=</span><span class="s">&quot;49.95&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/book&gt;</span>
+</span><span class='line'><span class="nt">&lt;/catalog&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Notice that the XML we have chosen to use contains attribute based notation. This was by choice. When XML is imported into Jackrabbit it will convert attributes into properties. Since Elements are treated as nodes, placing just text in an element will give you a node with a jcr:text property on the inside, this isn&rsquo;t what we want in this import.</p>
+
+<h2 id="id-8584e9662d6157856ec91d0bc8ff7faf">4 Clear Our Our Previous Main Method</h2>
+
+<p>Let&rsquo;s clean up our previous main method, however leaving the dump method alone for now. We should end up with a main method that looks like:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Cleaned Up Main Method</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Repository</span> <span class="n">repository</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TransientRepository</span><span class="o">();</span>
+</span><span class='line'><span class="n">Session</span> <span class="n">session</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="na">login</span><span class="o">(</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nf">SimpleCredentials</span><span class="o">(</span><span class="s">&quot;admin&quot;</span><span class="o">,</span><span class="s">&quot;admin&quot;</span><span class="o">.</span><span class="na">toCharArray</span><span class="o">()));</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">try</span><span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span><span class="k">finally</span><span class="o">{</span>
+</span><span class='line'>  <span class="n">session</span><span class="o">.</span><span class="na">logout</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2 id="id-bc4c8781c255264f1587c06105523bbf">5 Import Some Data</h2>
+
+<p>The following steps will augment our try block with what we need to import some data.</p>
+
+<h3 id="id-96fce25dd8b19bf1faebedff9654ac9b">5.1 Get The Root Node</h3>
+
+<p>Lets start off by getting our root node. In the try section, lets add the line:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting The Root Node</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Node</span> <span class="n">root</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="na">getRootNode</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h3 id="id-fafb0cbd20eee3a30e8f3f2c4112bdb0">5.2 Add A New Child Node For Our Import</h3>
+
+<p>Now that we have our root node we can add a new node to it, but just to protect ourselves in case we run this multiple times. Lets add some protection to our add:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Adding A Bookstore Node</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">if</span><span class="o">(!</span><span class="n">root</span><span class="o">.</span><span class="na">hasNode</span><span class="o">(</span><span class="s">&quot;bookstore&quot;</span><span class="o">)){</span>
+</span><span class='line'>  <span class="n">Node</span> <span class="n">node</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">addNode</span><span class="o">(</span><span class="s">&quot;bookstore&quot;</span><span class="o">,</span><span class="s">&quot;nt:unstructured&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>This is so we won&rsquo;t add the node more than once if we run it over and over again.</p>
+
+<h3 id="id-edb3ec79ac15171b148026eadbed6aec">5.3 Get A Stream And Import Our Data</h3>
+
+<p>So all we really need to do know is open up a file stream, pipe our xml into the node and save. We can do that by:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting An Input Stream</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">FileInputStream</span> <span class="n">stream</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="s">&quot;test.xml&quot;</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>To open a file stream. Then:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Importing XML Into The Session</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'> <span class="n">session</span><span class="o">.</span><span class="na">importXML</span><span class="o">(</span><span class="n">node</span><span class="o">.</span><span class="na">getPath</span><span class="o">(),</span><span class="n">stream</span><span class="o">,</span><span class="n">ImportUUIDBehavior</span><span class="o">.</span><span class="na">IMPORT_UUID_CREATE_NEW</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>The first argument is the path to import the data to. We created a root node ahead of time so we can use the path to the node. It&rsquo;s safer this way just to prevent typos.</p>
+
+<p>The second argument is our stream to the xml file.</p>
+
+<p>The third argument tells the importer how to handle specific ids that may be present in the document already. A way this could happen, would be if the xml nodes had the predefined &ldquo;jcr:uuid&rdquo; attribute in them. The chances are slim that this exists unless you exported this already from another repository, however the constant document is <a href="http://www.day.com/maven/jsr170/javadocs/jcr-2.0/javax/jcr/ImportUUIDBehavior.html">here</a>.</p>
+
+<p>Finally we can close everything up with:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Cleaning Up </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">stream</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'><span class="n">session</span><span class="o">.</span><span class="na">save</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>To persist our changes.</p>
+
+<h3 id="id-6da3391d505075606eec7d9736e581bc">5.4 Add Our Dump Method To See The Results</h3>
+
+<p>Now after the if block lets add our call to:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">dumpToConsole</span><span class="o">(</span><span class="n">root</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>So we can see what we get.</p>
+
+<h2 id="id-31acb19549c0fccb10926868ed651d5f">6 Run Our Application</h2>
+
+<p>If we do a:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">mvn</span> <span class="n">compile</span> <span class="nl">exec:</span><span class="n">java</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>We will get an output like this from our dumpToConsole method:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Node Dump Output</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/bookstore
+</span><span class='line'>/bookstore/jcr:primaryType<span class="o">=</span>nt:unstructured
+</span><span class='line'>/bookstore/catalog
+</span><span class='line'>/bookstore/catalog/jcr:primaryType<span class="o">=</span>nt:unstructured
+</span><span class='line'>/bookstore/catalog/book
+</span><span class='line'>/bookstore/catalog/book/description<span class="o">=</span>An in-depth look at creating applications             with XML.
+</span><span class='line'>/bookstore/catalog/book/title<span class="o">=</span>XML Developer<span class="err">&#39;</span>s Guide
+</span><span class='line'>/bookstore/catalog/book/id<span class="o">=</span>bk101
+</span><span class='line'>/bookstore/catalog/book/publish_date<span class="o">=</span>2000-10-01
+</span><span class='line'>/bookstore/catalog/book/price<span class="o">=</span>44.95
+</span><span class='line'>/bookstore/catalog/book/genre<span class="o">=</span>Computer
+</span><span class='line'>/bookstore/catalog/book/jcr:primaryType<span class="o">=</span>nt:unstructured
+</span><span class='line'>/bookstore/catalog/book/author<span class="o">=</span>Gambardella, Matthew
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>2<span class="o">]</span>
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>2<span class="o">]</span>/description<span class="o">=</span>A former architect battles corporate zombies,             an evil sorceress, and her own childhood to become queen             of the world.
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>2<span class="o">]</span>/title<span class="o">=</span>Midnight Rain
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>2<span class="o">]</span>/id<span class="o">=</span>bk102
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>2<span class="o">]</span>/publish_date<span class="o">=</span>2000-12-16
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>2<span class="o">]</span>/price<span class="o">=</span>5.95
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>2<span class="o">]</span>/genre<span class="o">=</span>Fantasy
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>2<span class="o">]</span>/jcr:primaryType<span class="o">=</span>nt:unstructured
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>2<span class="o">]</span>/author<span class="o">=</span>Ralls, Kim
+</span><span class='line'>......
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Notice how each book node in now indexed as book, book[1], book[2] etc. For each book our import created a new node and created properties for each attribute in the node. To better see what we did, lets export this to XML and see what we get.</p>
+
+<h2 id="id-84ec279255cd371a790226c53a4f781c">7 Export Some XML</h2>
+
+<p>In the above example, we checked to see if the node exists, if it didn&rsquo;t we imported some xml into it. Lets add an export to it by adding an else clause:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Adding An Else Clause</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">if</span><span class="o">(!</span><span class="n">root</span><span class="o">.</span><span class="na">hasNode</span><span class="o">(</span><span class="s">&quot;bookstore&quot;</span><span class="o">)){</span>
+</span><span class='line'><span class="o">....</span><span class="na">our</span> <span class="n">code</span><span class="o">...</span>
+</span><span class='line'><span class="o">}</span><span class="k">else</span><span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Now inside our else clause lets create a stream and export our results:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Exporting The Document View</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">FileOutputStream</span> <span class="n">ostream</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="s">&quot;fulldump.xml&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">session</span><span class="o">.</span><span class="na">exportDocumentView</span><span class="o">(</span><span class="s">&quot;/bookstore&quot;</span><span class="o">,</span><span class="n">ostream</span><span class="o">,</span><span class="kc">true</span><span class="o">,</span><span class="kc">false</span><span class="o">);</span>
+</span><span class='line'><span class="n">ostream</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p><em>Wait, why isn&rsquo;t this called exportXml instead of exportDocumentView? Well the output xml has two forms a <strong>system</strong> view and a <strong>document</strong> view. At the end of this tutorial I will post what the system view output looks like, but for right now lets just do a document view.</em></p>
+
+<p>The first argument of exporting a document view is the absolute path to export. The export will start at this node as the root of the document.</p>
+
+<p>The second argument is of course the stream to write to.</p>
+
+<p>The third is whether or not we should skip binary objects. Interestingly enough you can put types like nt:file in a JCR. Exporting those types to XML would make a rather large encoded blob in the file. Changing this option to true prevents the binary data from coming back (not that we have any).</p>
+
+<p>The fourth argument is weather to recurse into any nodes we find. This is handy if we just want the XML to the node we specify and not deeper.</p>
+
+<p>All together our main method now should look like:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>The Full Main Method</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span> <span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">Repository</span> <span class="n">repository</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TransientRepository</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">Session</span> <span class="n">session</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="na">login</span><span class="o">(</span>
+</span><span class='line'>          <span class="k">new</span> <span class="nf">SimpleCredentials</span><span class="o">(</span><span class="s">&quot;admin&quot;</span><span class="o">,</span><span class="s">&quot;admin&quot;</span><span class="o">.</span><span class="na">toCharArray</span><span class="o">()));</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">try</span><span class="o">{</span>
+</span><span class='line'>      <span class="n">Node</span> <span class="n">root</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="na">getRootNode</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">if</span><span class="o">(!</span><span class="n">root</span><span class="o">.</span><span class="na">hasNode</span><span class="o">(</span><span class="s">&quot;bookstore&quot;</span><span class="o">)){</span>
+</span><span class='line'>          <span class="n">Node</span> <span class="n">node</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">addNode</span><span class="o">(</span><span class="s">&quot;bookstore&quot;</span><span class="o">,</span><span class="s">&quot;nt:unstructured&quot;</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">FileInputStream</span> <span class="n">stream</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="s">&quot;test.xml&quot;</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">session</span><span class="o">.</span><span class="na">importXML</span><span class="o">(</span><span class="n">node</span><span class="o">.</span><span class="na">getPath</span><span class="o">(),</span><span class="n">stream</span><span class="o">,</span><span class="n">ImportUUIDBehavior</span><span class="o">.</span><span class="na">IMPORT_UUID_CREATE_NEW</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">stream</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="n">session</span><span class="o">.</span><span class="na">save</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+</span><span class='line'>          <span class="n">FileOutputStream</span> <span class="n">ostream</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="s">&quot;fulldump.xml&quot;</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">session</span><span class="o">.</span><span class="na">exportDocumentView</span><span class="o">(</span><span class="s">&quot;/bookstore&quot;</span><span class="o">,</span><span class="n">ostream</span><span class="o">,</span><span class="kc">true</span><span class="o">,</span><span class="kc">false</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">ostream</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">dumpToConsole</span><span class="o">(</span><span class="n">root</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="o">}</span><span class="k">finally</span><span class="o">{</span>
+</span><span class='line'>      <span class="n">session</span><span class="o">.</span><span class="na">logout</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2 id="id-85b2a723a857bed70a06ce2015a39b75">8 Run Again</h2>
+
+<p>Running this should product a new file in the top level of your project named fulldump.xml. If we look at that file we will see the structure of our JCR mapped back to XML:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>The Document View Of Our XML</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;bookstore</span> <span class="na">jcr:primaryType=</span><span class="s">&quot;nt:unstructured&quot;</span> <span class="na">xmlns:fn=</span><span class="s">&quot;http://www.w3.org/2005/xpath-functions&quot;</span>
+</span><span class='line'>           <span class="na">xmlns:fn_old=</span><span class="s">&quot;http://www.w3.org/2004/10/xpath-functions&quot;</span> <span class="na">xmlns:xs=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema&quot;</span>
+</span><span class='line'>           <span class="na">xmlns:jcr=</span><span class="s">&quot;http://www.jcp.org/jcr/1.0&quot;</span> <span class="na">xmlns:mix=</span><span class="s">&quot;http://www.jcp.org/jcr/mix/1.0&quot;</span>
+</span><span class='line'>           <span class="na">xmlns:sv=</span><span class="s">&quot;http://www.jcp.org/jcr/sv/1.0&quot;</span> <span class="na">xmlns:rep=</span><span class="s">&quot;internal&quot;</span> <span class="na">xmlns:nt=</span><span class="s">&quot;http://www.jcp.org/jcr/nt/1.0&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;catalog</span> <span class="na">jcr:primaryType=</span><span class="s">&quot;nt:unstructured&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;book</span> <span class="na">jcr:primaryType=</span><span class="s">&quot;nt:unstructured&quot;</span> <span class="na">author=</span><span class="s">&quot;Gambardella, Matthew&quot;</span>
+</span><span class='line'>              <span class="na">description=</span><span class="s">&quot;An in-depth look at creating applications             with XML.&quot;</span> <span class="na">genre=</span><span class="s">&quot;Computer&quot;</span> <span class="na">id=</span><span class="s">&quot;bk101&quot;</span>
+</span><span class='line'>              <span class="na">price=</span><span class="s">&quot;44.95&quot;</span> <span class="na">publish_date=</span><span class="s">&quot;2000-10-01&quot;</span> <span class="na">title=</span><span class="s">&quot;XML Developer&amp;apos;s Guide&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;book</span> <span class="na">jcr:primaryType=</span><span class="s">&quot;nt:unstructured&quot;</span> <span class="na">author=</span><span class="s">&quot;Ralls, Kim&quot;</span>
+</span><span class='line'>              <span class="na">description=</span><span class="s">&quot;A former architect battles corporate zombies,             an evil sorceress, and her own childhood to become queen             of the world.&quot;</span>
+</span><span class='line'>              <span class="na">genre=</span><span class="s">&quot;Fantasy&quot;</span> <span class="na">id=</span><span class="s">&quot;bk102&quot;</span> <span class="na">price=</span><span class="s">&quot;5.95&quot;</span> <span class="na">publish_date=</span><span class="s">&quot;2000-12-16&quot;</span> <span class="na">title=</span><span class="s">&quot;Midnight Rain&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;book</span> <span class="na">jcr:primaryType=</span><span class="s">&quot;nt:unstructured&quot;</span> <span class="na">author=</span><span class="s">&quot;Corets, Eva&quot;</span>
+</span><span class='line'>              <span class="na">description=</span><span class="s">&quot;After the collapse of a nanotechnology             society in England, the young survivors lay the             foundation for a new society.&quot;</span>
+</span><span class='line'>              <span class="na">genre=</span><span class="s">&quot;Fantasy&quot;</span> <span class="na">id=</span><span class="s">&quot;bk103&quot;</span> <span class="na">price=</span><span class="s">&quot;5.95&quot;</span> <span class="na">publish_date=</span><span class="s">&quot;2000-11-17&quot;</span> <span class="na">title=</span><span class="s">&quot;Maeve Ascendant&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;book</span> <span class="na">jcr:primaryType=</span><span class="s">&quot;nt:unstructured&quot;</span> <span class="na">author=</span><span class="s">&quot;Corets, Eva&quot;</span>
+</span><span class='line'>              <span class="na">description=</span><span class="s">&quot;In post-apocalypse England, the mysterious             agent known only as Oberon helps to create a new life             for the inhabitants of London. Sequel to Maeve             Ascendant.&quot;</span>
+</span><span class='line'>              <span class="na">genre=</span><span class="s">&quot;Fantasy&quot;</span> <span class="na">id=</span><span class="s">&quot;bk104&quot;</span> <span class="na">price=</span><span class="s">&quot;5.95&quot;</span> <span class="na">publish_date=</span><span class="s">&quot;2001-03-10&quot;</span> <span class="na">title=</span><span class="s">&quot;Oberon&amp;apos;s Legacy&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;book</span> <span class="na">jcr:primaryType=</span><span class="s">&quot;nt:unstructured&quot;</span> <span class="na">author=</span><span class="s">&quot;Corets, Eva&quot;</span>
+</span><span class='line'>              <span class="na">description=</span><span class="s">&quot;The two daughters of Maeve, half-sisters,             battle one another for control of England. Sequel to             Oberon&amp;apos;s Legacy.&quot;</span>
+</span><span class='line'>              <span class="na">genre=</span><span class="s">&quot;Fantasy&quot;</span> <span class="na">id=</span><span class="s">&quot;bk105&quot;</span> <span class="na">price=</span><span class="s">&quot;5.95&quot;</span> <span class="na">publish_date=</span><span class="s">&quot;2001-09-10&quot;</span> <span class="na">title=</span><span class="s">&quot;The Sundered Grail&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;book</span> <span class="na">jcr:primaryType=</span><span class="s">&quot;nt:unstructured&quot;</span> <span class="na">author=</span><span class="s">&quot;Randall, Cynthia&quot;</span>
+</span><span class='line'>              <span class="na">description=</span><span class="s">&quot;When Carla meets Paul at an ornithology             conference, tempers fly as feathers get ruffled.&quot;</span>
+</span><span class='line'>              <span class="na">genre=</span><span class="s">&quot;Romance&quot;</span> <span class="na">id=</span><span class="s">&quot;bk106&quot;</span> <span class="na">price=</span><span class="s">&quot;4.95&quot;</span> <span class="na">publish_date=</span><span class="s">&quot;2000-09-02&quot;</span> <span class="na">title=</span><span class="s">&quot;Lover Birds&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;book</span> <span class="na">jcr:primaryType=</span><span class="s">&quot;nt:unstructured&quot;</span> <span class="na">author=</span><span class="s">&quot;Thurman, Paula&quot;</span>
+</span><span class='line'>              <span class="na">description=</span><span class="s">&quot;A deep sea diver finds true love twenty             thousand leagues beneath the sea.&quot;</span>
+</span><span class='line'>              <span class="na">genre=</span><span class="s">&quot;Romance&quot;</span> <span class="na">id=</span><span class="s">&quot;bk107&quot;</span> <span class="na">price=</span><span class="s">&quot;4.95&quot;</span> <span class="na">publish_date=</span><span class="s">&quot;2000-11-02&quot;</span> <span class="na">title=</span><span class="s">&quot;Splish Splash&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;book</span> <span class="na">jcr:primaryType=</span><span class="s">&quot;nt:unstructured&quot;</span> <span class="na">author=</span><span class="s">&quot;Knorr, Stefan&quot;</span>
+</span><span class='line'>              <span class="na">description=</span><span class="s">&quot;An anthology of horror stories about roaches,             centipedes, scorpions  and other insects.&quot;</span>
+</span><span class='line'>              <span class="na">genre=</span><span class="s">&quot;Horror&quot;</span> <span class="na">id=</span><span class="s">&quot;bk108&quot;</span> <span class="na">price=</span><span class="s">&quot;4.95&quot;</span> <span class="na">publish_date=</span><span class="s">&quot;2000-12-06&quot;</span> <span class="na">title=</span><span class="s">&quot;Creepy Crawlies&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;book</span> <span class="na">jcr:primaryType=</span><span class="s">&quot;nt:unstructured&quot;</span> <span class="na">author=</span><span class="s">&quot;Kress, Peter&quot;</span>
+</span><span class='line'>              <span class="na">description=</span><span class="s">&quot;After an inadvertant trip through a Heisenberg             Uncertainty Device, James Salway discovers the problems             of being quantum.&quot;</span>
+</span><span class='line'>              <span class="na">genre=</span><span class="s">&quot;Science Fiction&quot;</span> <span class="na">id=</span><span class="s">&quot;bk109&quot;</span> <span class="na">price=</span><span class="s">&quot;6.95&quot;</span> <span class="na">publish_date=</span><span class="s">&quot;2000-11-02&quot;</span> <span class="na">title=</span><span class="s">&quot;Paradox Lost&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;book</span> <span class="na">jcr:primaryType=</span><span class="s">&quot;nt:unstructured&quot;</span> <span class="na">author=</span><span class="s">&quot;O&amp;apos;Brien, Tim&quot;</span>
+</span><span class='line'>              <span class="na">description=</span><span class="s">&quot;Microsoft&amp;apos;s .NET initiative is explored in             detail in this deep programmer&amp;apos;s reference.&quot;</span>
+</span><span class='line'>              <span class="na">genre=</span><span class="s">&quot;Computer&quot;</span> <span class="na">id=</span><span class="s">&quot;bk110&quot;</span> <span class="na">price=</span><span class="s">&quot;36.95&quot;</span> <span class="na">publish_date=</span><span class="s">&quot;2000-12-09&quot;</span>
+</span><span class='line'>              <span class="na">title=</span><span class="s">&quot;Microsoft .NET: The Programming Bible&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;book</span> <span class="na">jcr:primaryType=</span><span class="s">&quot;nt:unstructured&quot;</span> <span class="na">author=</span><span class="s">&quot;O&amp;apos;Brien, Tim&quot;</span>
+</span><span class='line'>              <span class="na">description=</span><span class="s">&quot;The Microsoft MSXML3 parser is covered in             detail, with attention to XML DOM interfaces, XSLT processing,             SAX and more.&quot;</span>
+</span><span class='line'>              <span class="na">genre=</span><span class="s">&quot;Computer&quot;</span> <span class="na">id=</span><span class="s">&quot;bk111&quot;</span> <span class="na">price=</span><span class="s">&quot;36.95&quot;</span> <span class="na">publish_date=</span><span class="s">&quot;2000-12-01&quot;</span>
+</span><span class='line'>              <span class="na">title=</span><span class="s">&quot;MSXML3: A Comprehensive Guide&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;book</span> <span class="na">jcr:primaryType=</span><span class="s">&quot;nt:unstructured&quot;</span> <span class="na">author=</span><span class="s">&quot;Galos, Mike&quot;</span>
+</span><span class='line'>              <span class="na">description=</span><span class="s">&quot;Microsoft Visual Studio 7 is explored in depth,             looking at how Visual Basic, Visual C++, C#, and ASP+ are             integrated into a comprehensive development             environment.&quot;</span>
+</span><span class='line'>              <span class="na">genre=</span><span class="s">&quot;Computer&quot;</span> <span class="na">id=</span><span class="s">&quot;bk112&quot;</span> <span class="na">price=</span><span class="s">&quot;49.95&quot;</span> <span class="na">publish_date=</span><span class="s">&quot;2001-04-16&quot;</span>
+</span><span class='line'>              <span class="na">title=</span><span class="s">&quot;Visual Studio 7: A Comprehensive Guide&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/catalog&gt;</span>
+</span><span class='line'><span class="nt">&lt;/bookstore&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2 id="id-3d8f4150e56f224f60e9f351b7438006">9 The System View?</h2>
+
+<p>I promised earlier I would show what the system view looks like and how it differs from the document view. All it takes is some tweaks to our else clause and we can see it. Let&rsquo;s change it to:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Modify Our Code To See The System View</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="o">}</span><span class="k">else</span><span class="o">{</span>
+</span><span class='line'>  <span class="n">FileOutputStream</span> <span class="n">ostream</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="s">&quot;systemview.xml&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="c1">//session.exportDocumentView(&quot;/bookstore&quot;,ostream,true,false);</span>
+</span><span class='line'>  <span class="n">session</span><span class="o">.</span><span class="na">exportSystemView</span><span class="o">(</span><span class="s">&quot;/bookstore&quot;</span><span class="o">,</span><span class="n">ostream</span><span class="o">,</span><span class="kc">true</span><span class="o">,</span><span class="kc">false</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">ostream</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>When we checkout the systemview.xml file we will see:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+<span class='line-number'>175</span>
+<span class='line-number'>176</span>
+<span class='line-number'>177</span>
+<span class='line-number'>178</span>
+<span class='line-number'>179</span>
+<span class='line-number'>180</span>
+<span class='line-number'>181</span>
+<span class='line-number'>182</span>
+<span class='line-number'>183</span>
+<span class='line-number'>184</span>
+<span class='line-number'>185</span>
+<span class='line-number'>186</span>
+<span class='line-number'>187</span>
+<span class='line-number'>188</span>
+<span class='line-number'>189</span>
+<span class='line-number'>190</span>
+<span class='line-number'>191</span>
+<span class='line-number'>192</span>
+<span class='line-number'>193</span>
+<span class='line-number'>194</span>
+<span class='line-number'>195</span>
+<span class='line-number'>196</span>
+<span class='line-number'>197</span>
+<span class='line-number'>198</span>
+<span class='line-number'>199</span>
+<span class='line-number'>200</span>
+<span class='line-number'>201</span>
+<span class='line-number'>202</span>
+<span class='line-number'>203</span>
+<span class='line-number'>204</span>
+<span class='line-number'>205</span>
+<span class='line-number'>206</span>
+<span class='line-number'>207</span>
+<span class='line-number'>208</span>
+<span class='line-number'>209</span>
+<span class='line-number'>210</span>
+<span class='line-number'>211</span>
+<span class='line-number'>212</span>
+<span class='line-number'>213</span>
+<span class='line-number'>214</span>
+<span class='line-number'>215</span>
+<span class='line-number'>216</span>
+<span class='line-number'>217</span>
+<span class='line-number'>218</span>
+<span class='line-number'>219</span>
+<span class='line-number'>220</span>
+<span class='line-number'>221</span>
+<span class='line-number'>222</span>
+<span class='line-number'>223</span>
+<span class='line-number'>224</span>
+<span class='line-number'>225</span>
+<span class='line-number'>226</span>
+<span class='line-number'>227</span>
+<span class='line-number'>228</span>
+<span class='line-number'>229</span>
+<span class='line-number'>230</span>
+<span class='line-number'>231</span>
+<span class='line-number'>232</span>
+<span class='line-number'>233</span>
+<span class='line-number'>234</span>
+<span class='line-number'>235</span>
+<span class='line-number'>236</span>
+<span class='line-number'>237</span>
+<span class='line-number'>238</span>
+<span class='line-number'>239</span>
+<span class='line-number'>240</span>
+<span class='line-number'>241</span>
+<span class='line-number'>242</span>
+<span class='line-number'>243</span>
+<span class='line-number'>244</span>
+<span class='line-number'>245</span>
+<span class='line-number'>246</span>
+<span class='line-number'>247</span>
+<span class='line-number'>248</span>
+<span class='line-number'>249</span>
+<span class='line-number'>250</span>
+<span class='line-number'>251</span>
+<span class='line-number'>252</span>
+<span class='line-number'>253</span>
+<span class='line-number'>254</span>
+<span class='line-number'>255</span>
+<span class='line-number'>256</span>
+<span class='line-number'>257</span>
+<span class='line-number'>258</span>
+<span class='line-number'>259</span>
+<span class='line-number'>260</span>
+<span class='line-number'>261</span>
+<span class='line-number'>262</span>
+<span class='line-number'>263</span>
+<span class='line-number'>264</span>
+<span class='line-number'>265</span>
+<span class='line-number'>266</span>
+<span class='line-number'>267</span>
+<span class='line-number'>268</span>
+<span class='line-number'>269</span>
+<span class='line-number'>270</span>
+<span class='line-number'>271</span>
+<span class='line-number'>272</span>
+<span class='line-number'>273</span>
+<span class='line-number'>274</span>
+<span class='line-number'>275</span>
+<span class='line-number'>276</span>
+<span class='line-number'>277</span>
+<span class='line-number'>278</span>
+<span class='line-number'>279</span>
+<span class='line-number'>280</span>
+<span class='line-number'>281</span>
+<span class='line-number'>282</span>
+<span class='line-number'>283</span>
+<span class='line-number'>284</span>
+<span class='line-number'>285</span>
+<span class='line-number'>286</span>
+<span class='line-number'>287</span>
+<span class='line-number'>288</span>
+<span class='line-number'>289</span>
+<span class='line-number'>290</span>
+<span class='line-number'>291</span>
+<span class='line-number'>292</span>
+<span class='line-number'>293</span>
+<span class='line-number'>294</span>
+<span class='line-number'>295</span>
+<span class='line-number'>296</span>
+<span class='line-number'>297</span>
+<span class='line-number'>298</span>
+<span class='line-number'>299</span>
+<span class='line-number'>300</span>
+<span class='line-number'>301</span>
+<span class='line-number'>302</span>
+<span class='line-number'>303</span>
+<span class='line-number'>304</span>
+<span class='line-number'>305</span>
+<span class='line-number'>306</span>
+<span class='line-number'>307</span>
+<span class='line-number'>308</span>
+<span class='line-number'>309</span>
+<span class='line-number'>310</span>
+<span class='line-number'>311</span>
+<span class='line-number'>312</span>
+<span class='line-number'>313</span>
+<span class='line-number'>314</span>
+<span class='line-number'>315</span>
+<span class='line-number'>316</span>
+<span class='line-number'>317</span>
+<span class='line-number'>318</span>
+<span class='line-number'>319</span>
+<span class='line-number'>320</span>
+<span class='line-number'>321</span>
+<span class='line-number'>322</span>
+<span class='line-number'>323</span>
+<span class='line-number'>324</span>
+<span class='line-number'>325</span>
+<span class='line-number'>326</span>
+<span class='line-number'>327</span>
+<span class='line-number'>328</span>
+<span class='line-number'>329</span>
+<span class='line-number'>330</span>
+<span class='line-number'>331</span>
+<span class='line-number'>332</span>
+<span class='line-number'>333</span>
+<span class='line-number'>334</span>
+<span class='line-number'>335</span>
+<span class='line-number'>336</span>
+<span class='line-number'>337</span>
+<span class='line-number'>338</span>
+<span class='line-number'>339</span>
+<span class='line-number'>340</span>
+<span class='line-number'>341</span>
+<span class='line-number'>342</span>
+<span class='line-number'>343</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;sv:node</span> <span class="na">sv:name=</span><span class="s">&quot;bookstore&quot;</span> <span class="na">xmlns:fn=</span><span class="s">&quot;http://www.w3.org/2005/xpath-functions&quot;</span>
+</span><span class='line'>         <span class="na">xmlns:fn_old=</span><span class="s">&quot;http://www.w3.org/2004/10/xpath-functions&quot;</span> <span class="na">xmlns:xs=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema&quot;</span>
+</span><span class='line'>         <span class="na">xmlns:jcr=</span><span class="s">&quot;http://www.jcp.org/jcr/1.0&quot;</span> <span class="na">xmlns:mix=</span><span class="s">&quot;http://www.jcp.org/jcr/mix/1.0&quot;</span>
+</span><span class='line'>         <span class="na">xmlns:sv=</span><span class="s">&quot;http://www.jcp.org/jcr/sv/1.0&quot;</span> <span class="na">xmlns:rep=</span><span class="s">&quot;internal&quot;</span> <span class="na">xmlns:nt=</span><span class="s">&quot;http://www.jcp.org/jcr/nt/1.0&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;jcr:primaryType&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;Name&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sv:value&gt;</span>nt:unstructured<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;sv:node</span> <span class="na">sv:name=</span><span class="s">&quot;catalog&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;jcr:primaryType&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;Name&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:value&gt;</span>nt:unstructured<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sv:node</span> <span class="na">sv:name=</span><span class="s">&quot;book&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;jcr:primaryType&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;Name&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>nt:unstructured<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;author&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Gambardella, Matthew<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;description&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>An in-depth look at creating applications with XML.<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;genre&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Computer<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;id&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>bk101<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;price&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>44.95<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;publish_date&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>2000-10-01<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;title&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>XML Developer&#39;s Guide<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/sv:node&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sv:node</span> <span class="na">sv:name=</span><span class="s">&quot;book&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;jcr:primaryType&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;Name&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>nt:unstructured<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;author&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Ralls, Kim<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;description&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>A former architect battles corporate zombies, an evil sorceress, and her own childhood to
+</span><span class='line'>                    become queen of the world.
+</span><span class='line'>                <span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;genre&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Fantasy<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;id&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>bk102<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;price&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>5.95<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;publish_date&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>2000-12-16<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;title&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Midnight Rain<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/sv:node&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sv:node</span> <span class="na">sv:name=</span><span class="s">&quot;book&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;jcr:primaryType&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;Name&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>nt:unstructured<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;author&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Corets, Eva<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;description&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>After the collapse of a nanotechnology society in England, the young survivors lay the
+</span><span class='line'>                    foundation for a new society.
+</span><span class='line'>                <span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;genre&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Fantasy<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;id&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>bk103<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;price&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>5.95<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;publish_date&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>2000-11-17<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;title&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Maeve Ascendant<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/sv:node&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sv:node</span> <span class="na">sv:name=</span><span class="s">&quot;book&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;jcr:primaryType&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;Name&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>nt:unstructured<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;author&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Corets, Eva<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;description&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>In post-apocalypse England, the mysterious agent known only as Oberon helps to create a new
+</span><span class='line'>                    life for the inhabitants of London. Sequel to Maeve Ascendant.
+</span><span class='line'>                <span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;genre&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Fantasy<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;id&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>bk104<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;price&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>5.95<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;publish_date&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>2001-03-10<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;title&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Oberon&#39;s Legacy<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/sv:node&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sv:node</span> <span class="na">sv:name=</span><span class="s">&quot;book&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;jcr:primaryType&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;Name&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>nt:unstructured<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;author&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Corets, Eva<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;description&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>The two daughters of Maeve, half-sisters, battle one another for control of England. Sequel to
+</span><span class='line'>                    Oberon&#39;s Legacy.
+</span><span class='line'>                <span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;genre&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Fantasy<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;id&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>bk105<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;price&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>5.95<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;publish_date&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>2001-09-10<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;title&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>The Sundered Grail<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/sv:node&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sv:node</span> <span class="na">sv:name=</span><span class="s">&quot;book&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;jcr:primaryType&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;Name&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>nt:unstructured<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;author&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Randall, Cynthia<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;description&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>When Carla meets Paul at an ornithology conference, tempers fly as feathers get ruffled.
+</span><span class='line'>                <span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;genre&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Romance<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;id&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>bk106<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;price&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>4.95<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;publish_date&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>2000-09-02<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;title&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Lover Birds<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/sv:node&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sv:node</span> <span class="na">sv:name=</span><span class="s">&quot;book&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;jcr:primaryType&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;Name&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>nt:unstructured<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;author&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Thurman, Paula<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;description&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>A deep sea diver finds true love twenty thousand leagues beneath the sea.<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;genre&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Romance<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;id&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>bk107<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;price&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>4.95<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;publish_date&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>2000-11-02<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;title&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Splish Splash<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/sv:node&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sv:node</span> <span class="na">sv:name=</span><span class="s">&quot;book&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;jcr:primaryType&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;Name&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>nt:unstructured<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;author&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Knorr, Stefan<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;description&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>An anthology of horror stories about roaches, centipedes, scorpions and other insects.
+</span><span class='line'>                <span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;genre&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Horror<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;id&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>bk108<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;price&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>4.95<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;publish_date&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>2000-12-06<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;title&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Creepy Crawlies<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/sv:node&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sv:node</span> <span class="na">sv:name=</span><span class="s">&quot;book&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;jcr:primaryType&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;Name&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>nt:unstructured<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;author&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Kress, Peter<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;description&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>After an inadvertant trip through a Heisenberg Uncertainty Device, James Salway discovers the
+</span><span class='line'>                    problems of being quantum.
+</span><span class='line'>                <span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;genre&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Science Fiction<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;id&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>bk109<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;price&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>6.95<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;publish_date&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>2000-11-02<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;title&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Paradox Lost<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/sv:node&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sv:node</span> <span class="na">sv:name=</span><span class="s">&quot;book&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;jcr:primaryType&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;Name&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>nt:unstructured<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;author&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>O&#39;Brien, Tim<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;description&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Microsoft&#39;s .NET initiative is explored in detail in this deep programmer&#39;s reference.
+</span><span class='line'>                <span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;genre&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Computer<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;id&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>bk110<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;price&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>36.95<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;publish_date&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>2000-12-09<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;title&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Microsoft .NET: The Programming Bible<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/sv:node&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sv:node</span> <span class="na">sv:name=</span><span class="s">&quot;book&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;jcr:primaryType&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;Name&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>nt:unstructured<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;author&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>O&#39;Brien, Tim<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;description&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>The Microsoft MSXML3 parser is covered in detail, with attention to XML DOM interfaces, XSLT
+</span><span class='line'>                    processing, SAX and more.
+</span><span class='line'>                <span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;genre&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Computer<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;id&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>bk111<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;price&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>36.95<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;publish_date&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>2000-12-01<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;title&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>MSXML3: A Comprehensive Guide<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/sv:node&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;sv:node</span> <span class="na">sv:name=</span><span class="s">&quot;book&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;jcr:primaryType&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;Name&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>nt:unstructured<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;author&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Galos, Mike<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;description&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Microsoft Visual Studio 7 is explored in depth, looking at how Visual Basic, Visual C++, C#,
+</span><span class='line'>                    and ASP+ are integrated into a comprehensive development environment.
+</span><span class='line'>                <span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;genre&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Computer<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;id&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>bk112<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;price&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>49.95<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;publish_date&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>2001-04-16<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;sv:property</span> <span class="na">sv:name=</span><span class="s">&quot;title&quot;</span> <span class="na">sv:type=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;sv:value&gt;</span>Visual Studio 7: A Comprehensive Guide<span class="nt">&lt;/sv:value&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/sv:property&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/sv:node&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/sv:node&gt;</span>
+</span><span class='line'><span class="nt">&lt;/sv:node&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Notice that this more closely represents the storage structure that the JSR specifies.</p>
+
+<h2 id="id-290612199861c31d1036b185b4e69b75">10 Summary</h2>
+
+<p>It&rsquo;s easy to see how XML importation and exportation is a good fit for the JCR. We will keep our xml file around in our project for later. Hopefully, at this point, you are comfortable with how importing and exporting data works.</p>
+
+  
+    <footer>
+      <p class="meta">
+        
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-03T10:55:00-04:00" pubdate data-updated="true"></time>
+        
+      </p>
+      
+        <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/importing-xml/index.html" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/importing-xml/index.html" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+      
+    </footer>
+  
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  <section>
+  <h1>Tutorial Steps</h1>
+  <ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-ef1e6887c579ba81dcedc3f4e3793cd2">Audience</a></li><li style="list-style:inherit;"><a href="#id-3b878279a04dc47d60932cb294d96259">Overview</a></li><li style="list-style:inherit;"><a href="#id-22cdc801dc611a924fba896ae226c781">Getting Some Test Data</a></li><li style="list-style:inherit;"><a href="#id-8584e9662d6157856ec91d0bc8ff7faf">Clear Our Our Previous Main Method</a></li><li style="list-style:inherit;"><a href="#id-bc4c8781c255264f1587c06105523bbf">Import Some Data</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-96fce25dd8b19bf1faebedff9654ac9b">Get The Root Node</a></li> <li style="list-style:inherit;"><a href="#id-fafb0cbd20eee3a30e8f3f2c4112bdb0">Add A New Child Node For Our Import</a></li> <li style="list-style:inherit;"><a href="#id-edb3ec79ac15171b148026eadbed6aec">Get A Stream And Import Our Data</a></li> <li style="list-style:inherit;"><a href="#id-6da3391d505075606eec7d9736e581bc">Add Our Dump Method To See The Results</a></li></ul></li><li style="list-style:inherit;"><a href="#id-31acb19549c0fccb10926868ed651d5f">Run Our Application</a></li><li style="list-style:inherit;"><a href="#id-84ec279255cd371a790226c53a4f781c">Export Some XML</a></li><li style="list-style:inherit;"><a href="#id-85b2a723a857bed70a06ce2015a39b75">Run Again</a></li><li style="list-style:inherit;"><a href="#id-3d8f4150e56f224f60e9f351b7438006">The System View?</a></li><li style="list-style:inherit;"><a href="#id-290612199861c31d1036b185b4e69b75">Summary</a></li></ol>
+  </section>
+<section>
+	<h1>Lab/Tutorial Sections</h1>
+	<ul id="recent_posts">
+      <li class="post">
+        <a href="/labs-and-tutorials/osgi/">OSGi</a>
+      </li>
+      <li>
+      	<a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a>
+      </li>
+  </ul>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/09/03/labs-and-tutorials-slash-apache-jackrabbit-slash-importing-xml/">The Most Important JavaScript Videos You Might Watch This Year</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/19/newest-osgi-tutorial-additions/">Newest OSGi Additions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/17/apache-jackrabbit-starting-out/">Apache Jackrabbit - Starting From Scratch Tutorial Up</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/114996005873710645329?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - jeff.downing@latchd.com -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'aggrolearning';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/importing-xml/index.html';
+        var disqus_url = 'http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/importing-xml/index.html';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

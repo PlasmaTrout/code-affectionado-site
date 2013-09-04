@@ -9,16 +9,28 @@
         <lastmod>2013-08-19T14:52:15-04:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://www.codeaffectionado.com/blog/2013/09/03/labs-and-tutorials-slash-apache-jackrabbit-slash-importing-xml/
+        </loc>
+        <lastmod>2013-09-04T09:28:04-04:00</lastmod>
+    </url>
+    <url>
         <loc>http://www.codeaffectionado.com/blog/archives/</loc>
-        <lastmod>2013-08-19T14:52:15-04:00</lastmod>
+        <lastmod>2013-09-04T09:28:04-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/</loc>
-        <lastmod>2013-08-19T14:52:15-04:00</lastmod>
+        <lastmod>2013-09-04T09:28:04-04:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/importing-xml/
+        </loc>
+        <lastmod>2013-09-04T11:25:26-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/</loc>
-        <lastmod>2013-08-19T17:22:47-04:00</lastmod>
+        <lastmod>2013-09-03T10:57:01-04:00</lastmod>
     </url>
     <url>
         <loc>
@@ -37,8 +49,12 @@
         <lastmod>2013-08-19T13:30:21-04:00</lastmod>
     </url>
     <url>
+        <loc>http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-blueprint/</loc>
+        <lastmod>2013-08-22T14:15:14-04:00</lastmod>
+    </url>
+    <url>
         <loc>http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-ds-bundle/</loc>
-        <lastmod>2013-08-21T16:29:06-04:00</lastmod>
+        <lastmod>2013-08-22T14:00:51-04:00</lastmod>
     </url>
     <url>
         <loc>
@@ -48,7 +64,7 @@
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-pax-exam/</loc>
-        <lastmod>2013-08-19T17:20:05-04:00</lastmod>
+        <lastmod>2013-08-22T09:53:57-04:00</lastmod>
     </url>
     <url>
         <loc>
@@ -57,8 +73,18 @@
         <lastmod>2013-08-21T16:07:15-04:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-scr-annotations/
+        </loc>
+        <lastmod>2013-08-22T14:29:10-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-servlets/</loc>
+        <lastmod>2013-08-22T16:07:04-04:00</lastmod>
+    </url>
+    <url>
         <loc>http://www.codeaffectionado.com/labs-and-tutorials/osgi/</loc>
-        <lastmod>2013-08-19T17:15:00-04:00</lastmod>
+        <lastmod>2013-08-22T10:10:00-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/robots.txt</loc>

@@ -11,5 +11,6 @@ The following OSGi labs are normally done in order, however frequently we includ
 1.	[Starting From Scratch](/labs-and-tutorials/osgi/apache-felix-from-scratch/)
 2.	[First Bundle the Programmatic Way](/labs-and-tutorials/osgi/apache-felix-programmatic-bundle/)
 3.	[Modifying Our First Bundle for Declarative Services](/labs-and-tutorials/osgi/apache-felix-ds-bundle/)
-4.	[Pax Exam and Unit Testing Felix Bundles](/blog/2013/08/15/apache-felix-paxexam-and-unit-testing-felix-bundles/)
+4.	[Pax Exam and Unit Testing Felix Bundles](/labs-and-tutorials/osgi/apache-felix-pax-exam/)
+5.  [Modifying First Bundle To Use SCR Annotations](/labs-and-tutorials/osgi/apache-felix-scr-annotations)
 
