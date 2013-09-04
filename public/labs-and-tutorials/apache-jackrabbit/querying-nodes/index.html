@@ -1,0 +1,661 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Apache Jackrabbit - Querying Nodes - CodeAffectionado</title>
+  <meta name="author" content="jeff.downing@latchd.com">
+
+  
+  <meta name="description" content="Apache Jackrabbit - Querying Nodes In a previous tutorial we learned how to import bulk XML into the JCR. However, once a significant number of &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/querying-nodes">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="CodeAffectionado" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43174506-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">CodeAffectionado</a></h1>
+  
+    <h2>Shared learning for code enthusiasts</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.codeaffectionado.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">News</a></li>
+  <li><a href="/labs-and-tutorials/">Labs And Tutorials</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article role="article">
+  
+  <header>
+    <h1 class="entry-title">Apache Jackrabbit - Querying Nodes</h1>
+    <p class="meta">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-04T14:24:00-04:00" pubdate data-updated="true"></time></p>
+  </header>
+  
+  <p>In a <a href="/labs-and-tutorials/apache-jackrabbit/importing-xml/">previous tutorial</a> we learned how to import bulk XML into the JCR. However, once a significant number of nodes are in the JCR, navigating each node one by one in order to find a specific set of nodes can be a bit tedious. For this the JCR uses queries. This tutorial shows how to execute queries against the imported data.</p>
+
+<h2 id="id-ef1e6887c579ba81dcedc3f4e3793cd2">1 Audience</h2>
+
+<p>The core audience is seated in a classroom environment. Readers performing this tutorial have just finished previous tutorials and should be familiar with how the labs will work. Most will be at work or seated in a place where they can read from the tutorial page and code in their own editor.</p>
+
+<h2 id="id-3b878279a04dc47d60932cb294d96259">2 Overview</h2>
+
+<p>Once a large amount of nodes exist in a repository, getting to just a specific set is inefficient. For instance, if we wanted to just get at all of our books that are in the genre &ldquo;computers&rdquo;, we would have to touch every single node and check. This would end up becoming a very inefficient process of:</p>
+
+<ol>
+<li>Iterate each child node of bookshelf</li>
+<li>Determine if that node had a property of genre matching computers</li>
+<li>If not next</li>
+<li>If so then push it into a collection</li>
+<li>Return the collection</li>
+</ol>
+
+
+<p>Luckily we don&rsquo;t have to do this. The standards specify a query API that can be used to help use find specific thing like this. This tutorial will demonstrate how this is done.</p>
+
+<p>If you came directly into this tutorial and didn&rsquo;t do the first one, don&rsquo;t fret. The starter project is on GitHub and the most recent tutorial can be found working the branch lab3-xmlimport. The following clone should get you started from where we left off:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting The Previous Lab</span><a href='https://github.com/PlasmaTrout/jackrabbit-training-lab1'>GitHub</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone git@github.com:PlasmaTrout/jackrabbit-training-lab1.git
+</span><span class='line'>git checkout lab3-xmlimport
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>We will be modifying this code to support our queries.</p>
+
+<h2 id="id-87cd38f51e59807f87092df1a7fe7909">3 Remove Code We Won&rsquo;t Need</h2>
+
+<p>For this tutorial we aren&rsquo;t going to need the else statement from our previous example so lets remove it so our if statement appears as the following:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Our Starter If Statement</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="k">if</span><span class="o">(!</span><span class="n">root</span><span class="o">.</span><span class="na">hasNode</span><span class="o">(</span><span class="s">&quot;bookstore&quot;</span><span class="o">)){</span>
+</span><span class='line'>  <span class="n">Node</span> <span class="n">node</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">addNode</span><span class="o">(</span><span class="s">&quot;bookstore&quot;</span><span class="o">,</span><span class="s">&quot;nt:unstructured&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">FileInputStream</span> <span class="n">stream</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="s">&quot;test.xml&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">session</span><span class="o">.</span><span class="na">importXML</span><span class="o">(</span><span class="n">node</span><span class="o">.</span><span class="na">getPath</span><span class="o">(),</span><span class="n">stream</span><span class="o">,</span><span class="n">ImportUUIDBehavior</span><span class="o">.</span><span class="na">IMPORT_UUID_CREATE_NEW</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">stream</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">session</span><span class="o">.</span><span class="na">save</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>This will also ensure that if we wipe our repository that we will rebuild the nodes back for these examples. Just to be sure lets run a:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Maven Compile And Run</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mvn compile <span class="nb">exec</span>:java
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Just to be sure we have the latest build working. In the output we should still see our books and there only is around 12 of them:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Our Current Book Dump</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>....
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>11<span class="o">]</span>
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>11<span class="o">]</span>/description<span class="o">=</span>The Microsoft MSXML3 parser is covered in             detail, with attention to XML DOM interfaces, XSLT processing,             SAX and more.
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>11<span class="o">]</span>/title<span class="o">=</span>MSXML3: A Comprehensive Guide
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>11<span class="o">]</span>/id<span class="o">=</span>bk111
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>11<span class="o">]</span>/publish_date<span class="o">=</span>2000-12-01
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>11<span class="o">]</span>/price<span class="o">=</span>36.95
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>11<span class="o">]</span>/genre<span class="o">=</span>Computer
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>11<span class="o">]</span>/jcr:primaryType<span class="o">=</span>nt:unstructured
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>11<span class="o">]</span>/author<span class="o">=</span>O<span class="err">&#39;</span>Brien, Tim
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>12<span class="o">]</span>
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>12<span class="o">]</span>/description<span class="o">=</span>Microsoft Visual Studio 7 is explored in depth,             looking at how Visual Basic, Visual C++, C#, and ASP+ are             integrated into a comprehensive development             environment.
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>12<span class="o">]</span>/title<span class="o">=</span>Visual Studio 7: A Comprehensive Guide
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>12<span class="o">]</span>/id<span class="o">=</span>bk112
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>12<span class="o">]</span>/publish_date<span class="o">=</span>2001-04-16
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>12<span class="o">]</span>/price<span class="o">=</span>49.95
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>12<span class="o">]</span>/genre<span class="o">=</span>Computer
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>12<span class="o">]</span>/jcr:primaryType<span class="o">=</span>nt:unstructured
+</span><span class='line'>/bookstore/catalog/book<span class="o">[</span>12<span class="o">]</span>/author<span class="o">=</span>Galos, Mike
+</span><span class='line'>...
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Notice how each book in the output has a genre? Let&rsquo;s suppose we wanted to get all of the books in the bookstore node that have a genre of &ldquo;Computer&rdquo;, how would we do that? The answer is to use the query API.</p>
+
+<h2 id="id-1d25849741b0e0c0f7f459ef277fa13e">4 Query The Records</h2>
+
+<p>In order to use the API to query the records from the JCR, a specific pattern of steps will always be used. They essentially follow the same steps:</p>
+
+<ol>
+<li>Get a reference to a query manager</li>
+<li>Create a query</li>
+<li>Execute the query to get a query result set</li>
+<li>Get the nodes in the results set</li>
+<li>Do something with them</li>
+</ol>
+
+
+<p>So lets take a look at how thats done using the API by placing the following items after our if statement in the code.</p>
+
+<h3 id="id-bd2b2461d61bd9b894aa98c2f907308b">4.1 Get A Reference To A Query Manager</h3>
+
+<p>The query manager is a workspace level object. This means the proper way to get it is to first get the workspace you are in, then ask it for the query manager. You can chain these calls together if you wish like this:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting A Query Manager</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">QueryManager</span> <span class="n">manager</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="na">getWorkspace</span><span class="o">().</span><span class="na">getQueryManager</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>There aren&rsquo;t any arguments needed to get this one.</p>
+
+<h3 id="id-ead87f1d213945897ab21cd4ae1fe842">4.2 Create A Query</h3>
+
+<p>Basically we create a query by calling createQuery on the manager. This will give us back a query object that we can use like so:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Creating A Query</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Query</span> <span class="n">query</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="s">&quot;select * from [nt:unstructured] where [genre]=&#39;Computer&#39;&quot;</span><span class="o">,</span> <span class="n">Query</span><span class="o">.</span><span class="na">JCR_SQL2</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>The first argument to the create query methods is the query itself. This will differ based on the type of query you use, however we are using JCR_SQL2 to keep things simple.</p>
+
+<p>The second argument tells the manager what types of query to expect. In our case we used SQL2 but the available options can be found <a href="http://www.day.com/maven/jsr170/javadocs/jcr-2.0/javax/jcr/query/Query.html">here</a>. Notice how the others, with the exception of JCR_JQOM, have been deprecated.</p>
+
+<h3 id="id-bcacb81141fa0736cbb998d76c711ca5">4.3 Execute The Query</h3>
+
+<p>Now that we have a query all worked out, we can call execute against it. This will give us back a query result object:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Executing A Query</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">QueryResult</span> <span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="na">execute</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h3 id="id-d302c9b00a4aaa3e5b1cd40d3edd2b88">4.4 Get The Nodes In The Result Set</h3>
+
+<p>Now all we have to do is ask our result set for the nodes and print them by adding:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting And Printing The Query Results</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">NodeIterator</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">getNodes</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">while</span><span class="o">(</span><span class="n">nodes</span><span class="o">.</span><span class="na">hasNext</span><span class="o">()){</span>
+</span><span class='line'>  <span class="n">Node</span> <span class="n">node</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="na">nextNode</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">Property</span> <span class="n">property</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;title&quot;</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Matched: &quot;</span><span class="o">+</span><span class="n">property</span><span class="o">.</span><span class="na">getString</span><span class="o">());</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//dumpToConsole(root);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>It&rsquo;s a good idea to comment out the dump to console call for right now, and our final main method should look something like this:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Our Main Method</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span> <span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">Repository</span> <span class="n">repository</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TransientRepository</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">Session</span> <span class="n">session</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="na">login</span><span class="o">(</span>
+</span><span class='line'>          <span class="k">new</span> <span class="nf">SimpleCredentials</span><span class="o">(</span><span class="s">&quot;admin&quot;</span><span class="o">,</span><span class="s">&quot;admin&quot;</span><span class="o">.</span><span class="na">toCharArray</span><span class="o">()));</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">try</span><span class="o">{</span>
+</span><span class='line'>      <span class="n">Node</span> <span class="n">root</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="na">getRootNode</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">if</span><span class="o">(!</span><span class="n">root</span><span class="o">.</span><span class="na">hasNode</span><span class="o">(</span><span class="s">&quot;bookstore&quot;</span><span class="o">)){</span>
+</span><span class='line'>          <span class="n">Node</span> <span class="n">node</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">addNode</span><span class="o">(</span><span class="s">&quot;bookstore&quot;</span><span class="o">,</span><span class="s">&quot;nt:unstructured&quot;</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">FileInputStream</span> <span class="n">stream</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="s">&quot;test.xml&quot;</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">session</span><span class="o">.</span><span class="na">importXML</span><span class="o">(</span><span class="n">node</span><span class="o">.</span><span class="na">getPath</span><span class="o">(),</span> <span class="n">stream</span><span class="o">,</span> <span class="n">ImportUUIDBehavior</span><span class="o">.</span><span class="na">IMPORT_UUID_CREATE_NEW</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">stream</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>          <span class="n">session</span><span class="o">.</span><span class="na">save</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">QueryManager</span> <span class="n">manager</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="na">getWorkspace</span><span class="o">().</span><span class="na">getQueryManager</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">Query</span> <span class="n">query</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="s">&quot;select * from [nt:unstructured] where [genre]=&#39;Computer&#39;&quot;</span><span class="o">,</span> <span class="n">Query</span><span class="o">.</span><span class="na">JCR_SQL2</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">QueryResult</span> <span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="na">execute</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">NodeIterator</span> <span class="n">nodes</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">getNodes</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">while</span><span class="o">(</span><span class="n">nodes</span><span class="o">.</span><span class="na">hasNext</span><span class="o">()){</span>
+</span><span class='line'>          <span class="n">Node</span> <span class="n">node</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="na">nextNode</span><span class="o">();</span>
+</span><span class='line'>          <span class="n">Property</span> <span class="n">property</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="na">getProperty</span><span class="o">(</span><span class="s">&quot;title&quot;</span><span class="o">);</span>
+</span><span class='line'>          <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Matched: &quot;</span><span class="o">+</span><span class="n">property</span><span class="o">.</span><span class="na">getString</span><span class="o">());</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="c1">//dumpToConsole(root);</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="o">}</span><span class="k">finally</span><span class="o">{</span>
+</span><span class='line'>      <span class="n">session</span><span class="o">.</span><span class="na">logout</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2 id="id-925b6d5afae3d121418632ab9898de8f">5 Running Our Query</h2>
+
+<p>If we do a <strong>mvn compile exec:java</strong> on our code now, we should see the results of our query placed in the output just before the success notification.</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>The Query Results</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Matched: MSXML3: A Comprehensive Guide
+</span><span class='line'>Matched: Microsoft .NET: The Programming Bible
+</span><span class='line'>Matched: Visual Studio 7: A Comprehensive Guide
+</span><span class='line'>Matched: XML Developer<span class="err">&#39;</span>s Guide
+</span><span class='line'><span class="o">[</span>INFO<span class="o">]</span> ------------------------------------------------------------------------
+</span><span class='line'><span class="o">[</span>INFO<span class="o">]</span> BUILD SUCCESS
+</span><span class='line'><span class="o">[</span>INFO<span class="o">]</span> ------------------------------------------------------------------------
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2 id="id-860ae96cb07b7d1ac666b10e42e1fa10">6 Testing Another Query</h2>
+
+<p>So lets try a different query just to test things out. Let&rsquo;s try to query all of the Fantasy book by Corets:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Modifying Our Query</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Query</span> <span class="n">query</span> <span class="o">=</span> <span class="n">manager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span>
+</span><span class='line'>  <span class="s">&quot;select * from [nt:unstructured] where [genre]=&#39;Fantasy&#39; and [author] LIKE &#39;Corets%&#39;&quot;</span><span class="o">,</span>
+</span><span class='line'>  <span class="n">Query</span><span class="o">.</span><span class="na">JCR_SQL2</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>We should get back:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Our New Query Results</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Matched: Oberon<span class="err">&#39;</span>s Legacy
+</span><span class='line'>Matched: The Sundered Grail
+</span><span class='line'>Matched: Maeve Ascendant
+</span><span class='line'><span class="o">[</span>INFO<span class="o">]</span> ------------------------------------------------------------------------
+</span><span class='line'><span class="o">[</span>INFO<span class="o">]</span> BUILD SUCCESS
+</span><span class='line'><span class="o">[</span>INFO<span class="o">]</span> ------------------------------------------------------------------------
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2 id="id-290612199861c31d1036b185b4e69b75">7 Summary</h2>
+
+<p>What else can you query? Well its really up to your imagination, but I would suggest googling a few examples. They don&rsquo;t have to be Jackrabbit specific to work. Take a look at <a href="http://docs.exoplatform.com/PLF30/refguide/html/ch-jcr-query-usecases.html#JCR.FindAllNodes">The ExoPlatforms Help Page</a> and look at some of their examples. Reading the <a href="http://www.h2database.com/jcr/grammar.html">H2 Databases Grammar Page</a> may help as well.</p>
+
+<h2 id="id-886d4861dc91975311dfb96307bfe449">8 Common Questions</h2>
+
+<p>In this section, I&rsquo;ll add some common questions I get during the classes.</p>
+
+<blockquote><p>Are the queries case sensitive?</p></blockquote>
+
+<p>You mean if you tried <em>select
+* from [nt:unstructured] where [genre]=&lsquo;fantasy&rsquo;</em> would you get the same results as <em>[genre]=&lsquo;Fantasy&rsquo;</em>? The answer is no, the queries must match the property name exactly including case. This can trip you up if you came from the SQL world.</p>
+
+<blockquote><p>What the heck are JQOM queries?</p></blockquote>
+
+<p>They are really low level API queries used to dynamically build queries one section at a time. For instance we would do something like:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>The JQOM Low Level API</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// Obtain the query manager for the session ...</span>
+</span><span class='line'><span class="n">javax</span><span class="o">.</span><span class="na">jcr</span><span class="o">.</span><span class="na">query</span><span class="o">.</span><span class="na">QueryManager</span> <span class="n">queryManager</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="na">getWorkspace</span><span class="o">().</span><span class="na">getQueryManager</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Create a query object model factory ...</span>
+</span><span class='line'><span class="n">QueryObjectModelFactory</span> <span class="n">factory</span> <span class="o">=</span> <span class="n">queryManager</span><span class="o">.</span><span class="na">getQOMFactory</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Create the FROM clause: a selector for the [nt:unstructured] nodes ...</span>
+</span><span class='line'><span class="n">Selector</span> <span class="n">source</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="na">selector</span><span class="o">(</span><span class="s">&quot;nt:unstructured&quot;</span><span class="o">,</span><span class="s">&quot;unstructNodes&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Create the SELECT clause (we want all columns defined on the node type) ...</span>
+</span><span class='line'><span class="n">Column</span><span class="o">[]</span> <span class="n">columns</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Create the WHERE clauses and then &quot;and&quot; them together</span>
+</span><span class='line'><span class="n">Constraint</span> <span class="n">constraint1</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="na">comparison</span><span class="o">(</span>
+</span><span class='line'>      <span class="n">factory</span><span class="o">.</span><span class="na">propertyValue</span><span class="o">(</span><span class="s">&quot;unstructNodes&quot;</span><span class="o">,</span><span class="s">&quot;genre&quot;</span><span class="o">),</span>
+</span><span class='line'>      <span class="n">Operator</span><span class="o">.</span><span class="na">EQ</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span>
+</span><span class='line'>      <span class="n">factory</span><span class="o">.</span><span class="na">literal</span><span class="o">(</span><span class="k">new</span> <span class="n">StringValue</span><span class="o">(</span><span class="s">&quot;Fantasy&quot;</span><span class="o">)));</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Constraint</span> <span class="n">constraint2</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="na">comparison</span><span class="o">(</span>
+</span><span class='line'>      <span class="n">factory</span><span class="o">.</span><span class="na">propertyValue</span><span class="o">(</span><span class="s">&quot;unstructNodes&quot;</span><span class="o">,</span><span class="s">&quot;author&quot;</span><span class="o">),</span>
+</span><span class='line'>      <span class="n">Operator</span><span class="o">.</span><span class="na">LIKE</span><span class="o">.</span><span class="na">toString</span><span class="o">(),</span>
+</span><span class='line'>      <span class="n">factory</span><span class="o">.</span><span class="na">literal</span><span class="o">(</span><span class="k">new</span> <span class="n">StringValue</span><span class="o">(</span><span class="s">&quot;Corets%&quot;</span><span class="o">)));</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">Constraint</span> <span class="n">and</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="na">and</span><span class="o">(</span><span class="n">constraint1</span><span class="o">,</span><span class="n">constraint2</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Define the orderings (we have none for this query)...</span>
+</span><span class='line'><span class="n">Ordering</span><span class="o">[]</span> <span class="n">orderings</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Create the query ...</span>
+</span><span class='line'><span class="n">QueryObjectModel</span> <span class="n">query</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="n">source</span><span class="o">,</span><span class="n">and</span><span class="o">,</span><span class="n">orderings</span><span class="o">,</span><span class="n">columns</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Execute the query and get the results ...</span>
+</span><span class='line'><span class="c1">// (This is the same as before.)</span>
+</span><span class='line'><span class="n">javax</span><span class="o">.</span><span class="na">jcr</span><span class="o">.</span><span class="na">QueryResult</span> <span class="n">result</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="na">execute</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>The best case to use them is when you need to write code to dynamically generate queries on the fly. It&rsquo;s API provides a sort of safety against you executing a malformed string.</p>
+
+  
+    <footer>
+      <p class="meta">
+        
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-04T14:24:00-04:00" pubdate data-updated="true"></time>
+        
+      </p>
+      
+        <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/querying-nodes/index.html" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/querying-nodes/index.html" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+      
+    </footer>
+  
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  <section>
+  <h1>Tutorial Steps</h1>
+  <ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-ef1e6887c579ba81dcedc3f4e3793cd2">Audience</a></li><li style="list-style:inherit;"><a href="#id-3b878279a04dc47d60932cb294d96259">Overview</a></li><li style="list-style:inherit;"><a href="#id-87cd38f51e59807f87092df1a7fe7909">Remove Code We Won&rsquo;t Need</a></li><li style="list-style:inherit;"><a href="#id-1d25849741b0e0c0f7f459ef277fa13e">Query The Records</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-bd2b2461d61bd9b894aa98c2f907308b">Get A Reference To A Query Manager</a></li> <li style="list-style:inherit;"><a href="#id-ead87f1d213945897ab21cd4ae1fe842">Create A Query</a></li> <li style="list-style:inherit;"><a href="#id-bcacb81141fa0736cbb998d76c711ca5">Execute The Query</a></li> <li style="list-style:inherit;"><a href="#id-d302c9b00a4aaa3e5b1cd40d3edd2b88">Get The Nodes In The Result Set</a></li></ul></li><li style="list-style:inherit;"><a href="#id-925b6d5afae3d121418632ab9898de8f">Running Our Query</a></li><li style="list-style:inherit;"><a href="#id-860ae96cb07b7d1ac666b10e42e1fa10">Testing Another Query</a></li><li style="list-style:inherit;"><a href="#id-290612199861c31d1036b185b4e69b75">Summary</a></li><li style="list-style:inherit;"><a href="#id-886d4861dc91975311dfb96307bfe449">Common Questions</a></li></ol>
+  </section>
+<section>
+	<h1>Lab/Tutorial Sections</h1>
+	<ul id="recent_posts">
+      <li class="post">
+        <a href="/labs-and-tutorials/osgi/">OSGi</a>
+      </li>
+      <li>
+      	<a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a>
+      </li>
+  </ul>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/09/03/labs-and-tutorials-slash-apache-jackrabbit-slash-importing-xml/">The Most Important JavaScript Videos You Might Watch This Year</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/19/newest-osgi-tutorial-additions/">Newest OSGi Additions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/17/apache-jackrabbit-starting-out/">Apache Jackrabbit - Starting From Scratch Tutorial Up</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/114996005873710645329?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - jeff.downing@latchd.com -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'aggrolearning';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/querying-nodes/index.html';
+        var disqus_url = 'http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/querying-nodes/index.html';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
