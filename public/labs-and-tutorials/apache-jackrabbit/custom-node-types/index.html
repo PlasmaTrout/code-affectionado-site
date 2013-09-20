@@ -1,0 +1,628 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Apache Jackrabbit - Custom Node Types - CodeAffectionado</title>
+  <meta name="author" content="jeff.downing@latchd.com">
+
+  
+  <meta name="description" content="Apache Jackrabbit - Custom Node Types The purpose of this lab is to enhance our previous tutorial. In that tutorial we learned how to query elements &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/custom-node-types">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="CodeAffectionado" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43174506-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">CodeAffectionado</a></h1>
+  
+    <h2>Shared learning for code enthusiasts</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.codeaffectionado.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">News</a></li>
+  <li><a href="/labs-and-tutorials/">Labs And Tutorials</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article role="article">
+  
+  <header>
+    <h1 class="entry-title">Apache Jackrabbit - Custom Node Types</h1>
+    <p class="meta">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-13T17:09:00-04:00" pubdate data-updated="true"></time></p>
+  </header>
+  
+  <p>The purpose of this lab is to enhance our <a href="/labs-and-tutorials/apache-jackrabbit/querying-nodes">previous tutorial</a>. In that tutorial we learned how to query elements that were stored in the repository used SQL2 and JDOM. Up to now, we have been mostly dealing with unstructured nodes. This means the node themselves have no schema except for what the nt:unstructured types provided for us.</p>
+
+<p>This tutorial will show how to create a custom node type and load it into the repository programmatically.</p>
+
+<h2 id="id-ef1e6887c579ba81dcedc3f4e3793cd2">1 Audience</h2>
+
+<p>The core audience is seated in a classroom environment. Readers performing this tutorial have just finished previous tutorials and should be familiar with how the labs will work. Most will be at work or seated in a place where they can read from the tutorial page and code in their own editor.</p>
+
+<h2 id="id-3b878279a04dc47d60932cb294d96259">2 Overview</h2>
+
+<p>In most cases, storing content will just require a node and property structure that is flexible. Node properties can differ from other node properties etc. There may come a time, however, that you want to create a schema and enforce some contraints against it, so that nodes inserted into the JCR will mandatorily have specific properties with specific types. The JSR refers to these as node type definitions.</p>
+
+<p>Node types are defined using a special notation called Compact Node Type Definition Notation (or CND Notation for short). We don&rsquo;t have time in a single tutorial to go over the whole specification but if your interested the JSR-173 or 280 is a good place to start. There are lots of details on the grammar and usage in the specification.</p>
+
+<p>Lastly, if you came directly into this tutorial and didn&rsquo;t do the last one, don&rsquo;t fret. The starter project is on GitHub and the most recent tutorial can be found working the branch lab5-nodetypes. The following clone should get you started from where we left off:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting The Previous Lab</span><a href='https://github.com/PlasmaTrout/jackrabbit-training-lab1'>GitHub</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone git@github.com:PlasmaTrout/jackrabbit-training-lab1.git
+</span><span class='line'>git checkout lab5-nodetypes
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2 id="id-6dd9e7257b6c92b39b5822d27f272629">3 A Quick Note Before We Get Started</h2>
+
+<p>I am going to have you delete the repository directory multiple times during this tutorial. In truth it&rsquo;s laziness, but registering node types is somewhat like building a table schema. It would be easier to have you delete it each time than issue alter statements and/or deal with dependency issues. You can however argue some options into the CndImporter command (that you will see later) and have it replace the schema each time, but this only scales so far and eventually you will cause a change that will break the semantics of the node type and it will throw an exception.</p>
+
+<h2 id="id-edeac4f2e1f63597edc58bc3ce31d685">4 Create A Compact Node Type Definition</h2>
+
+<p>In our example we are just going to create a small example to demonstrate how the definition language works. Let&rsquo;s say we have an node that&rsquo;s going to represent an article. We don&rsquo;t care how many properties is has, but it must have a headline and body filled out.</p>
+
+<p>Let&rsquo;s create a file in the root of the project called article.cnd. In its contents lets write the following:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Getting The Previous Lab</span><a href='https://github.com/PlasmaTrout/jackrabbit-training-lab1'>GitHub</a></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>&lt;<span class="nv">ca</span> <span class="o">=</span> <span class="s1">&#39;http://www.codeaffectionado.com/training&#39;</span>&gt;
+</span><span class='line'><span class="o">[</span>ca:article<span class="o">]</span>
+</span><span class='line'>- ca:headline <span class="o">(</span>string<span class="o">)</span>
+</span><span class='line'>mandatory
+</span><span class='line'>- ca:body <span class="o">(</span>string<span class="o">)</span>
+</span><span class='line'>mandatory
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>This file is going to create a namespace for our node, then declaring a new type named ca:article. This type has two mandatory properties: headline and body.</p>
+
+<h2 id="id-afe29371187d36fb3ef2a2f3efd77102">5 Registering A Node Type Into The Repository</h2>
+
+<p>In order to use our node type in Jackrabbit, we must first register it. To do so lets clear out our try block from the previous example and add some code:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Registering A Node Type From A CND File</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">CndImporter</span><span class="o">.</span><span class="na">registerNodeTypes</span><span class="o">(</span><span class="k">new</span> <span class="n">FileReader</span><span class="o">(</span><span class="s">&quot;article.cnd&quot;</span><span class="o">),</span><span class="n">session</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Now lets write some test code to see what happens if we create an article but leave out the mandatory fields.</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Adding, Viewing and Removing Our Node</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Node</span> <span class="n">root</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="na">getRootNode</span><span class="o">();</span>
+</span><span class='line'><span class="n">Node</span> <span class="n">articles</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">addNode</span><span class="o">(</span><span class="s">&quot;articles&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">Node</span> <span class="n">newNode</span> <span class="o">=</span> <span class="n">articles</span><span class="o">.</span><span class="na">addNode</span><span class="o">(</span><span class="s">&quot;article&quot;</span><span class="o">,</span><span class="s">&quot;ca:article&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// What do you think happens?</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">session</span><span class="o">.</span><span class="na">save</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Look at our node</span>
+</span><span class='line'><span class="n">Node</span> <span class="n">savedNode</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">getNode</span><span class="o">(</span><span class="s">&quot;articles/article&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">dumpToConsole</span><span class="o">(</span><span class="n">savedNode</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Cleanup</span>
+</span><span class='line'><span class="n">savedNode</span><span class="o">.</span><span class="na">remove</span><span class="o">();</span>
+</span><span class='line'><span class="n">session</span><span class="o">.</span><span class="na">save</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>If we <em>mvn compile exec:java</em> we should get an exception now like:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Exception</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>javax.jcr.nodetype.ConstraintViolationException: /articles/article: mandatory property <span class="o">{</span>http://www.codeaffectionado.com/training<span class="o">}</span>body does not exist
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Let&rsquo;s modify the last few lines and add a body and see what happens:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Setting A Mandatory Property Our New Node Type</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Node</span> <span class="n">newNode</span> <span class="o">=</span> <span class="n">articles</span><span class="o">.</span><span class="na">addNode</span><span class="o">(</span><span class="s">&quot;article&quot;</span><span class="o">,</span><span class="s">&quot;ca:article&quot;</span><span class="o">);</span>
+</span><span class='line'><span class="n">newNode</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;ca:body&quot;</span><span class="o">,</span><span class="s">&quot;Hello World!&quot;</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// Now what do you think happens?</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">session</span><span class="o">.</span><span class="na">save</span><span class="o">();</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Now we see another exception:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Exception</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>javax.jcr.nodetype.ConstraintViolationException: /articles/article: mandatory property <span class="o">{</span>http://www.codeaffectionado.com/training<span class="o">}</span>headline does not exist
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>If we add a headline we should be ok so lets add the line:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Adding The Final Mandatory Property</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">newNode</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;ca:headline&quot;</span><span class="o">,</span><span class="s">&quot;New Hello World Article&quot;</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>And run it again, you should see the output:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Sample Output</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/articles/article
+</span><span class='line'>/articles/article/ca:body<span class="o">=</span>Hello World!
+</span><span class='line'>/articles/article/ca:headline<span class="o">=</span>New Hello World Article
+</span><span class='line'>/articles/article/jcr:primaryType<span class="o">=</span>ca:article
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>After your done playing, <em>delete your repository folder</em> and try the next example.</p>
+
+<h2 id="id-e68090d3fed83b8ed0f0b82283766c9e">6 Creating Default Values</h2>
+
+<p>Maybe we wish to allow users to save articles that have no headline or body, but put in a default value instead. In order to do this, we need to revisit our node definition and change it to look like:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>New Node Type With Default Fields</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>&lt;<span class="nv">ca</span> <span class="o">=</span> <span class="s1">&#39;http://www.codeaffectionado.com/training&#39;</span>&gt;
+</span><span class='line'><span class="o">[</span>ca:article<span class="o">]</span>
+</span><span class='line'>- ca:headline <span class="o">(</span>string<span class="o">)</span>
+</span><span class='line'><span class="o">=</span> <span class="s1">&#39;Headline Goes Here&#39;</span>
+</span><span class='line'>mandatory autocreated
+</span><span class='line'>- ca:body <span class="o">(</span>string<span class="o">)</span>
+</span><span class='line'><span class="o">=</span> <span class="s1">&#39;Body Goes Here&#39;</span>
+</span><span class='line'>mandatory autocreated
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Now if we run this on a fresh repository (by deleting the old repository folder before running) we will see:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Sample Output</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/articles/article
+</span><span class='line'>/articles/article/ca:body<span class="o">=</span>Body Goes Here
+</span><span class='line'>/articles/article/ca:headline<span class="o">=</span>Headline Goes Here
+</span><span class='line'>/articles/article/jcr:primaryType<span class="o">=</span>ca:article
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2 id="id-80c01d21345b9f660dca38a514c8a0de">7 Adding Non Specified Properties To Our New Type</h2>
+
+<p>You may notice, if you play around, that if you try to add properties that aren&rsquo;t in the CND file into your node they will thrown an exception. This is because we never told the node definition that other properties are allowed. At the bottom of the file add:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Allow Wildcard Sibling Properties</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>- * <span class="o">(</span>undefined<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Then you will be able to. Lets delete our repository add this line and then add some java code like:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Set A Sibling Property</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">newNode</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;otherProp&quot;</span><span class="o">,</span><span class="s">&quot;Yah! It Worked!&quot;</span><span class="o">);</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Then when we run we will see:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Sample Output</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>/articles/article
+</span><span class='line'>/articles/article/ca:body<span class="o">=</span>Body Goes Here
+</span><span class='line'>/articles/article/otherProp<span class="o">=</span>Yah! It Worked!
+</span><span class='line'>/articles/article/ca:headline<span class="o">=</span>Headline Goes Here
+</span><span class='line'>/articles/article/jcr:primaryType<span class="o">=</span>ca:article
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2 id="id-70b023db8fb279ef02f66b9ef4388dfe">8 Repository Storage Of Node Types</h2>
+
+<p>If you want to see the fruits of your labor so far, find the custom node types xml file in the directory repository &ndash;> repository &ndash;> nodetypes &ndash;> custom_nodetypes.xml. If you look closely you can see your namespace declaration and a special system specific format for declaring what you put in the CND file.</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>custom_nodetypes.xml</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;</span>
+</span><span class='line'><span class="nt">&lt;nodeTypes</span> <span class="na">xmlns:ca=</span><span class="s">&quot;http://www.codeaffectionado.com/training&quot;</span> <span class="na">xmlns:fn=</span><span class="s">&quot;http://www.w3.org/2005/xpath-functions&quot;</span>
+</span><span class='line'>           <span class="na">xmlns:fn_old=</span><span class="s">&quot;http://www.w3.org/2004/10/xpath-functions&quot;</span> <span class="na">xmlns:jcr=</span><span class="s">&quot;http://www.jcp.org/jcr/1.0&quot;</span>
+</span><span class='line'>           <span class="na">xmlns:mix=</span><span class="s">&quot;http://www.jcp.org/jcr/mix/1.0&quot;</span> <span class="na">xmlns:nt=</span><span class="s">&quot;http://www.jcp.org/jcr/nt/1.0&quot;</span> <span class="na">xmlns:rep=</span><span class="s">&quot;internal&quot;</span>
+</span><span class='line'>           <span class="na">xmlns:sv=</span><span class="s">&quot;http://www.jcp.org/jcr/sv/1.0&quot;</span> <span class="na">xmlns:xs=</span><span class="s">&quot;http://www.w3.org/2001/XMLSchema&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;nodeType</span> <span class="na">hasOrderableChildNodes=</span><span class="s">&quot;false&quot;</span> <span class="na">isAbstract=</span><span class="s">&quot;false&quot;</span> <span class="na">isMixin=</span><span class="s">&quot;false&quot;</span> <span class="na">isQueryable=</span><span class="s">&quot;true&quot;</span> <span class="na">name=</span><span class="s">&quot;ca:article&quot;</span>
+</span><span class='line'>              <span class="na">primaryItemName=</span><span class="s">&quot;&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;supertypes&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;supertype&gt;</span>nt:base<span class="nt">&lt;/supertype&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/supertypes&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;propertyDefinition</span> <span class="na">autoCreated=</span><span class="s">&quot;true&quot;</span> <span class="na">isFullTextSearchable=</span><span class="s">&quot;true&quot;</span> <span class="na">isQueryOrderable=</span><span class="s">&quot;true&quot;</span> <span class="na">mandatory=</span><span class="s">&quot;true&quot;</span>
+</span><span class='line'>                            <span class="na">multiple=</span><span class="s">&quot;false&quot;</span> <span class="na">name=</span><span class="s">&quot;ca:headline&quot;</span> <span class="na">onParentVersion=</span><span class="s">&quot;COPY&quot;</span> <span class="na">protected=</span><span class="s">&quot;false&quot;</span>
+</span><span class='line'>                            <span class="na">requiredType=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;defaultValues&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;defaultValue&gt;</span>Headline Goes Here<span class="nt">&lt;/defaultValue&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/defaultValues&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/propertyDefinition&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;propertyDefinition</span> <span class="na">autoCreated=</span><span class="s">&quot;true&quot;</span> <span class="na">isFullTextSearchable=</span><span class="s">&quot;true&quot;</span> <span class="na">isQueryOrderable=</span><span class="s">&quot;true&quot;</span> <span class="na">mandatory=</span><span class="s">&quot;true&quot;</span>
+</span><span class='line'>                            <span class="na">multiple=</span><span class="s">&quot;false&quot;</span> <span class="na">name=</span><span class="s">&quot;ca:body&quot;</span> <span class="na">onParentVersion=</span><span class="s">&quot;COPY&quot;</span> <span class="na">protected=</span><span class="s">&quot;false&quot;</span>
+</span><span class='line'>                            <span class="na">requiredType=</span><span class="s">&quot;String&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;defaultValues&gt;</span>
+</span><span class='line'>                <span class="nt">&lt;defaultValue&gt;</span>Body Goes Here<span class="nt">&lt;/defaultValue&gt;</span>
+</span><span class='line'>            <span class="nt">&lt;/defaultValues&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;/propertyDefinition&gt;</span>
+</span><span class='line'>        <span class="nt">&lt;propertyDefinition</span> <span class="na">autoCreated=</span><span class="s">&quot;false&quot;</span> <span class="na">isFullTextSearchable=</span><span class="s">&quot;true&quot;</span> <span class="na">isQueryOrderable=</span><span class="s">&quot;true&quot;</span> <span class="na">mandatory=</span><span class="s">&quot;false&quot;</span>
+</span><span class='line'>                            <span class="na">multiple=</span><span class="s">&quot;false&quot;</span> <span class="na">name=</span><span class="s">&quot;*&quot;</span> <span class="na">onParentVersion=</span><span class="s">&quot;COPY&quot;</span> <span class="na">protected=</span><span class="s">&quot;false&quot;</span>
+</span><span class='line'>                            <span class="na">requiredType=</span><span class="s">&quot;undefined&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;/nodeType&gt;</span>
+</span><span class='line'><span class="nt">&lt;/nodeTypes&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Now you may ask, can&rsquo;t I use edit this file? I wouldn&rsquo;t suggest it, this file is processed on startup of the repository and could seriously damage your workspace if you made errors in it. It&rsquo;s best to leave the registration to the API.</p>
+
+<h2 id="id-ddcf50c29294d4414f3f7c1bbc892cb5">9 Resources</h2>
+
+<p>Heres our final CND file:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Final CND File</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>&lt;<span class="nv">ca</span> <span class="o">=</span> <span class="s1">&#39;http://www.codeaffectionado.com/training&#39;</span>&gt;
+</span><span class='line'><span class="o">[</span>ca:article<span class="o">]</span>
+</span><span class='line'>- ca:headline <span class="o">(</span>string<span class="o">)</span>
+</span><span class='line'><span class="o">=</span> <span class="s1">&#39;Headline Goes Here&#39;</span>
+</span><span class='line'>mandatory autocreated
+</span><span class='line'>- ca:body <span class="o">(</span>string<span class="o">)</span>
+</span><span class='line'><span class="o">=</span> <span class="s1">&#39;Body Goes Here&#39;</span>
+</span><span class='line'>mandatory autocreated
+</span><span class='line'>- * <span class="o">(</span>undefined<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>And our final main method:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Final Main Method</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span> <span class="n">String</span><span class="o">[]</span> <span class="n">args</span> <span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">Repository</span> <span class="n">repository</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TransientRepository</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">Session</span> <span class="n">session</span> <span class="o">=</span> <span class="n">repository</span><span class="o">.</span><span class="na">login</span><span class="o">(</span>
+</span><span class='line'>          <span class="k">new</span> <span class="nf">SimpleCredentials</span><span class="o">(</span><span class="s">&quot;admin&quot;</span><span class="o">,</span><span class="s">&quot;admin&quot;</span><span class="o">.</span><span class="na">toCharArray</span><span class="o">()));</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">try</span><span class="o">{</span>
+</span><span class='line'>      <span class="n">CndImporter</span><span class="o">.</span><span class="na">registerNodeTypes</span><span class="o">(</span><span class="k">new</span> <span class="n">FileReader</span><span class="o">(</span><span class="s">&quot;article.cnd&quot;</span><span class="o">),</span><span class="n">session</span><span class="o">,</span><span class="kc">true</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">Node</span> <span class="n">root</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="na">getRootNode</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">Node</span> <span class="n">articles</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">addNode</span><span class="o">(</span><span class="s">&quot;articles&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">Node</span> <span class="n">newNode</span> <span class="o">=</span> <span class="n">articles</span><span class="o">.</span><span class="na">addNode</span><span class="o">(</span><span class="s">&quot;article&quot;</span><span class="o">,</span><span class="s">&quot;ca:article&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">newNode</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">&quot;otherProp&quot;</span><span class="o">,</span><span class="s">&quot;Yah! It Worked!&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="c1">//newNode.setProperty(&quot;ca:body&quot;,&quot;Hello World!&quot;);</span>
+</span><span class='line'>      <span class="c1">//newNode.setProperty(&quot;ca:headline&quot;,&quot;New Hello World Article&quot;);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">session</span><span class="o">.</span><span class="na">save</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">Node</span> <span class="n">savedNode</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">getNode</span><span class="o">(</span><span class="s">&quot;articles/article&quot;</span><span class="o">);</span>
+</span><span class='line'>      <span class="n">dumpToConsole</span><span class="o">(</span><span class="n">savedNode</span><span class="o">);</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">savedNode</span><span class="o">.</span><span class="na">remove</span><span class="o">();</span>
+</span><span class='line'>      <span class="n">session</span><span class="o">.</span><span class="na">save</span><span class="o">();</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="o">}</span><span class="k">finally</span><span class="o">{</span>
+</span><span class='line'>      <span class="n">session</span><span class="o">.</span><span class="na">logout</span><span class="o">();</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+
+
+  
+    <footer>
+      <p class="meta">
+        
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-13T17:09:00-04:00" pubdate data-updated="true"></time>
+        
+      </p>
+      
+        <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/custom-node-types/index.html" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/custom-node-types/index.html" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+      
+    </footer>
+  
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  <section>
+  <h1>Tutorial Steps</h1>
+  <ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-ef1e6887c579ba81dcedc3f4e3793cd2">Audience</a></li><li style="list-style:inherit;"><a href="#id-3b878279a04dc47d60932cb294d96259">Overview</a></li><li style="list-style:inherit;"><a href="#id-6dd9e7257b6c92b39b5822d27f272629">A Quick Note Before We Get Started</a></li><li style="list-style:inherit;"><a href="#id-edeac4f2e1f63597edc58bc3ce31d685">Create A Compact Node Type Definition</a></li><li style="list-style:inherit;"><a href="#id-afe29371187d36fb3ef2a2f3efd77102">Registering A Node Type Into The Repository</a></li><li style="list-style:inherit;"><a href="#id-e68090d3fed83b8ed0f0b82283766c9e">Creating Default Values</a></li><li style="list-style:inherit;"><a href="#id-80c01d21345b9f660dca38a514c8a0de">Adding Non Specified Properties To Our New Type</a></li><li style="list-style:inherit;"><a href="#id-70b023db8fb279ef02f66b9ef4388dfe">Repository Storage Of Node Types</a></li><li style="list-style:inherit;"><a href="#id-ddcf50c29294d4414f3f7c1bbc892cb5">Resources</a></li></ol>
+  </section>
+<section>
+	<h1>Lab/Tutorial Sections</h1>
+	<ul id="recent_posts">
+      <li class="post">
+        <a href="/labs-and-tutorials/osgi/">OSGi</a>
+      </li>
+      <li>
+      	<a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a>
+      </li>
+  </ul>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/09/03/labs-and-tutorials-slash-apache-jackrabbit-slash-importing-xml/">The Most Important JavaScript Videos You Might Watch This Year</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/19/newest-osgi-tutorial-additions/">Newest OSGi Additions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/17/apache-jackrabbit-starting-out/">Apache Jackrabbit - Starting From Scratch Tutorial Up</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/114996005873710645329?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - jeff.downing@latchd.com -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'aggrolearning';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/custom-node-types/index.html';
+        var disqus_url = 'http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/custom-node-types/index.html';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

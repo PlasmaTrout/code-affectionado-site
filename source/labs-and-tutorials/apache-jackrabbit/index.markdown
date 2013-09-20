@@ -12,3 +12,4 @@ he following Apache Jackrabbit labs are normally done in order, however frequent
 2. [Manipulating Nodes](/labs-and-tutorials/apache-jackrabbit/manipulating-nodes)
 3. [Importing XML](/labs-and-tutorials/apache-jackrabbit/importing-xml)
 4. [Querying Nodes](/labs-and-tutorials/apache-jackrabbit/querying-nodes)
+5. [Custom Node Types](/labs-and-tutorials/apache-jackrabbit/custom-node-types)
