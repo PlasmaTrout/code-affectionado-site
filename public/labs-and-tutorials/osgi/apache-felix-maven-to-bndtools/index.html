@@ -1,0 +1,498 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Apache Felix - From Maven/SCR To BndTools - CodeAffectionado</title>
+  <meta name="author" content="jeff.downing@latchd.com">
+
+  
+  <meta name="description" content="Apache Felix - From Maven/SCR to BndTools In a previous tutorial we built a project and tested it utilizing maven. While maven is easy
+to learn when &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-maven-to-bndtools">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="CodeAffectionado" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43174506-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">CodeAffectionado</a></h1>
+  
+    <h2>Shared learning for code enthusiasts</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.codeaffectionado.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">News</a></li>
+  <li><a href="/labs-and-tutorials/">Labs And Tutorials</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article role="article">
+  
+  <header>
+    <h1 class="entry-title">Apache Felix - From Maven/SCR to BndTools</h1>
+    <p class="meta">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-01T10:01:00-04:00" pubdate data-updated="true"></time></p>
+  </header>
+  
+  <p>In a <a href="/labs-and-tutorials/osgi/apache-felix-scr-annotations">previous tutorial</a> we built a project and tested it utilizing maven. While maven is easy
+to learn when making simple bundles, it can be much more difficult to manage when projects
+have many bundles or when projects separate their API and Implementations frequently.
+A product called Bndtools streamlines the building of OSGi components and provides a significant number of
+ tools that help in this arena. In this tutorial the original simple greeter service is going to
+  be rebuilt as a Bndtools project.</p>
+
+<h2 id="id-9e7b1e92c9960b2f9a56d38d1045a47c">1 Getting Bndtools</h2>
+
+<p>Bndtools is an Eclipse tool set. Using the Eclipse marketplace is the preferred way of installing it.
+ The instructions are found at <a href="http://bndtools.org/installation.html.">http://bndtools.org/installation.html.</a></p>
+
+<h2 id="id-85105d730f764932fc83241aded6922c">2 Create a New Project</h2>
+
+<p>To demonstrate Bndtools, this tutorial will start all over again with the uber simple greeter service
+ used in previous posts. Start fresh with a new work-space and new project (I called my
+  work-space <code>osgibndtutorial</code> and called the project <code>greeter-bundle</code>). Choose an &ldquo;Empty Project&rdquo; as
+   the template and then finish.</p>
+
+<p><em>Note: If your prompted to create a configuration project, go ahead and create one.</em></p>
+
+<h2 id="id-8f79f85abfd23cbda081c5475b66dd4a">3 Create the API</h2>
+
+<p>Bndtools make separating bundles really easy. From one project you can have as many bundles as you would like built from it.  From the beginning of this tutorial we are going to start all over again and this time separate our bundles cleanly.</p>
+
+<h3 id="id-35dc3c6217e6c196249edb4c031c776c">3.1 Create an API Bundle</h3>
+
+<p>Bndtools, handles bundle creation a bit differently than previous tutorials. For each
+bundle created,  a bundle descriptor will be needed. This is used to build, test and configure
+each bundle independently of one another. Right click the project and choose New &ndash;> Bundle
+Descriptor and name it <code>greeter-bundle-api</code>:</p>
+
+<p><img src="/images/bndtools/Capture.PNG" title="The Bndtools Dialog" alt="The Bndtools Dialog"></p>
+
+<p>Once finished, in the directory of your project labeled <code>generated</code>, locate a created jar file called <code>greeter-bundle-api.jar</code>. Each time a bundle descriptor is created a new bundle jar file will be created and synchronized in this directory for you.</p>
+
+<p><em>Note: Double clicking the bnd descriptor file opens a configuration panel that&rsquo;s used to add packages the the bundle. By default, it&rsquo;s empty.</em></p>
+
+<p><em>Note: Double click any jar file to see whats inside of it.</em></p>
+
+<h3 id="id-34f8f3dcc0bb0e06da27813fe84879e0">3.2 Create an Interface</h3>
+
+<p>In the projects <code>src</code> directory, recreate the <code>Greeter.java</code> interface again:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>A New Interface For Our API</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">.</span><span class="na">api</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Greeter</span> <span class="o">{</span>
+</span><span class='line'>  <span class="n">String</span> <span class="nf">greet</span><span class="o">();</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>In the previous tutorials we had to use the jar command to open up our bundles jar files to see what was inside.
+Fortunately those days are over. A handy utility was installed into eclipse  that shows jar file contents without having to use the command line. Now if we double click the <code>greeter-bundle-api.jar</code>, we can see what&rsquo;s inside.</p>
+
+<p><img src="/images/bndtools/Capture2.PNG" title="'The Jar File Viewer In Action'" ></p>
+
+<p>Notice that the <code>MANIFEST.MF</code> file is the sole resident of the jar file. In order to get the newly
+created interface in there the <code>greeter-bundle-api.bnd</code> configuration needs to be modified.</p>
+
+<h3 id="id-8413bd554dfa289b8e54ce32e9efd594">3.3 Configuring the API Bundle</h3>
+
+<p>If we double click on the <code>greeter-bundle-api.bnd</code> file in the base directory of the project, we are presented with a new dialog. In the export packages section, click on the plus sign in the top right corner. The only option right now is the package that was just created. Double click the api package name in the dialog:</p>
+
+<p><img src="/images/bndtools/Capture3.PNG" title="'Exposing Our API'" ></p>
+
+<p>Now hit save all and double click the <code>greeter-bundle-api.jar</code> file again and examine the contents:</p>
+
+<p><img src="/images/bndtools/Capture4.PNG" title="'API Jar Revisited'" ></p>
+
+<p>Notice how the created interface package now appears in the jar file and the manifest is set to export it. All this with a few clicks of a button.</p>
+
+<h2 id="id-0806695a2ea772330084cf43c80d75b2">4 Creating an Implementation</h2>
+
+<p>Right click on the project again and create a new bundle descriptor. This time call it <code>greeter-bundle-impl.jar</code>. Notice when done, that there are two jar files now in the generated directory. One for the API bundle and another for the new implementation bundle.</p>
+
+<h3 id="id-f0cd311900f9b7ad6df6d930c1789cbc">4.1 Create a Greeter Implementation</h3>
+
+<p>Create a new class called <code>HelloWorldGreeter</code> and make it implement the <code>Greeter</code> interface:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Our New Greeter Implementation</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">.</span><span class="na">impl</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.bhn.training.api.Greeter</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorldGreeter</span> <span class="kd">implements</span> <span class="n">Greeter</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Override</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="n">String</span> <span class="nf">greet</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="k">return</span> <span class="s">&quot;Hello World&quot;</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h3 id="id-54735f014b7692acc5c2e0e8bed1ccd8">4.2 Annotate the Implementation</h3>
+
+<p>In one of the previous tutorials, SCR annotations were used to markup classes. In Bndtools we are going to use a different set of annotations.</p>
+
+<p>Double click on the <code>bnd.bnd</code> file that was created when the project was created. Once it appears, click on the plus sign next to build path text box and add the <code>biz.aQuote.bnd.annotation</code> package. After a quick save, make sure the screen shows something similar to the following:</p>
+
+<p><img src="/images/bndtools/Capture5.PNG" title="'Build Settings'" ></p>
+
+<p><em>Note: Remember how to do this. It will become common to use this dialog to add jars to the path. You may wonder where this list was populated from. If you look at the cnf folder that was created when you created the project, you will see a few directories in there. Some actually have the jars needed to build your projects but some are xml configurations that specify external repositories. Bndtools uses these repositories to make other bundles and libraries available to you in the tool. You can add repositories to this list as well, but that&rsquo;s out of the scope of this specific tutorial.</em></p>
+
+<p>In the <code>HelloWorldGreeter</code> implementation add the following annotation to the class declaration:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Our New Annotation</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Component</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorldGreeter</span> <span class="kd">implements</span> <span class="n">Greeter</span> <span class="o">{</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p><em>Note: You may be thinking, wait&hellip;that&rsquo;s it? Yep. That&rsquo;s it. The annotations for bndtools were well thought out ahead of time. They don&rsquo;t need you to tell them what interface to expose since you obviously implemented it and being a component must mean you want declarative services to register it for you.</em></p>
+
+<h3 id="id-0738ce23450e3217c967be41d8fbeb25">4.3 Adding The Implementation To The Bundle</h3>
+
+<p>Double click the <code>greeter-bundle-impl.bnd</code> file again and add this bundle to it as a private package. In the declarative services pull down select the Bnd Annotations and verify the screen looks like:</p>
+
+<p><img src="/images/bndtools/Capture6.PNG" title="'Implementation Bundle Settings'" ></p>
+
+<p>After a save all, peek into the jar again. See that the Service-Component descriptor and the xml file were written automatically.</p>
+
+<h2 id="id-e93a27452949cdd2cff211a1aea5cb5f">5 Remaking The Gogo Command</h2>
+
+<p>Before we recreate the original Gogo command from a previous tutorial, create a new bundle descriptor named <code>greeter-bundle-commands</code>. Once setup, double click the <code>bnd.bnd</code> file again and this time add a build path entry of <code>org.apache.felix.gogo.runtime</code>.</p>
+
+<p>When complete, create a new class called GreeterCommand.java and make it look like the following:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Our new Greeter</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">.</span><span class="na">commands</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.bhn.training.api.Greeter</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">aQute.bnd.annotation.component.Reference</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">GreetCommand</span> <span class="o">{</span>
+</span><span class='line'>  <span class="kd">private</span> <span class="n">Greeter</span> <span class="n">greeter</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nd">@Reference</span>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setGreeter</span><span class="o">(</span><span class="n">Greeter</span> <span class="n">greeter</span><span class="o">){</span>
+</span><span class='line'>      <span class="k">this</span><span class="o">.</span><span class="na">greeter</span> <span class="o">=</span> <span class="n">greeter</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">greet</span><span class="o">(){</span>
+</span><span class='line'>      <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">greeter</span><span class="o">.</span><span class="na">greet</span><span class="o">());</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>The reference annotation seen above automatically calls the service registry and gets the service injected into the method.</p>
+
+<p><em>Note: You may ask what if more than one is registered? Well it will still get one. Which one depends on the implementation of the framework. It is possible to filter what service that will be chosen. It&rsquo;s also possible to get all of them at once, which we will do in the next tutorial.</em></p>
+
+<h3 id="id-167ae985f9fb84e62f56b5f18b7b8a15">5.1 Annotating The Command</h3>
+
+<p>The greeter command doesn&rsquo;t have an interface, per say. So we will use a trick here to ensure it always gets registered by telling the framework it provides the Object class as its interface. To do that, some properties and alternate configurations for the component must be specified in the annotation:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Annotation Our Command</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Component</span><span class="o">(</span><span class="n">properties</span><span class="o">={</span>
+</span><span class='line'>      <span class="n">CommandProcessor</span><span class="o">.</span><span class="na">COMMAND_SCOPE</span><span class="o">+</span><span class="s">&quot;:String=tutorial&quot;</span><span class="o">,</span>
+</span><span class='line'>      <span class="n">CommandProcessor</span><span class="o">.</span><span class="na">COMMAND_FUNCTION</span><span class="o">+</span><span class="s">&quot;:String=greet&quot;</span>
+</span><span class='line'><span class="o">},</span><span class="n">provide</span><span class="o">=</span><span class="n">Object</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">GreetCommand</span> <span class="o">{</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h3 id="id-2db43e500cff8482e65a69c55f8653e2">5.2 Bundling The Command</h3>
+
+<p>In the <code>greeter-bundle-command.bnd</code> file. Add the command package as a private package and set the Declarative Services to Bnd Annotations. After a quick save, verify the screen looks like the following:</p>
+
+<p><img src="/images/bndtools/Capture7.PNG" title="'Bundling The Command'" ></p>
+
+<h2 id="id-3b62fd1bd0e1781b396f1342f443ba46">6 Running The Bundles</h2>
+
+<p>Double click the <code>bnd.bnd</code> file and go to the run tab. Drag the following bundles from the available bundles section to the run bundles section:</p>
+
+<ul>
+<li>org.apache.felix.gogo.runtime</li>
+<li>org.apache.felix.gogo.shell</li>
+<li>org.apache.felix.gogo.commands</li>
+<li>org.apache.felix.scr</li>
+<li>greeter-bundle-commands</li>
+</ul>
+
+
+<p>Now press the run button and the familiar Gogo shell should appear. Typing help should show that indeed the <code>tutorial:greet</code> command is available and ready. Typing <code>tutorial:greet</code> should get the hello world message just like it did in our very first tutorial. Here&rsquo;s an example of what it looks like:</p>
+
+<p><img src="/images/bndtools/Capture9.PNG" title="'Running The Command'" ></p>
+
+<h2 id="id-290612199861c31d1036b185b4e69b75">7 Summary</h2>
+
+<p>In this tutorial we took our original greeter service from a maven / scr project to using Bndtools. In the next tutorial multiple implementations of the Greeter service will be created and our command will execute all of them dynamically.</p>
+
+  
+    <footer>
+      <p class="meta">
+        
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-01T10:01:00-04:00" pubdate data-updated="true"></time>
+        
+      </p>
+      
+        <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-maven-to-bndtools/index.html" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-maven-to-bndtools/index.html" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+      
+    </footer>
+  
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  <section>
+  <h1>Tutorial Steps</h1>
+  <ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-9e7b1e92c9960b2f9a56d38d1045a47c">Getting Bndtools</a></li><li style="list-style:inherit;"><a href="#id-85105d730f764932fc83241aded6922c">Create a New Project</a></li><li style="list-style:inherit;"><a href="#id-8f79f85abfd23cbda081c5475b66dd4a">Create the API</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-35dc3c6217e6c196249edb4c031c776c">Create an API Bundle</a></li> <li style="list-style:inherit;"><a href="#id-34f8f3dcc0bb0e06da27813fe84879e0">Create an Interface</a></li> <li style="list-style:inherit;"><a href="#id-8413bd554dfa289b8e54ce32e9efd594">Configuring the API Bundle</a></li></ul></li><li style="list-style:inherit;"><a href="#id-0806695a2ea772330084cf43c80d75b2">Creating an Implementation</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-f0cd311900f9b7ad6df6d930c1789cbc">Create a Greeter Implementation</a></li> <li style="list-style:inherit;"><a href="#id-54735f014b7692acc5c2e0e8bed1ccd8">Annotate the Implementation</a></li> <li style="list-style:inherit;"><a href="#id-0738ce23450e3217c967be41d8fbeb25">Adding The Implementation To The Bundle</a></li></ul></li><li style="list-style:inherit;"><a href="#id-e93a27452949cdd2cff211a1aea5cb5f">Remaking The Gogo Command</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-167ae985f9fb84e62f56b5f18b7b8a15">Annotating The Command</a></li> <li style="list-style:inherit;"><a href="#id-2db43e500cff8482e65a69c55f8653e2">Bundling The Command</a></li></ul></li><li style="list-style:inherit;"><a href="#id-3b62fd1bd0e1781b396f1342f443ba46">Running The Bundles</a></li><li style="list-style:inherit;"><a href="#id-290612199861c31d1036b185b4e69b75">Summary</a></li></ol>
+  </section>
+<section>
+	<h1>Lab/Tutorial Sections</h1>
+	<ul id="recent_posts">
+      <li class="post">
+        <a href="/labs-and-tutorials/osgi/">OSGi</a>
+      </li>
+      <li>
+      	<a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a>
+      </li>
+  </ul>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/10/16/new-osgi-tutorial-posted/">New OSGi Tutorial on Bndtools Posted</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/03/labs-and-tutorials-slash-apache-jackrabbit-slash-importing-xml/">The Most Important JavaScript Videos You Might Watch This Year</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/19/newest-osgi-tutorial-additions/">Newest OSGi Additions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/17/apache-jackrabbit-starting-out/">Apache Jackrabbit - Starting From Scratch Tutorial Up</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/114996005873710645329?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - jeff.downing@latchd.com -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'aggrolearning';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-maven-to-bndtools/index.html';
+        var disqus_url = 'http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-maven-to-bndtools/index.html';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

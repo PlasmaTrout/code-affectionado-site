@@ -4,7 +4,7 @@
   <title><![CDATA[CodeAffectionado]]></title>
   <link href="http://www.codeaffectionado.com/atom.xml" rel="self"/>
   <link href="http://www.codeaffectionado.com/"/>
-  <updated>2013-09-20T16:39:18-04:00</updated>
+  <updated>2014-10-16T14:09:28-04:00</updated>
   <id>http://www.codeaffectionado.com/</id>
   <author>
     <name><![CDATA[jeff.downing@latchd.com]]></name>
@@ -12,6 +12,20 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[New OSGi Tutorial On Bndtools Posted]]></title>
+    <link href="http://www.codeaffectionado.com/blog/2014/10/16/new-osgi-tutorial-posted/"/>
+    <updated>2014-10-16T14:01:00-04:00</updated>
+    <id>http://www.codeaffectionado.com/blog/2014/10/16/new-osgi-tutorial-posted</id>
+    <content type="html"><![CDATA[<p>In a <a href="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-scr-annotations">previous osgi tutorial</a> we built a project and tested it utilizing maven. While maven is easy for making simple bundles, it becomes difficult to manage when projects
+have many bundles or when projects separate their API and Implementations frequently.</p>
+
+<p>A product called Bndtools streamlines the building of OSGi components and provides a significant number of  tools that help in this arena. In this <a href="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-maven-to-bndtools">new Bndtools tutorial</a> the original simple greeter service is going to be rebuilt from scratch as a Bndtools project.</p>
+
+<p>The <a href="http://www.codeaffectionado.com/labs-and-tutorials/osgi/">OSGi Tutorial Page</a> has been updated with this tutorial as well.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[The Most Important JavaScript Videos You Might Watch This Year]]></title>
