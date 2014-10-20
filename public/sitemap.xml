@@ -2,120 +2,126 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://www.codeaffectionado.com/blog/2013/08/17/apache-jackrabbit-starting-out/</loc>
-        <lastmod>2014-10-16T12:10:47-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/blog/2013/08/19/newest-osgi-tutorial-additions/</loc>
-        <lastmod>2014-10-16T12:10:47-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://www.codeaffectionado.com/blog/2013/09/03/labs-and-tutorials-slash-apache-jackrabbit-slash-importing-xml/
         </loc>
-        <lastmod>2014-10-16T12:10:47-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/blog/2014/10/16/new-osgi-tutorial-posted/</loc>
-        <lastmod>2014-10-16T14:09:27-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://www.codeaffectionado.com/blog/2014/10/16/hey-whats-with-this-wordpress-site/
         </loc>
-        <lastmod>2014-10-16T14:39:57-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/blog/archives/</loc>
-        <lastmod>2014-10-16T14:39:57-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/</loc>
-        <lastmod>2014-10-16T14:39:57-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/custom-node-types/
         </loc>
-        <lastmod>2014-10-16T12:10:47-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/importing-xml/
         </loc>
-        <lastmod>2014-10-16T12:10:47-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/</loc>
-        <lastmod>2014-10-16T12:10:47-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/manipulating-nodes/
         </loc>
-        <lastmod>2014-10-16T12:10:47-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/querying-nodes/
         </loc>
-        <lastmod>2014-10-16T12:10:47-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/starting-from-scratch/
         </loc>
-        <lastmod>2014-10-16T12:10:47-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/labs-and-tutorials/</loc>
-        <lastmod>2014-10-16T12:10:47-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-blueprint/</loc>
-        <lastmod>2014-10-16T12:10:47-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-ds-bundle/</loc>
-        <lastmod>2014-10-16T12:10:47-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-from-scratch/
         </loc>
-        <lastmod>2014-10-16T12:10:47-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-maven-to-bndtools/
         </loc>
-        <lastmod>2014-10-16T13:42:32-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-multiple-cardinality-references/
+        </loc>
+        <lastmod>2014-10-20T10:56:08-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-pax-exam/</loc>
-        <lastmod>2014-10-16T12:10:47-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-programmatic-bundle/
         </loc>
-        <lastmod>2014-10-16T12:10:47-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-scr-annotations/
         </loc>
-        <lastmod>2014-10-16T12:10:47-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-servlets/</loc>
-        <lastmod>2014-10-16T12:10:47-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/labs-and-tutorials/osgi/</loc>
-        <lastmod>2014-10-16T13:45:43-04:00</lastmod>
+        <lastmod>2014-10-20T10:58:18-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/robots.txt</loc>
-        <lastmod>2014-10-16T12:10:47-04:00</lastmod>
+        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
     </url>
 </urlset>
