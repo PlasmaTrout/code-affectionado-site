@@ -1,6 +1,6 @@
 ---
 layout: page
-title: "Apache Felix - Multiple Cardinality Reference"
+title: "Apache Felix - Multiple Cardinality References"
 date: 2014-10-20 10:01
 comments: true
 sharing: true
@@ -38,7 +38,7 @@ public class GreetCommand {
 This works great if we think that only one greeter will ever be registered as a service. But, 
 what if we wanted the command to save all of the greeters it found and use them all?
 
-## Modify The Command To Take Multiple References ##
+## Modify the Command for Multiple References ##
 We need to change our field to store more than one service at a time. So lets change it to a list of greeters. That means:
 ```java Original Field Declaration
 private Greeter greeter;
@@ -74,7 +74,7 @@ public void setGreeter(Greeter greeter){
 
 _Note: You can see the effects of this annotation change if you later break apart the component.xml file it generates. Inside you will notice that multiple=true sets the cardinality to "1..n" and the dynamic=true sets a property called policy to "dynamic". The final component.xml file is shown at the end of this tutorial for reference._
 
-## Create Unbind Method
+## Create an Unbind Method
 When we just had a single field, it was ok for the variable to hold a reference or a null. However, now that we are dealing with a collection of references, we need this field to have zero to many references, but never null. To do this, we need to create a method that will remove references from the collection when they are removed from OSGi. 
 
 Lets add a ```unsetGreeter``` method to unbind the references. The name alone is enough for the framework to find it. The framework is smart enough to know that if the method was named ```setSomething``` then ```unsetSomething``` must be the opposite. 
@@ -137,7 +137,7 @@ This is all we needed to do to make our bundle operate like before, but I promis
 
 Note: In the next sections I'm going to breeze through creating a new greeter bundle. If you get stuck and can't remember how to do it in Bndtools, the [previous tutorial](/labs-and-tutorials/osgi/apache-felix-maven-to-bndtools) had sections that can help.
 
-## Create An Alternate Implementation
+## Create an Alternate Implementation
 Using Eclipse and Bndtools, create a new Bundle Descriptor. Name this one ```greeter-bundle-impl2``` and inside it create the following implementation.:
 
 ```java Alternate Greeter Implementation
@@ -159,7 +159,7 @@ public class HelloUniverseGreeter implements Greeter {
 ```
 Now add this new implementation to the private packages of its ```greeter-bundle-impl2.bnd``` file and set the Declarative services to _Bnd Annotations_.
 
-## Setup And Run
+## Setup and Run
 Now in our ```bnd.bnd``` file again, click on the run tab and drag our new ```greeter-bundle-impl2``` file into the run bundles, if it isn't already there. When you click on the Run OSGi button now and run the tutorial:greet command, notice what you see:
 
 ```
@@ -203,7 +203,7 @@ g!
 
 When the bundle started, the references were bound immediately. They will now stay that way unless the implementation bundles are stopped or uninstalled. If you stop impl or impl2 in the console, watch what happens. This dynamic setting and unsetting is what makes OSGi so powerful.
 
-## A Peek Into The Component XML File ##
+## A Peek into the Component XML File ##
 So the annotation changes we made did some interesting things to the reference section of the component file. You can see it by double clicking on the greeter-bundle-commands.jar. It now looks like this:
 
 ```xml The Component XML File Now
