@@ -1,0 +1,175 @@
+---
+layout: page
+title: "Apache Felix - Filtering Multiple References"
+date: 2014-09-1 10:01
+comments: true
+sharing: true
+footer: true
+indexer: true
+---
+The [last tutorial](/labs-and-tutorials/OSGi/apache-felix-multiple-cardinality-references) used multiple references to bind all of the implementations it found of the Greeter interface. This comes in handy, but there are also times when only a few types of references are needed or certain ones should be excluded from binding. In order to do this we have to filter what references are bound from our binding method.
+
+In this example, simple filters will be implemented to filter what Greeter interfaces are bound by the Command class.
+
+## Setup
+Before we play with the filter, let's make one more greeter (so we have three). 
+
+### Yet Another Greeter Implementation
+Create one more greeter implementation in Bndtools and call this Bundle Descriptor ```greeter-bundle-impl3```. Inside make a class that looks like:
+
+```java Yet Another Greeter
+package org.bhn.training.impl3;
+
+import org.bhn.training.api.Greeter;
+import aQute.bnd.annotation.component.Component;
+
+@Component(properties={ "dayofweek:String=monday" })
+public class MondayMorningGreeter implements Greeter {
+    @Override
+    public String greet() {
+        return "bah!";
+    }
+}
+```
+Don't forget to add this class as a private member of the ```greeter-bundle-impl3.bnd``` file.
+
+### Decorate Existing Greeters
+In order to filter on the bundles, they need some properties added to them. In this example let's assume that each greeter is used for a specific day of the week and only a specific day's reference needs to be bound to the command. While this example isn't very useful, it demonstrates the general idea. In ```HelloWorldGreeter.java``` and ```HelloUniverseGreeter.java``` add the following properties to the component annotation:
+
+```java HelloWorldGreeter.java After Change
+package org.bhn.training.impl;
+
+import org.bhn.training.api.Greeter;
+import aQute.bnd.annotation.component.Component;
+
+@Component(properties={ "dayofweek:String=tuesday" })
+public class HelloWorldGreeter implements Greeter {
+    @Override
+    public String greet() {
+        return "Hello World!";
+    }
+}
+```
+and
+```java HelloUniverseGreeter.java After Change
+package org.bhn.training.impl2;
+
+import org.bhn.training.api.Greeter;
+import aQute.bnd.annotation.component.Component;
+
+@Component(properties={"dayofweek:String=saturday"})
+public class HelloUniverseGreeter implements Greeter {
+    @Override
+    public String greet() {
+        return "Hello Universe!";
+    }
+}
+```
+### Check Things So Far
+Run the modified project. A third greeter should now be available and the message should show on the console:
+
+```
+____________________________
+Welcome to Apache Felix Gogo
+
+g! Adding org.bhn.training.impl.HelloWorldGreeter
+Adding org.bhn.training.impl2.HelloUniverseGreeter
+Adding org.bhn.training.impl3.MondayMorningGreeter
+
+g! tutorial:greet
+Hello World!
+Hello Universe!
+bah!
+g! 
+```
+
+## Creating the Filter
+Right now when we run the Gogo command we created, we get all of the registered greeter interfaces. Let's suppose we only want the greeter that has the dayofweek set to Monday. How would we do that? 
+
+### Filtering the Greeters
+In order to filter what implementations will be registered, add a target property to the ```@Reference``` annotation in our ```GreetCommand.java``` class. Make it look like:
+
+```java Adding A Target Filter
+@Reference(multiple=true,dynamic=true,target="(dayofweek=monday)")
+public void setGreeter(Greeter greeter){
+    if(this.greeters == null){
+        this.greeters = new ArrayList<Greeter>();
+    }
+    System.out.println("Adding "+greeter.getClass().getName());
+    this.greeters.add(greeter);
+}
+```
+When we run the bundle now, check out what we get:
+```
+Welcome to Apache Felix Gogo
+
+g! Adding org.bhn.training.impl3.MondayMorningGreeter
+
+g! tutorial:greet
+bah!
+g! 
+```
+The target filter we applied made it so that only Greeters with a declared property of dayofweek set to monday were bound.
+
+### More Filter Fun
+The syntax used by the filter method is LDAP query syntax. If you google it you can find examples of how to do some pretty amazing things with it. Let's change our filter to bind everything that doesn't match the dayofweek by changing our expression to:
+
+```java
+@Reference(multiple=true,dynamic=true,target="(!(dayofweek=monday))")
+```
+This time when we run our example:
+```
+Adding org.bhn.training.impl.HelloWorldGreeter
+Adding org.bhn.training.impl2.HelloUniverseGreeter
+____________________________
+Welcome to Apache Felix Gogo
+
+g! tutorial:greet
+Hello World!
+Hello Universe!
+g! 
+```
+As we expected the other Greeters show up now because they don't have a dayofweek set to Monday.
+
+## Further Experimentation
+If you really want to have some more fun, here are some simple examples to try:
+
+```java Starts With Letter Example
+// Where dayofweek starts with s
+@Reference(multiple=true,dynamic=true,target="(dayofweek=s*)")
+```
+
+```java Or Example
+// Where dayofweek is monday or starts with t
+@Reference(multiple=true,dynamic=true,target="(|(dayofweek=t*)(dayofweek=monday))")
+```
+
+```java Wildcard Example
+@Reference(multiple=true,dynamic=true,target="(component.name=*Hello*)")
+```
+### Even More Experimentation
+We can change our signature of the bind method to see what properties exist on each reference we get. This can help us experiment with some strange combinations and help us troubleshoot problems. If you are in a experimental mood, set the ```setGreeter()``` method to look like this:
+
+```java Showing The Properties
+@Reference(multiple=true,dynamic=true)
+public void setGreeter(Greeter greeter,Map<String,Object> props){
+    if(this.greeters == null){
+        this.greeters = new ArrayList<Greeter>();
+    }
+    if(props != null){
+        Iterator<String> a = props.keySet().iterator();
+        while(a.hasNext()){
+            String key = a.next();
+            System.out.println("Key: "+key+" Value: "+props.get(key));
+        }
+    }
+    System.out.println("Adding "+greeter.getClass().getName());
+    this.greeters.add(greeter);
+}
+```
+When you run your bundles again notice that the properties of each one that was bound now show up.
+
+
+## Summary
+This example used ```@Reference``` targets to filter what implementations of a service would dynamically bind. In the next lessons, a crude web application will be constructed that use the greeter bundles.
+

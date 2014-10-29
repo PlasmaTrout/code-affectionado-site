@@ -1,0 +1,551 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Apache Felix - Filtering Multiple References - CodeAffectionado</title>
+  <meta name="author" content="jeff.downing@latchd.com">
+
+  
+  <meta name="description" content="Apache Felix - Filtering Multiple References The last tutorial used multiple references to bind all of the implementations it found of the Greeter &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-filtering-multiple-references">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="CodeAffectionado" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43174506-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">CodeAffectionado</a></h1>
+  
+    <h2>Shared learning for code enthusiasts</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.codeaffectionado.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">News</a></li>
+  <li><a href="/labs-and-tutorials/">Labs And Tutorials</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article role="article">
+  
+  <header>
+    <h1 class="entry-title">Apache Felix - Filtering Multiple References</h1>
+    <p class="meta">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-01T10:01:00-04:00" pubdate data-updated="true"></time></p>
+  </header>
+  
+  <p>The <a href="/labs-and-tutorials/OSGi/apache-felix-multiple-cardinality-references">last tutorial</a> used multiple references to bind all of the implementations it found of the Greeter interface. This comes in handy, but there are also times when only a few types of references are needed or certain ones should be excluded from binding. In order to do this we have to filter what references are bound from our binding method.</p>
+
+<p>In this example, simple filters will be implemented to filter what Greeter interfaces are bound by the Command class.</p>
+
+<h2 id="id-ad2376beebecdcf7846ba973fa1a005b">1 Setup</h2>
+
+<p>Before we play with the filter, let&rsquo;s make one more greeter (so we have three).</p>
+
+<h3 id="id-f24833f1712a488f0094c8db4cd154e7">1.1 Yet Another Greeter Implementation</h3>
+
+<p>Create one more greeter implementation in Bndtools and call this Bundle Descriptor <code>greeter-bundle-impl3</code>. Inside make a class that looks like:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Yet Another Greeter</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">.</span><span class="na">impl3</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.bhn.training.api.Greeter</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">aQute.bnd.annotation.component.Component</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Component</span><span class="o">(</span><span class="n">properties</span><span class="o">={</span> <span class="s">&quot;dayofweek:String=monday&quot;</span> <span class="o">})</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MondayMorningGreeter</span> <span class="kd">implements</span> <span class="n">Greeter</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">greet</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">&quot;bah!&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Don&rsquo;t forget to add this class as a private member of the <code>greeter-bundle-impl3.bnd</code> file.</p>
+
+<h3 id="id-93ca8155a0d73b4570668655757bc458">1.2 Decorate Existing Greeters</h3>
+
+<p>In order to filter on the bundles, they need some properties added to them. In this example let&rsquo;s assume that each greeter is used for a specific day of the week and only a specific day&rsquo;s reference needs to be bound to the command. While this example isn&rsquo;t very useful, it demonstrates the general idea. In <code>HelloWorldGreeter.java</code> and <code>HelloUniverseGreeter.java</code> add the following properties to the component annotation:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>HelloWorldGreeter.java After Change</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">.</span><span class="na">impl</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.bhn.training.api.Greeter</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">aQute.bnd.annotation.component.Component</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Component</span><span class="o">(</span><span class="n">properties</span><span class="o">={</span> <span class="s">&quot;dayofweek:String=tuesday&quot;</span> <span class="o">})</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloWorldGreeter</span> <span class="kd">implements</span> <span class="n">Greeter</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">greet</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">&quot;Hello World!&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>and</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>HelloUniverseGreeter.java After Change</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kn">package</span> <span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">.</span><span class="na">impl2</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="kn">import</span> <span class="nn">org.bhn.training.api.Greeter</span><span class="o">;</span>
+</span><span class='line'><span class="kn">import</span> <span class="nn">aQute.bnd.annotation.component.Component</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nd">@Component</span><span class="o">(</span><span class="n">properties</span><span class="o">={</span><span class="s">&quot;dayofweek:String=saturday&quot;</span><span class="o">})</span>
+</span><span class='line'><span class="kd">public</span> <span class="kd">class</span> <span class="nc">HelloUniverseGreeter</span> <span class="kd">implements</span> <span class="n">Greeter</span> <span class="o">{</span>
+</span><span class='line'>    <span class="nd">@Override</span>
+</span><span class='line'>    <span class="kd">public</span> <span class="n">String</span> <span class="nf">greet</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="s">&quot;Hello Universe!&quot;</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h3 id="id-034f2cdb5ba43255de9d6c01760699ec">1.3 Check Things So Far</h3>
+
+<p>Run the modified project. A third greeter should now be available and the message should show on the console:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>HelloUniverseGreeter.java After Change</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">____________________________</span>
+</span><span class='line'><span class="n">Welcome</span> <span class="n">to</span> <span class="n">Apache</span> <span class="n">Felix</span> <span class="n">Gogo</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">g</span><span class="o">!</span> <span class="n">Adding</span> <span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">.</span><span class="na">impl</span><span class="o">.</span><span class="na">HelloWorldGreeter</span>
+</span><span class='line'><span class="n">Adding</span> <span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">.</span><span class="na">impl2</span><span class="o">.</span><span class="na">HelloUniverseGreeter</span>
+</span><span class='line'><span class="n">Adding</span> <span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">.</span><span class="na">impl3</span><span class="o">.</span><span class="na">MondayMorningGreeter</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">g</span><span class="o">!</span> <span class="nl">tutorial:</span><span class="n">greet</span>
+</span><span class='line'><span class="n">Hello</span> <span class="n">World</span><span class="o">!</span>
+</span><span class='line'><span class="n">Hello</span> <span class="n">Universe</span><span class="o">!</span>
+</span><span class='line'><span class="n">bah</span><span class="o">!</span>
+</span><span class='line'><span class="n">g</span><span class="o">!</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2 id="id-92ce61f6602ff76344f33bace8a83984">2 Creating the Filter</h2>
+
+<p>Right now when we run the Gogo command we created, we get all of the registered greeter interfaces. Let&rsquo;s suppose we only want the greeter that has the dayofweek set to Monday. How would we do that?</p>
+
+<h3 id="id-7deecbc78303cbee2dcfdcd8a0c0b375">2.1 Filtering the Greeters</h3>
+
+<p>In order to filter what implementations will be registered, add a target property to the <code>@Reference</code> annotation in our <code>GreetCommand.java</code> class. Make it look like:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Adding A Target Filter</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Reference</span><span class="o">(</span><span class="n">multiple</span><span class="o">=</span><span class="kc">true</span><span class="o">,</span><span class="n">dynamic</span><span class="o">=</span><span class="kc">true</span><span class="o">,</span><span class="n">target</span><span class="o">=</span><span class="s">&quot;(dayofweek=monday)&quot;</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setGreeter</span><span class="o">(</span><span class="n">Greeter</span> <span class="n">greeter</span><span class="o">){</span>
+</span><span class='line'>    <span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">greeters</span> <span class="o">==</span> <span class="kc">null</span><span class="o">){</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">greeters</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Greeter</span><span class="o">&gt;();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Adding &quot;</span><span class="o">+</span><span class="n">greeter</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">greeters</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">greeter</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>When we run the bundle now, check out what we get:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Adding A Target Filter</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Welcome</span> <span class="n">to</span> <span class="n">Apache</span> <span class="n">Felix</span> <span class="n">Gogo</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">g</span><span class="o">!</span> <span class="n">Adding</span> <span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">.</span><span class="na">impl3</span><span class="o">.</span><span class="na">MondayMorningGreeter</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">g</span><span class="o">!</span> <span class="nl">tutorial:</span><span class="n">greet</span>
+</span><span class='line'><span class="n">bah</span><span class="o">!</span>
+</span><span class='line'><span class="n">g</span><span class="o">!</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>The target filter we applied made it so that only Greeters with a declared property of dayofweek set to monday were bound.</p>
+
+<h3 id="id-4e8e5a17a9fb733fcca71b6d374a0fe3">2.2 More Filter Fun</h3>
+
+<p>The syntax used by the filter method is LDAP query syntax. If you google it you can find examples of how to do some pretty amazing things with it. Let&rsquo;s change our filter to bind everything that doesn&rsquo;t match the dayofweek by changing our expression to:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Reference</span><span class="o">(</span><span class="n">multiple</span><span class="o">=</span><span class="kc">true</span><span class="o">,</span><span class="n">dynamic</span><span class="o">=</span><span class="kc">true</span><span class="o">,</span><span class="n">target</span><span class="o">=</span><span class="s">&quot;(!(dayofweek=monday))&quot;</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>This time when we run our example:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="n">Adding</span> <span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">.</span><span class="na">impl</span><span class="o">.</span><span class="na">HelloWorldGreeter</span>
+</span><span class='line'><span class="n">Adding</span> <span class="n">org</span><span class="o">.</span><span class="na">bhn</span><span class="o">.</span><span class="na">training</span><span class="o">.</span><span class="na">impl2</span><span class="o">.</span><span class="na">HelloUniverseGreeter</span>
+</span><span class='line'><span class="n">____________________________</span>
+</span><span class='line'><span class="n">Welcome</span> <span class="n">to</span> <span class="n">Apache</span> <span class="n">Felix</span> <span class="n">Gogo</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">g</span><span class="o">!</span> <span class="nl">tutorial:</span><span class="n">greet</span>
+</span><span class='line'><span class="n">Hello</span> <span class="n">World</span><span class="o">!</span>
+</span><span class='line'><span class="n">Hello</span> <span class="n">Universe</span><span class="o">!</span>
+</span><span class='line'><span class="n">g</span><span class="o">!</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>As we expected the other Greeters show up now because they don&rsquo;t have a dayofweek set to Monday.</p>
+
+<h2 id="id-561d4d285ffc8213b27ecbe5f2f2ad91">3 Further Experimentation</h2>
+
+<p>If you really want to have some more fun, here are some simple examples to try:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Starts With Letter Example</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// Where dayofweek starts with s</span>
+</span><span class='line'><span class="nd">@Reference</span><span class="o">(</span><span class="n">multiple</span><span class="o">=</span><span class="kc">true</span><span class="o">,</span><span class="n">dynamic</span><span class="o">=</span><span class="kc">true</span><span class="o">,</span><span class="n">target</span><span class="o">=</span><span class="s">&quot;(dayofweek=s*)&quot;</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Or Example</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="c1">// Where dayofweek is monday or starts with t</span>
+</span><span class='line'><span class="nd">@Reference</span><span class="o">(</span><span class="n">multiple</span><span class="o">=</span><span class="kc">true</span><span class="o">,</span><span class="n">dynamic</span><span class="o">=</span><span class="kc">true</span><span class="o">,</span><span class="n">target</span><span class="o">=</span><span class="s">&quot;(|(dayofweek=t*)(dayofweek=monday))&quot;</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Wildcard Example</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Reference</span><span class="o">(</span><span class="n">multiple</span><span class="o">=</span><span class="kc">true</span><span class="o">,</span><span class="n">dynamic</span><span class="o">=</span><span class="kc">true</span><span class="o">,</span><span class="n">target</span><span class="o">=</span><span class="s">&quot;(component.name=*Hello*)&quot;</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h3 id="id-46f485ecb70d04d112c5da5f00671400">3.1 Even More Experimentation</h3>
+
+<p>We can change our signature of the bind method to see what properties exist on each reference we get. This can help us experiment with some strange combinations and help us troubleshoot problems. If you are in a experimental mood, set the <code>setGreeter()</code> method to look like this:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span>Showing The Properties</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="nd">@Reference</span><span class="o">(</span><span class="n">multiple</span><span class="o">=</span><span class="kc">true</span><span class="o">,</span><span class="n">dynamic</span><span class="o">=</span><span class="kc">true</span><span class="o">)</span>
+</span><span class='line'><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setGreeter</span><span class="o">(</span><span class="n">Greeter</span> <span class="n">greeter</span><span class="o">,</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">props</span><span class="o">){</span>
+</span><span class='line'>    <span class="k">if</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">greeters</span> <span class="o">==</span> <span class="kc">null</span><span class="o">){</span>
+</span><span class='line'>        <span class="k">this</span><span class="o">.</span><span class="na">greeters</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Greeter</span><span class="o">&gt;();</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="k">if</span><span class="o">(</span><span class="n">props</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">){</span>
+</span><span class='line'>        <span class="n">Iterator</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="n">props</span><span class="o">.</span><span class="na">keySet</span><span class="o">().</span><span class="na">iterator</span><span class="o">();</span>
+</span><span class='line'>        <span class="k">while</span><span class="o">(</span><span class="n">a</span><span class="o">.</span><span class="na">hasNext</span><span class="o">()){</span>
+</span><span class='line'>            <span class="n">String</span> <span class="n">key</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
+</span><span class='line'>            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Key: &quot;</span><span class="o">+</span><span class="n">key</span><span class="o">+</span><span class="s">&quot; Value: &quot;</span><span class="o">+</span><span class="n">props</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">));</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">&quot;Adding &quot;</span><span class="o">+</span><span class="n">greeter</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getName</span><span class="o">());</span>
+</span><span class='line'>    <span class="k">this</span><span class="o">.</span><span class="na">greeters</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">greeter</span><span class="o">);</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>When you run your bundles again notice that the properties of each one that was bound now show up.</p>
+
+<h2 id="id-290612199861c31d1036b185b4e69b75">4 Summary</h2>
+
+<p>This example used <code>@Reference</code> targets to filter what implementations of a service would dynamically bind. In the next lessons, a crude web application will be constructed that use the greeter bundles.</p>
+
+  
+    <footer>
+      <p class="meta">
+        
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-01T10:01:00-04:00" pubdate data-updated="true"></time>
+        
+      </p>
+      
+        <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-filtering-multiple-references/index.html" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-filtering-multiple-references/index.html" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+      
+    </footer>
+  
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  <section>
+  <h1>Tutorial Steps</h1>
+  <ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-ad2376beebecdcf7846ba973fa1a005b">Setup</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-f24833f1712a488f0094c8db4cd154e7">Yet Another Greeter Implementation</a></li> <li style="list-style:inherit;"><a href="#id-93ca8155a0d73b4570668655757bc458">Decorate Existing Greeters</a></li> <li style="list-style:inherit;"><a href="#id-034f2cdb5ba43255de9d6c01760699ec">Check Things So Far</a></li></ul></li><li style="list-style:inherit;"><a href="#id-92ce61f6602ff76344f33bace8a83984">Creating the Filter</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-7deecbc78303cbee2dcfdcd8a0c0b375">Filtering the Greeters</a></li> <li style="list-style:inherit;"><a href="#id-4e8e5a17a9fb733fcca71b6d374a0fe3">More Filter Fun</a></li></ul></li><li style="list-style:inherit;"><a href="#id-561d4d285ffc8213b27ecbe5f2f2ad91">Further Experimentation</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-46f485ecb70d04d112c5da5f00671400">Even More Experimentation</a></li></ul></li><li style="list-style:inherit;"><a href="#id-290612199861c31d1036b185b4e69b75">Summary</a></li></ol>
+  </section>
+<section>
+	<h1>Lab/Tutorial Sections</h1>
+	<ul id="recent_posts">
+      <li class="post">
+        <a href="/labs-and-tutorials/osgi/">OSGi</a>
+      </li>
+      <li>
+      	<a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a>
+      </li>
+  </ul>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/10/16/hey-whats-with-this-wordpress-site/">Hey? Whats With This Wordpress Site?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/16/new-osgi-tutorial-posted/">New OSGi Tutorial on Bndtools Posted</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/03/labs-and-tutorials-slash-apache-jackrabbit-slash-importing-xml/">The Most Important JavaScript Videos You Might Watch This Year</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/19/newest-osgi-tutorial-additions/">Newest OSGi Additions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/17/apache-jackrabbit-starting-out/">Apache Jackrabbit - Starting From Scratch Tutorial Up</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/114996005873710645329?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - jeff.downing@latchd.com -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'aggrolearning';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-filtering-multiple-references/index.html';
+        var disqus_url = 'http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-filtering-multiple-references/index.html';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

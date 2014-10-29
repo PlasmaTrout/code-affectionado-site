@@ -2,126 +2,138 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://www.codeaffectionado.com/blog/2013/08/17/apache-jackrabbit-starting-out/</loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/blog/2013/08/19/newest-osgi-tutorial-additions/</loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://www.codeaffectionado.com/blog/2013/09/03/labs-and-tutorials-slash-apache-jackrabbit-slash-importing-xml/
         </loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/blog/2014/10/16/new-osgi-tutorial-posted/</loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://www.codeaffectionado.com/blog/2014/10/16/hey-whats-with-this-wordpress-site/
         </loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
     </url>
     <url>
-        <loc>http://www.codeaffectionado.com/blog/archives/</loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
-    </url>
-    <url>
-        <loc>http://www.codeaffectionado.com/</loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
-    </url>
-    <url>
-        <loc>
-            http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/custom-node-types/
-        </loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
-    </url>
-    <url>
-        <loc>
-            http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/importing-xml/
-        </loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
-    </url>
-    <url>
-        <loc>http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/</loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
-    </url>
-    <url>
-        <loc>
-            http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/manipulating-nodes/
-        </loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
+        <loc>http://www.codeaffectionado.com/robots.txt</loc>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/querying-nodes/
         </loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/importing-xml/
+        </loc>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/</loc>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/custom-node-types/
+        </loc>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/manipulating-nodes/
+        </loc>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/starting-from-scratch/
         </loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
-    </url>
-    <url>
-        <loc>http://www.codeaffectionado.com/labs-and-tutorials/</loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
-    </url>
-    <url>
-        <loc>http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-blueprint/</loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
-    </url>
-    <url>
-        <loc>http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-ds-bundle/</loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
-    </url>
-    <url>
-        <loc>
-            http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-from-scratch/
-        </loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
-    </url>
-    <url>
-        <loc>
-            http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-maven-to-bndtools/
-        </loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
-    </url>
-    <url>
-        <loc>
-            http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-multiple-cardinality-references/
-        </loc>
-        <lastmod>2014-10-20T11:02:32-04:00</lastmod>
-    </url>
-    <url>
-        <loc>http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-pax-exam/</loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-programmatic-bundle/
         </loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-from-scratch/
+        </loc>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-blueprint/</loc>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
     </url>
     <url>
         <loc>
             http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-scr-annotations/
         </loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-filtering-multiple-references/
+        </loc>
+        <lastmod>2014-10-29T11:20:41-04:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-filtering-multiple-references/index.markdown.bak
+        </loc>
+        <lastmod>2014-10-29T11:09:25-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-servlets/</loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-pax-exam/</loc>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-ds-bundle/</loc>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/labs-and-tutorials/osgi/</loc>
-        <lastmod>2014-10-20T10:58:18-04:00</lastmod>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
     </url>
     <url>
-        <loc>http://www.codeaffectionado.com/robots.txt</loc>
-        <lastmod>2014-10-20T09:42:43-04:00</lastmod>
+        <loc>
+            http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-multiple-cardinality-references/
+        </loc>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-maven-to-bndtools/
+        </loc>
+        <lastmod>2014-10-29T11:08:03-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://www.codeaffectionado.com/labs-and-tutorials/</loc>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://www.codeaffectionado.com/</loc>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
+    </url>
+    <url>
+        <loc>http://www.codeaffectionado.com/blog/archives/</loc>
+        <lastmod>2014-10-24T13:38:22-04:00</lastmod>
     </url>
 </urlset>

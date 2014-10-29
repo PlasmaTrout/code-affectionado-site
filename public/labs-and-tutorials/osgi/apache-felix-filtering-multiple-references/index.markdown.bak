@@ -1,0 +1,434 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Apache Felix - Filtering Multiple References - CodeAffectionado</title>
+  <meta name="author" content="jeff.downing@latchd.com">
+
+  
+  <meta name="description" content="Apache Felix - Filtering Multiple References In the [last tutorial](/labs-and-tutorials/OSGi/apache-felix-multiple-cardinality-references), dynamic &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-filtering-multiple-references/index.markdown.bak">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="CodeAffectionado" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43174506-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">CodeAffectionado</a></h1>
+  
+    <h2>Shared learning for code enthusiasts</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:www.codeaffectionado.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">News</a></li>
+  <li><a href="/labs-and-tutorials/">Labs And Tutorials</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article role="article">
+  
+  <header>
+    <h1 class="entry-title">Apache Felix - Filtering Multiple References</h1>
+    <p class="meta">
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-01T10:01:00-04:00" pubdate data-updated="true"></time></p>
+  </header>
+  
+  In the [last tutorial](/labs-and-tutorials/OSGi/apache-felix-multiple-cardinality-references), dynamic multiple references were used along with an immediate activation policy. The command class bound all of the implementations it found of the Greeter interface. However, suppose only a few types of references are needed or certain ones should be excluded from binding.
+
+In this example, simple filters will be implemented to filter what Greeter interfaces are bound by the Command class.
+
+## Setup
+Before we play with the filter, let's make one more greeter (so we have three). Then we will add some annotation properties to them to filter on.
+
+### Yet Another Greeter Implementation
+Create one more greeter implementation in Bndtools and call this Bundle Descriptor ```greeter-bundle-impl3```. Inside make a class that looks like:
+
+```java Yet Another Greeter
+package org.bhn.training.impl3;
+
+import org.bhn.training.api.Greeter;
+import aQute.bnd.annotation.component.Component;
+
+@Component(properties={ "dayofweek:String=monday" })
+public class MondayMorningGreeter implements Greeter {
+    @Override
+    public String greet() {
+        return "bah!";
+    }
+}
+```
+Don't forget to add this class as a private member of the ```greeter-bundle-impl3.bnd``` file.
+
+### Decorate Existing Greeters
+In order to filter on the bundles they need some properties that can be filtered on. In this example assume that each greeter is used for a specific day of the week and only a specific day's reference needs to be bound to the command. While this example has very little real world significance, it demonstrates the idea. In ```HelloWorldGreeter.java``` and ```HelloUniverseGreeter.java``` add the following properties to the component annotation:
+
+```java HelloWorldGreeter.java After Change
+package org.bhn.training.impl;
+
+import org.bhn.training.api.Greeter;
+import aQute.bnd.annotation.component.Component;
+
+@Component(properties={ "dayofweek:String=tuesday" })
+public class HelloWorldGreeter implements Greeter {
+    @Override
+    public String greet() {
+        return "Hello World!";
+    }
+}
+```
+and
+```java HelloUniverseGreeter.java After Change
+package org.bhn.training.impl2;
+
+import org.bhn.training.api.Greeter;
+import aQute.bnd.annotation.component.Component;
+
+@Component(properties={"dayofweek:String=saturday"})
+public class HelloUniverseGreeter implements Greeter {
+    @Override
+    public String greet() {
+        return "Hello Universe!";
+    }
+}
+```
+### Check Things So Far
+Run the modified project. A third greeter should now be available and the message should show on the console:
+
+```
+____________________________
+Welcome to Apache Felix Gogo
+
+g! Adding org.bhn.training.impl.HelloWorldGreeter
+Adding org.bhn.training.impl2.HelloUniverseGreeter
+Adding org.bhn.training.impl3.MondayMorningGreeter
+
+g! tutorial:greet
+Hello World!
+Hello Universe!
+bah!
+g! 
+```
+
+## Creating the Filter
+Right now when we run the gogo command we created, we get all of the registered greeter interfaces. Let's suppose we only want the greeter that has the dayofweek set to Monday. How would we do that? 
+
+### Filtering the Greeters
+In order to filter what implementations will be registered, add a target property to the ```@Reference``` annotation in our ```GreetCommand.java``` class. Make it look like:
+
+```java Adding A Target Filter
+@Reference(multiple=true,dynamic=true,target="(dayofweek=monday)")
+public void setGreeter(Greeter greeter){
+    if(this.greeters == null){
+        this.greeters = new ArrayList<Greeter>();
+    }
+    System.out.println("Adding "+greeter.getClass().getName());
+    this.greeters.add(greeter);
+}
+```
+When we run the bundle now, check out what we get:
+```
+Welcome to Apache Felix Gogo
+
+g! Adding org.bhn.training.impl3.MondayMorningGreeter
+
+g! tutorial:greet
+bah!
+g! 
+```
+The target filter we applied made it so that only Greeters with a declared property of dayofweek set to monday were bound.
+
+### More Filter Fun
+The syntax used by the filter method is LDAP query syntax. If you google it you can find examples of how to do some pretty amazing things. Let's change our filter to bind everything that doesn't match the dayofweek by changing our expression to:
+
+```java
+@Reference(multiple=true,dynamic=true,target="(!(dayofweek=monday))")
+```
+This time when we run our example:
+```
+Adding org.bhn.training.impl.HelloWorldGreeter
+Adding org.bhn.training.impl2.HelloUniverseGreeter
+____________________________
+Welcome to Apache Felix Gogo
+
+g! tutorial:greet
+Hello World!
+Hello Universe!
+g! 
+```
+As we expected the other Greeters show up now because they don't have a dayofweek set to Monday.
+
+## Further Experimentation
+If you really want to have some more fun, here are some simple examples to try:
+
+```java Starts With Letter Example
+// Where dayofweek starts with s
+@Reference(multiple=true,dynamic=true,target="(dayofweek=s*)")
+```
+
+```java Or Example
+// Where dayofweek is monday or starts with t
+@Reference(multiple=true,dynamic=true,target="(|(dayofweek=t*)(dayofweek=monday))")
+```
+
+```java Wildcard Example
+@Reference(multiple=true,dynamic=true,target="(component.name=*Hello*)")
+```
+### Even More Experimentation
+We can change our signature of the bind method to see what properties exist on each reference we get. This can help us experiment with some strange combinations and help us troubleshoot problems. If you are in a experimental mood, set the ```setGreeter()``` method to look like this:
+
+```java Showing The Properties
+@Reference(multiple=true,dynamic=true)
+public void setGreeter(Greeter greeter,Map<String,Object> props){
+    if(this.greeters == null){
+        this.greeters = new ArrayList<Greeter>();
+    }
+    if(props != null){
+        Iterator<String> a = props.keySet().iterator();
+        while(a.hasNext()){
+            String key = a.next();
+            System.out.println("Key: "+key+" Value: "+props.get(key));
+        }
+    }
+    System.out.println("Adding "+greeter.getClass().getName());
+    this.greeters.add(greeter);
+}
+```
+When you run your bundles again notice that the properties of each one that was bound now show up.
+
+
+## Summary
+This example used ```@Reference``` targets to filter what implementations of a service would dynamically bind. In the next lessons, a crude web application will be constructed that use the greeter bundles.
+
+
+  
+    <footer>
+      <p class="meta">
+        
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-01T10:01:00-04:00" pubdate data-updated="true"></time>
+        
+      </p>
+      
+        <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-filtering-multiple-references/index.markdown.bak" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-filtering-multiple-references/index.markdown.bak" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+      
+    </footer>
+  
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    
+  <section>
+  <h1>Tutorial Steps</h1>
+  <ol style="margin-left: 1.3em;"></ol>
+  </section>
+<section>
+	<h1>Lab/Tutorial Sections</h1>
+	<ul id="recent_posts">
+      <li class="post">
+        <a href="/labs-and-tutorials/osgi/">OSGi</a>
+      </li>
+      <li>
+      	<a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a>
+      </li>
+  </ul>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/10/16/hey-whats-with-this-wordpress-site/">Hey? Whats With This Wordpress Site?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/16/new-osgi-tutorial-posted/">New OSGi Tutorial on Bndtools Posted</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/03/labs-and-tutorials-slash-apache-jackrabbit-slash-importing-xml/">The Most Important JavaScript Videos You Might Watch This Year</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/19/newest-osgi-tutorial-additions/">Newest OSGi Additions</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/08/17/apache-jackrabbit-starting-out/">Apache Jackrabbit - Starting From Scratch Tutorial Up</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/114996005873710645329?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - jeff.downing@latchd.com -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'aggrolearning';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-filtering-multiple-references/index.markdown.bak';
+        var disqus_url = 'http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-filtering-multiple-references/index.markdown.bak';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
