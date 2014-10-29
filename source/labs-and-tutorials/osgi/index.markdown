@@ -15,6 +15,6 @@ The following OSGi labs are normally done in order, however frequently we includ
 5.  [Modifying First Bundle To Use SCR Annotations](/labs-and-tutorials/osgi/apache-felix-scr-annotations)
 6.  [Using Bndtools](/labs-and-tutorials/osgi/apache-felix-maven-to-bndtools)
 7.  [Multiple Cardinality References](/labs-and-tutorials/osgi/apache-felix-multiple-cardinality-references)
-8.  Filtering References
+8.  [Filtering References](/labs-and-tutorials/osgi/apache-felix-filtering-multiple-references)
 9.  Moving On To Apache Sling
 
