@@ -1,0 +1,26 @@
+---
+layout: post
+title: "Set Up For 2015 (Videos And More)"
+date: 2015-05-13 09:16
+comments: true
+categories: [General]
+---
+I know it's been quiet for a while since the last update, and that's going to change. It just took a while to setup for the new additions
+to the site. It took longer than I expected to purchase the software and equipment needed to take this to the next level.
+
+So whats in the works, well, for starters video tutorials. There will be more of those for sure. My first few attempts went into the [Programmer Vs World youtube channel](https://www.youtube.com/channel/UCXUMchScrOIZYUa9_6wmFTg), but I think I may move them to a dedicated codeaffectionado channel soon. 
+
+Here's an example (I made a [special area](http://localhost:4000/labs-and-tutorials/osgi/) in the OSGi tutorial page for these):
+
+<iframe width="625" height="385" src="https://www.youtube.com/embed/KqhpgiFNQso" frameborder="0" allowfullscreen></iframe>
+
+<br/><br/>
+Also, myself and a few friends have started getting ready to start a podcast. 
+We've done some sample takes and think we've got a format that can be fun and educational all at the same time. We did some test episodes but we should have the real show cranking up in late June. I'll post the link on here when it starts.
+
+
+Lastly the site has needed a makeover for quite a while. I've been running with the stock theme for far too long. Thanks to [Anne Johnson](http://annekjohnson.com/) for the theme.
+
+What's the next tutorial? Well I received a ton of questions about how to build JSP applications for Felix/BndTools, so I thought we would start there. I have the materials complete, I just need a play to put a zip file of all of the BndTools items you will need first. I also recieved some questions on logging as well and we will tackle that too.
+
+Thanks everyone for being patient the last few months and game on!

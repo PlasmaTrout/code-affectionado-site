@@ -4,7 +4,7 @@
   <title><![CDATA[Category: General | CodeAffectionado]]></title>
   <link href="http://www.codeaffectionado.com/blog/categories/general/atom.xml" rel="self"/>
   <link href="http://www.codeaffectionado.com/"/>
-  <updated>2014-10-29T11:28:55-04:00</updated>
+  <updated>2015-05-13T09:49:14-04:00</updated>
   <id>http://www.codeaffectionado.com/</id>
   <author>
     <name><![CDATA[jeff.downing@latchd.com]]></name>
@@ -12,6 +12,37 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Set Up for 2015 (Videos and More)]]></title>
+    <link href="http://www.codeaffectionado.com/blog/2015/05/13/setting-up-for-2015/"/>
+    <updated>2015-05-13T09:16:00-04:00</updated>
+    <id>http://www.codeaffectionado.com/blog/2015/05/13/setting-up-for-2015</id>
+    <content type="html"><![CDATA[<p>I know it&rsquo;s been quiet for a while since the last update, and that&rsquo;s going to change. It just took a while to setup for the new additions
+to the site. It took longer than I expected to purchase the software and equipment needed to take this to the next level.</p>
+
+<p>So whats in the works, well, for starters video tutorials. There will be more of those for sure. My first few attempts went into the <a href="https://www.youtube.com/channel/UCXUMchScrOIZYUa9_6wmFTg">Programmer Vs World youtube channel</a>, but I think I may move them to a dedicated codeaffectionado channel soon.</p>
+
+<p>Here&rsquo;s an example (I made a <a href="http://localhost:4000/labs-and-tutorials/osgi/">special area</a> in the OSGi tutorial page for these):</p>
+
+<iframe width="625" height="385" src="https://www.youtube.com/embed/KqhpgiFNQso" frameborder="0" allowfullscreen></iframe>
+
+
+
+
+<br/><br/>
+
+
+<p>Also, myself and a few friends have started getting ready to start a podcast.
+We&rsquo;ve done some sample takes and think we&rsquo;ve got a format that can be fun and educational all at the same time. We did some test episodes but we should have the real show cranking up in late June. I&rsquo;ll post the link on here when it starts.</p>
+
+<p>Lastly the site has needed a makeover for quite a while. I&rsquo;ve been running with the stock theme for far too long. Thanks to <a href="http://annekjohnson.com/">Anne Johnson</a> for the theme.</p>
+
+<p>What&rsquo;s the next tutorial? Well I received a ton of questions about how to build JSP applications for Felix/BndTools, so I thought we would start there. I have the materials complete, I just need a play to put a zip file of all of the BndTools items you will need first. I also recieved some questions on logging as well and we will tackle that too.</p>
+
+<p>Thanks everyone for being patient the last few months and game on!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Hey? Whats With This Wordpress Site?]]></title>

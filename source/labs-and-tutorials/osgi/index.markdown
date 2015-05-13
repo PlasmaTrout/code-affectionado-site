@@ -8,6 +8,8 @@ footer: true
 ---
 The following OSGi labs are normally done in order, however frequently we include GitHub links directly to finished versions of the previous labs so you can jump right in. This list is updated often as new tutorials are completed so check back often. The following labs are available in the category OSGi:
 
+#### Web Tutorials
+
 1.	[Starting From Scratch](/labs-and-tutorials/osgi/apache-felix-from-scratch/)
 2.	[First Bundle the Programmatic Way](/labs-and-tutorials/osgi/apache-felix-programmatic-bundle/)
 3.	[Modifying Our First Bundle for Declarative Services](/labs-and-tutorials/osgi/apache-felix-ds-bundle/)
@@ -16,5 +18,10 @@ The following OSGi labs are normally done in order, however frequently we includ
 6.  [Using Bndtools](/labs-and-tutorials/osgi/apache-felix-maven-to-bndtools)
 7.  [Multiple Cardinality References](/labs-and-tutorials/osgi/apache-felix-multiple-cardinality-references)
 8.  [Filtering References](/labs-and-tutorials/osgi/apache-felix-filtering-multiple-references)
-9.  Moving On To Apache Sling
+
+#### Video Tutorials
+
+1.  [Installing Apache Felix With Web Console From Scratch](https://youtu.be/KqhpgiFNQso)
+2.  [Installing Apache Karaf With Web Console From Scratch](https://youtu.be/Z7kDntKsS6w)
+3.  [Setting Up Eclipse With BndTools](https://youtu.be/AEUxeUBb6i0)
 

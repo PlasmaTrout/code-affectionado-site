@@ -4,15 +4,15 @@
 <!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
+  <script src="/js/vendor/modernizr.js"></script>
   <meta charset="utf-8">
-  <title>Apache Jackrabbit - Querying Nodes - CodeAffectionado</title>
+  <title>Apache Jackrabbit - Querying Nodes | CodeAffectionado</title>
   <meta name="author" content="jeff.downing@latchd.com">
 
   
-  <meta name="description" content="Apache Jackrabbit - Querying Nodes In a previous tutorial we learned how to import bulk XML into the JCR. However, once a significant number of &hellip;">
+  <meta name="description" content="Apache Jackrabbit - Querying Nodes September 4, 2013 --> In a previous tutorial we learned how to import bulk XML into the JCR. However, once a &hellip;">
   
 
-  <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -22,13 +22,26 @@
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="CodeAffectionado" type="application/atom+xml">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+
+  <script src="/js/vendor/jquery.js"></script>
+  <script src="/js/vendor/fastclick.js"></script>
+
+  <script src="/js/foundation.min.js"></script>
+
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
+
+
+  <script>
+
+  $(document).ready(function(){
+    $(document).foundation();
+  });
+
+  </script>
+
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Roboto:300,300italic,500,500italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Ubuntu:500' rel='stylesheet' type='text/css'>
 
   
   <script type="text/javascript">
@@ -46,42 +59,69 @@
 
 </head>
 
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/">CodeAffectionado</a></h1>
-  
-    <h2>Shared learning for code enthusiasts</h2>
-  
-</hgroup>
-
+<body  >
+  <header role="banner" class="top-header">
 </header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <nav role="navigation"><ul class="subscription hide" data-subscription="rss">
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
-  
-<form action="http://google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:www.codeaffectionado.com" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">News</a></li>
-  <li><a href="/labs-and-tutorials/">Labs And Tutorials</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
-</ul>
+
+
+  <nav class="top-bar" data-topbar>
+
+    <!--Uncomment CodeAffectionado below if you would like a title area on the left side of the nav bar-->
+
+    <ul class="title-area">
+        <li class="name">
+          <h1><a href="/">CodeAffectionado</a></h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#">Menu</a></li>
+    </ul>
+
+
+    <section class="top-bar-section">
+
+      <ul class="main-navigation right">
+
+          <li><a href="/">Home</a></li>
+      	  <li class="has-dropdown">
+            <a href="/labs-and-tutorials">Tutorials</a>
+        		<ul class="dropdown">
+        		   <li><a href="/labs-and-tutorials/osgi/">OSGi</a></li>
+        		   <li><a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a></li>
+        		</ul>
+          <li>
+
+          <!--<li class="has-dropdown">
+            <a href="/no-sidebar">No Sidebar Page</a>
+
+            <ul class="dropdown">
+              <li><a href="/no-sidebar/left-sidebar">Left Sidebar Page</a></li>
+              <li><a href="/no-sidebar/right-sidebar">Right Sidebar Page</a></li>
+              <li><a href="/no-sidebar/example-formatting">Example Formatting</a></li>
+            </ul>
+
+          </li>-->
+
+          <li><a href="/blog/archives">Archives</a></li>
+
+      </ul>
+
+    </section>
+  </nav>
+
 
 </nav>
   <div id="main">
-    <div id="content">
-      <div>
-<article role="article">
-  
-  <header>
-    <h1 class="entry-title">Apache Jackrabbit - Querying Nodes</h1>
-    <p class="meta">
+    <div id="content" class="row">
+        <div class="small-12 medium-12 large-8 columns">
+  <article role="article">
+    
+    <header class="page-header">
+      <h1 class="page-title">Apache Jackrabbit - Querying Nodes</h1>
+      
+      <!--<p class="meta">
 
 
 
@@ -93,10 +133,10 @@
   
 
 
-<time datetime="2013-09-04T14:24:00-04:00" pubdate data-updated="true"></time></p>
-  </header>
-  
-  <p>In a <a href="/labs-and-tutorials/apache-jackrabbit/importing-xml/">previous tutorial</a> we learned how to import bulk XML into the JCR. However, once a significant number of nodes are in the JCR, navigating each node one by one in order to find a specific set of nodes can be a bit tedious. For this the JCR uses queries. This tutorial shows how to execute queries against the imported data.</p>
+<i class="fa fa-calendar-o"></i> <time datetime="2013-09-04T14:24:00-04:00" pubdate data-updated="true">September  4, 2013</time> </p>-->
+    </header>
+    
+    <p>In a <a href="/labs-and-tutorials/apache-jackrabbit/importing-xml/">previous tutorial</a> we learned how to import bulk XML into the JCR. However, once a significant number of nodes are in the JCR, navigating each node one by one in order to find a specific set of nodes can be a bit tedious. For this the JCR uses queries. This tutorial shows how to execute queries against the imported data.</p>
 
 <h2 id="id-ef1e6887c579ba81dcedc3f4e3793cd2">1 Audience</h2>
 
@@ -498,11 +538,11 @@
 
 <p>The best case to use them is when you need to write code to dynamically generate queries on the fly. It&rsquo;s API provides a sort of safety against you executing a malformed string.</p>
 
-  
-    <footer>
-      <p class="meta">
-        
-        
+    
+      <footer>
+        <p class="meta">
+          
+          
 
 
 
@@ -514,11 +554,11 @@
   
 
 
-<time datetime="2013-09-04T14:24:00-04:00" pubdate data-updated="true"></time>
+<i class="fa fa-calendar-o"></i> <time datetime="2013-09-04T14:24:00-04:00" pubdate data-updated="true">September  4, 2013</time> 
+          
+        </p>
         
-      </p>
-      
-        <div class="sharing">
+          <div class="sharing">
   
   <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/querying-nodes/index.html" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/querying-nodes/index.html" >Tweet</a>
   
@@ -530,22 +570,22 @@
   
 </div>
 
-      
-    </footer>
-  
-</article>
-
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-</div>
-  </section>
-
-</div>
-
-<aside class="sidebar">
-  
+        
+      </footer>
     
+  </article>
+  
+    <section>
+      <h1>Comments</h1>
+      <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </section>
+  
+  </div><!--.columns-->
+  
+  <aside class="sidebar small-12 medium-12 large-4 columns">
+    
+      
   <section>
   <h1>Tutorial Steps</h1>
   <ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-ef1e6887c579ba81dcedc3f4e3793cd2">Audience</a></li><li style="list-style:inherit;"><a href="#id-3b878279a04dc47d60932cb294d96259">Overview</a></li><li style="list-style:inherit;"><a href="#id-87cd38f51e59807f87092df1a7fe7909">Remove Code We Won&rsquo;t Need</a></li><li style="list-style:inherit;"><a href="#id-1d25849741b0e0c0f7f459ef277fa13e">Query The Records</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-bd2b2461d61bd9b894aa98c2f907308b">Get A Reference To A Query Manager</a></li> <li style="list-style:inherit;"><a href="#id-ead87f1d213945897ab21cd4ae1fe842">Create A Query</a></li> <li style="list-style:inherit;"><a href="#id-bcacb81141fa0736cbb998d76c711ca5">Execute The Query</a></li> <li style="list-style:inherit;"><a href="#id-d302c9b00a4aaa3e5b1cd40d3edd2b88">Get The Nodes In The Result Set</a></li></ul></li><li style="list-style:inherit;"><a href="#id-925b6d5afae3d121418632ab9898de8f">Running Our Query</a></li><li style="list-style:inherit;"><a href="#id-860ae96cb07b7d1ac666b10e42e1fa10">Testing Another Query</a></li><li style="list-style:inherit;"><a href="#id-290612199861c31d1036b185b4e69b75">Summary</a></li><li style="list-style:inherit;"><a href="#id-886d4861dc91975311dfb96307bfe449">Common Questions</a></li></ol>
@@ -561,8 +601,12 @@
       </li>
   </ul>
 </section><section>
-  <h1>Recent Posts</h1>
+  <h1>Recent Posts <i class="fa fa-edit"></i></h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/05/13/setting-up-for-2015/">Set Up for 2015 (Videos and More)</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/10/16/hey-whats-with-this-wordpress-site/">Hey? Whats With This Wordpress Site?</a>
@@ -580,33 +624,36 @@
         <a href="/blog/2013/08/19/newest-osgi-tutorial-additions/">Newest OSGi Additions</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/08/17/apache-jackrabbit-starting-out/">Apache Jackrabbit - Starting From Scratch Tutorial Up</a>
-      </li>
-    
   </ul>
 </section>
 
 <section class="googleplus">
-  <h1>
+  <h3>
     <a href="https://plus.google.com/114996005873710645329?rel=author">
-      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      <i class="fa fa-google-plus-square"></i> 
       Google+
     </a>
-  </h1>
+  </h3>
 </section>
 
 
 
+    
+  </aside>
   
-</aside>
 
 
     </div>
   </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - jeff.downing@latchd.com -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <footer role="contentinfo"><p class="text-center">
+  <span class="copyright">
+  	Copyright &copy; 2015 by jeff.downing@latchd.com
+  </span>
+
+  <span class="credit">
+  	Powered by <a href="http://octopress.org" target="_blank">Octopress</a><br />
+  	<span><a href="http://github.com/annejohnson/octofound" target="_blank">Theme</a> by <a href="http://feathers.io" target="_blank">Anne Johnson</a></span>
+  </span>
 </p>
 
 </footer>
@@ -623,7 +670,7 @@
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -660,6 +707,7 @@
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
+
 
 
 

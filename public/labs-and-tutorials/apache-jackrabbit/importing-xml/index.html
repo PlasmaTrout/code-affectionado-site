@@ -4,15 +4,15 @@
 <!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
+  <script src="/js/vendor/modernizr.js"></script>
   <meta charset="utf-8">
-  <title>Apache Jackrabbit - Importing XML - CodeAffectionado</title>
+  <title>Apache Jackrabbit - Importing XML | CodeAffectionado</title>
   <meta name="author" content="jeff.downing@latchd.com">
 
   
-  <meta name="description" content="Apache Jackrabbit - Importing XML The purpose of this lab is to enhance our previous tutorial. In that tutorial we learned how to create nodes &hellip;">
+  <meta name="description" content="Apache Jackrabbit - Importing XML September 3, 2013 --> The purpose of this lab is to enhance our previous tutorial. In that tutorial we learned how &hellip;">
   
 
-  <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -22,13 +22,26 @@
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="CodeAffectionado" type="application/atom+xml">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+
+  <script src="/js/vendor/jquery.js"></script>
+  <script src="/js/vendor/fastclick.js"></script>
+
+  <script src="/js/foundation.min.js"></script>
+
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
+
+
+  <script>
+
+  $(document).ready(function(){
+    $(document).foundation();
+  });
+
+  </script>
+
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Roboto:300,300italic,500,500italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Ubuntu:500' rel='stylesheet' type='text/css'>
 
   
   <script type="text/javascript">
@@ -46,42 +59,69 @@
 
 </head>
 
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/">CodeAffectionado</a></h1>
-  
-    <h2>Shared learning for code enthusiasts</h2>
-  
-</hgroup>
-
+<body  >
+  <header role="banner" class="top-header">
 </header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <nav role="navigation"><ul class="subscription hide" data-subscription="rss">
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
-  
-<form action="http://google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:www.codeaffectionado.com" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">News</a></li>
-  <li><a href="/labs-and-tutorials/">Labs And Tutorials</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
-</ul>
+
+
+  <nav class="top-bar" data-topbar>
+
+    <!--Uncomment CodeAffectionado below if you would like a title area on the left side of the nav bar-->
+
+    <ul class="title-area">
+        <li class="name">
+          <h1><a href="/">CodeAffectionado</a></h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#">Menu</a></li>
+    </ul>
+
+
+    <section class="top-bar-section">
+
+      <ul class="main-navigation right">
+
+          <li><a href="/">Home</a></li>
+      	  <li class="has-dropdown">
+            <a href="/labs-and-tutorials">Tutorials</a>
+        		<ul class="dropdown">
+        		   <li><a href="/labs-and-tutorials/osgi/">OSGi</a></li>
+        		   <li><a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a></li>
+        		</ul>
+          <li>
+
+          <!--<li class="has-dropdown">
+            <a href="/no-sidebar">No Sidebar Page</a>
+
+            <ul class="dropdown">
+              <li><a href="/no-sidebar/left-sidebar">Left Sidebar Page</a></li>
+              <li><a href="/no-sidebar/right-sidebar">Right Sidebar Page</a></li>
+              <li><a href="/no-sidebar/example-formatting">Example Formatting</a></li>
+            </ul>
+
+          </li>-->
+
+          <li><a href="/blog/archives">Archives</a></li>
+
+      </ul>
+
+    </section>
+  </nav>
+
 
 </nav>
   <div id="main">
-    <div id="content">
-      <div>
-<article role="article">
-  
-  <header>
-    <h1 class="entry-title">Apache Jackrabbit - Importing XML</h1>
-    <p class="meta">
+    <div id="content" class="row">
+        <div class="small-12 medium-12 large-8 columns">
+  <article role="article">
+    
+    <header class="page-header">
+      <h1 class="page-title">Apache Jackrabbit - Importing XML</h1>
+      
+      <!--<p class="meta">
 
 
 
@@ -93,10 +133,10 @@
   
 
 
-<time datetime="2013-09-03T10:55:00-04:00" pubdate data-updated="true"></time></p>
-  </header>
-  
-  <p>The purpose of this lab is to enhance our <a href="/labs-and-tutorials/apache-jackrabbit/manipulating-nodes/">previous tutorial</a>. In that tutorial we learned how to create nodes programmatically. While easy to do, creating a large set of nodes can be somewhat tedious using code. If we have a pre-existing XML file or export of our structure, we can use the importer to do our dirty work for us.</p>
+<i class="fa fa-calendar-o"></i> <time datetime="2013-09-03T10:55:00-04:00" pubdate data-updated="true">September  3, 2013</time> </p>-->
+    </header>
+    
+    <p>The purpose of this lab is to enhance our <a href="/labs-and-tutorials/apache-jackrabbit/manipulating-nodes/">previous tutorial</a>. In that tutorial we learned how to create nodes programmatically. While easy to do, creating a large set of nodes can be somewhat tedious using code. If we have a pre-existing XML file or export of our structure, we can use the importer to do our dirty work for us.</p>
 
 <h2 id="id-ef1e6887c579ba81dcedc3f4e3793cd2">1 Audience</h2>
 
@@ -1324,11 +1364,11 @@
 
 <p>It&rsquo;s easy to see how XML importation and exportation is a good fit for the JCR. We will keep our xml file around in our project for later. Hopefully, at this point, you are comfortable with how importing and exporting data works.</p>
 
-  
-    <footer>
-      <p class="meta">
-        
-        
+    
+      <footer>
+        <p class="meta">
+          
+          
 
 
 
@@ -1340,11 +1380,11 @@
   
 
 
-<time datetime="2013-09-03T10:55:00-04:00" pubdate data-updated="true"></time>
+<i class="fa fa-calendar-o"></i> <time datetime="2013-09-03T10:55:00-04:00" pubdate data-updated="true">September  3, 2013</time> 
+          
+        </p>
         
-      </p>
-      
-        <div class="sharing">
+          <div class="sharing">
   
   <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/importing-xml/index.html" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/labs-and-tutorials/apache-jackrabbit/importing-xml/index.html" >Tweet</a>
   
@@ -1356,22 +1396,22 @@
   
 </div>
 
-      
-    </footer>
-  
-</article>
-
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-</div>
-  </section>
-
-</div>
-
-<aside class="sidebar">
-  
+        
+      </footer>
     
+  </article>
+  
+    <section>
+      <h1>Comments</h1>
+      <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </section>
+  
+  </div><!--.columns-->
+  
+  <aside class="sidebar small-12 medium-12 large-4 columns">
+    
+      
   <section>
   <h1>Tutorial Steps</h1>
   <ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-ef1e6887c579ba81dcedc3f4e3793cd2">Audience</a></li><li style="list-style:inherit;"><a href="#id-3b878279a04dc47d60932cb294d96259">Overview</a></li><li style="list-style:inherit;"><a href="#id-22cdc801dc611a924fba896ae226c781">Getting Some Test Data</a></li><li style="list-style:inherit;"><a href="#id-8584e9662d6157856ec91d0bc8ff7faf">Clear Our Our Previous Main Method</a></li><li style="list-style:inherit;"><a href="#id-bc4c8781c255264f1587c06105523bbf">Import Some Data</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-96fce25dd8b19bf1faebedff9654ac9b">Get The Root Node</a></li> <li style="list-style:inherit;"><a href="#id-fafb0cbd20eee3a30e8f3f2c4112bdb0">Add A New Child Node For Our Import</a></li> <li style="list-style:inherit;"><a href="#id-edb3ec79ac15171b148026eadbed6aec">Get A Stream And Import Our Data</a></li> <li style="list-style:inherit;"><a href="#id-6da3391d505075606eec7d9736e581bc">Add Our Dump Method To See The Results</a></li></ul></li><li style="list-style:inherit;"><a href="#id-31acb19549c0fccb10926868ed651d5f">Run Our Application</a></li><li style="list-style:inherit;"><a href="#id-84ec279255cd371a790226c53a4f781c">Export Some XML</a></li><li style="list-style:inherit;"><a href="#id-85b2a723a857bed70a06ce2015a39b75">Run Again</a></li><li style="list-style:inherit;"><a href="#id-3d8f4150e56f224f60e9f351b7438006">The System View?</a></li><li style="list-style:inherit;"><a href="#id-290612199861c31d1036b185b4e69b75">Summary</a></li></ol>
@@ -1387,8 +1427,12 @@
       </li>
   </ul>
 </section><section>
-  <h1>Recent Posts</h1>
+  <h1>Recent Posts <i class="fa fa-edit"></i></h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/05/13/setting-up-for-2015/">Set Up for 2015 (Videos and More)</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/10/16/hey-whats-with-this-wordpress-site/">Hey? Whats With This Wordpress Site?</a>
@@ -1406,33 +1450,36 @@
         <a href="/blog/2013/08/19/newest-osgi-tutorial-additions/">Newest OSGi Additions</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/08/17/apache-jackrabbit-starting-out/">Apache Jackrabbit - Starting From Scratch Tutorial Up</a>
-      </li>
-    
   </ul>
 </section>
 
 <section class="googleplus">
-  <h1>
+  <h3>
     <a href="https://plus.google.com/114996005873710645329?rel=author">
-      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      <i class="fa fa-google-plus-square"></i> 
       Google+
     </a>
-  </h1>
+  </h3>
 </section>
 
 
 
+    
+  </aside>
   
-</aside>
 
 
     </div>
   </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - jeff.downing@latchd.com -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <footer role="contentinfo"><p class="text-center">
+  <span class="copyright">
+  	Copyright &copy; 2015 by jeff.downing@latchd.com
+  </span>
+
+  <span class="credit">
+  	Powered by <a href="http://octopress.org" target="_blank">Octopress</a><br />
+  	<span><a href="http://github.com/annejohnson/octofound" target="_blank">Theme</a> by <a href="http://feathers.io" target="_blank">Anne Johnson</a></span>
+  </span>
 </p>
 
 </footer>
@@ -1449,7 +1496,7 @@
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -1486,6 +1533,7 @@
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
+
 
 
 

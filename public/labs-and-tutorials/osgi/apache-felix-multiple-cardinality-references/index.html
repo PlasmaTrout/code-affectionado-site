@@ -4,15 +4,15 @@
 <!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
+  <script src="/js/vendor/modernizr.js"></script>
   <meta charset="utf-8">
-  <title>Apache Felix - Multiple Cardinality References - CodeAffectionado</title>
+  <title>Apache Felix - Multiple Cardinality References | CodeAffectionado</title>
   <meta name="author" content="jeff.downing@latchd.com">
 
   
-  <meta name="description" content="Apache Felix - Multiple Cardinality References In the last example, we made a simple greeter interface and a hello world class that used it in &hellip;">
+  <meta name="description" content="Apache Felix - Multiple Cardinality References October 20, 2014 --> In the last example, we made a simple greeter interface and a hello world class &hellip;">
   
 
-  <!-- http://t.co/dKP3o1e -->
   <meta name="HandheldFriendly" content="True">
   <meta name="MobileOptimized" content="320">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -22,13 +22,26 @@
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="CodeAffectionado" type="application/atom+xml">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/lib/jquery.min.js"%3E%3C/script%3E'))</script>
+
+  <script src="/js/vendor/jquery.js"></script>
+  <script src="/js/vendor/fastclick.js"></script>
+
+  <script src="/js/foundation.min.js"></script>
+
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
+
+
+  <script>
+
+  $(document).ready(function(){
+    $(document).foundation();
+  });
+
+  </script>
+
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href='http://fonts.googleapis.com/css?family=Roboto:300,300italic,500,500italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Ubuntu:500' rel='stylesheet' type='text/css'>
 
   
   <script type="text/javascript">
@@ -46,42 +59,69 @@
 
 </head>
 
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/">CodeAffectionado</a></h1>
-  
-    <h2>Shared learning for code enthusiasts</h2>
-  
-</hgroup>
-
+<body  >
+  <header role="banner" class="top-header">
 </header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <nav role="navigation"><ul class="subscription hide" data-subscription="rss">
   <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
   
 </ul>
-  
-<form action="http://google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:www.codeaffectionado.com" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">News</a></li>
-  <li><a href="/labs-and-tutorials/">Labs And Tutorials</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
-</ul>
+
+
+  <nav class="top-bar" data-topbar>
+
+    <!--Uncomment CodeAffectionado below if you would like a title area on the left side of the nav bar-->
+
+    <ul class="title-area">
+        <li class="name">
+          <h1><a href="/">CodeAffectionado</a></h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#">Menu</a></li>
+    </ul>
+
+
+    <section class="top-bar-section">
+
+      <ul class="main-navigation right">
+
+          <li><a href="/">Home</a></li>
+      	  <li class="has-dropdown">
+            <a href="/labs-and-tutorials">Tutorials</a>
+        		<ul class="dropdown">
+        		   <li><a href="/labs-and-tutorials/osgi/">OSGi</a></li>
+        		   <li><a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a></li>
+        		</ul>
+          <li>
+
+          <!--<li class="has-dropdown">
+            <a href="/no-sidebar">No Sidebar Page</a>
+
+            <ul class="dropdown">
+              <li><a href="/no-sidebar/left-sidebar">Left Sidebar Page</a></li>
+              <li><a href="/no-sidebar/right-sidebar">Right Sidebar Page</a></li>
+              <li><a href="/no-sidebar/example-formatting">Example Formatting</a></li>
+            </ul>
+
+          </li>-->
+
+          <li><a href="/blog/archives">Archives</a></li>
+
+      </ul>
+
+    </section>
+  </nav>
+
 
 </nav>
   <div id="main">
-    <div id="content">
-      <div>
-<article role="article">
-  
-  <header>
-    <h1 class="entry-title">Apache Felix - Multiple Cardinality References</h1>
-    <p class="meta">
+    <div id="content" class="row">
+        <div class="small-12 medium-12 large-8 columns">
+  <article role="article">
+    
+    <header class="page-header">
+      <h1 class="page-title">Apache Felix - Multiple Cardinality References</h1>
+      
+      <!--<p class="meta">
 
 
 
@@ -93,10 +133,10 @@
   
 
 
-<time datetime="2014-10-20T10:01:00-04:00" pubdate data-updated="true"></time></p>
-  </header>
-  
-  <p>In the <a href="/labs-and-tutorials/osgi/apache-felix-maven-to-bndtools">last example</a>, we made a simple greeter interface and a hello world class that used it in Bndtools. A Gogo shell command was then used to call the service and get back a string greeting. The reference was bound using the @Reference annotation in the command class and we stored this information into a single field. But, what would happen if many greeters were registered as services? What if all of them were needed?</p>
+<i class="fa fa-calendar-o"></i> <time datetime="2014-10-20T10:01:00-04:00" pubdate data-updated="true">October 20, 2014</time> </p>-->
+    </header>
+    
+    <p>In the <a href="/labs-and-tutorials/osgi/apache-felix-maven-to-bndtools">last example</a>, we made a simple greeter interface and a hello world class that used it in Bndtools. A Gogo shell command was then used to call the service and get back a string greeting. The reference was bound using the @Reference annotation in the command class and we stored this information into a single field. But, what would happen if many greeters were registered as services? What if all of them were needed?</p>
 
 <p>In this tutorial, we will change our project to support multiple cardinality references and make the command to run all the greeters that it finds when it&rsquo;s typed.</p>
 
@@ -449,11 +489,11 @@ Now that we are done with the shell command, the class looks like this:</p>
 
 <p>In this tutorial, we changed an existing project to support multiple reference binding. By doing so, we asked for every service that implemented a specific interface to be bound. In our next tutorial we will learn more about the concept of filtering references so that we can keep certain references from binding, yet allow others.</p>
 
-  
-    <footer>
-      <p class="meta">
-        
-        
+    
+      <footer>
+        <p class="meta">
+          
+          
 
 
 
@@ -465,11 +505,11 @@ Now that we are done with the shell command, the class looks like this:</p>
   
 
 
-<time datetime="2014-10-20T10:01:00-04:00" pubdate data-updated="true"></time>
+<i class="fa fa-calendar-o"></i> <time datetime="2014-10-20T10:01:00-04:00" pubdate data-updated="true">October 20, 2014</time> 
+          
+        </p>
         
-      </p>
-      
-        <div class="sharing">
+          <div class="sharing">
   
   <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-multiple-cardinality-references/index.html" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-multiple-cardinality-references/index.html" >Tweet</a>
   
@@ -481,22 +521,22 @@ Now that we are done with the shell command, the class looks like this:</p>
   
 </div>
 
-      
-    </footer>
-  
-</article>
-
-  <section>
-    <h1>Comments</h1>
-    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-</div>
-  </section>
-
-</div>
-
-<aside class="sidebar">
-  
+        
+      </footer>
     
+  </article>
+  
+    <section>
+      <h1>Comments</h1>
+      <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </section>
+  
+  </div><!--.columns-->
+  
+  <aside class="sidebar small-12 medium-12 large-4 columns">
+    
+      
   <section>
   <h1>Tutorial Steps</h1>
   <ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-bb2e0d598ec6aa8a6d571355ba7459d7">A Quick Review</a></li><li style="list-style:inherit;"><a href="#id-418c8c0359af5543bcbd1ba20d70d0a5">Modify the Command for Multiple References</a></li><li style="list-style:inherit;"><a href="#id-592dd488823d7f58507f217393551799">Create an Unbind Method</a></li><li style="list-style:inherit;"><a href="#id-578f1574d68ddcfeaa3c39aef185c289">Create an Alternate Implementation</a></li><li style="list-style:inherit;"><a href="#id-00a9348ca39914089684373fe25279d7">Setup and Run</a></li><li style="list-style:inherit;"><a href="#id-710b6869e7581a0c111f98a5af383e4d">A Peek into the Component XML File</a></li><li style="list-style:inherit;"><a href="#id-290612199861c31d1036b185b4e69b75">Summary</a></li></ol>
@@ -512,8 +552,12 @@ Now that we are done with the shell command, the class looks like this:</p>
       </li>
   </ul>
 </section><section>
-  <h1>Recent Posts</h1>
+  <h1>Recent Posts <i class="fa fa-edit"></i></h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/05/13/setting-up-for-2015/">Set Up for 2015 (Videos and More)</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/10/16/hey-whats-with-this-wordpress-site/">Hey? Whats With This Wordpress Site?</a>
@@ -531,33 +575,36 @@ Now that we are done with the shell command, the class looks like this:</p>
         <a href="/blog/2013/08/19/newest-osgi-tutorial-additions/">Newest OSGi Additions</a>
       </li>
     
-      <li class="post">
-        <a href="/blog/2013/08/17/apache-jackrabbit-starting-out/">Apache Jackrabbit - Starting From Scratch Tutorial Up</a>
-      </li>
-    
   </ul>
 </section>
 
 <section class="googleplus">
-  <h1>
+  <h3>
     <a href="https://plus.google.com/114996005873710645329?rel=author">
-      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      <i class="fa fa-google-plus-square"></i> 
       Google+
     </a>
-  </h1>
+  </h3>
 </section>
 
 
 
+    
+  </aside>
   
-</aside>
 
 
     </div>
   </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - jeff.downing@latchd.com -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+  <footer role="contentinfo"><p class="text-center">
+  <span class="copyright">
+  	Copyright &copy; 2015 by jeff.downing@latchd.com
+  </span>
+
+  <span class="credit">
+  	Powered by <a href="http://octopress.org" target="_blank">Octopress</a><br />
+  	<span><a href="http://github.com/annejohnson/octofound" target="_blank">Theme</a> by <a href="http://feathers.io" target="_blank">Anne Johnson</a></span>
+  </span>
 </p>
 
 </footer>
@@ -574,7 +621,7 @@ Now that we are done with the shell command, the class looks like this:</p>
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -611,6 +658,7 @@ Now that we are done with the shell command, the class looks like this:</p>
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
+
 
 
 
