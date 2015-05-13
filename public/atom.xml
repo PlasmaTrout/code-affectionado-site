@@ -4,7 +4,7 @@
   <title><![CDATA[CodeAffectionado]]></title>
   <link href="http://www.codeaffectionado.com/atom.xml" rel="self"/>
   <link href="http://www.codeaffectionado.com/"/>
-  <updated>2015-05-13T09:49:14-04:00</updated>
+  <updated>2015-05-13T17:32:45-04:00</updated>
   <id>http://www.codeaffectionado.com/</id>
   <author>
     <name><![CDATA[jeff.downing@latchd.com]]></name>
@@ -12,6 +12,28 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[New Video: Setup BndTool for JSP Development]]></title>
+    <link href="http://www.codeaffectionado.com/blog/2015/05/13/new-video-setup-bndtool-for-jsp-development/"/>
+    <updated>2015-05-13T17:19:00-04:00</updated>
+    <id>http://www.codeaffectionado.com/blog/2015/05/13/new-video-setup-bndtool-for-jsp-development</id>
+    <content type="html"><![CDATA[<p>Today I worked on a video tutorial on how to setup BndTools with Pax-Web so you can develop JSP applications on it.
+I originally found out how to get this accomplished by looking at the imports that Karaf uses when you turn the
+features on for it. Translating them to felix wasn&rsquo;t hard but it was time consuming and tedious. In the end you only
+need a <a href="https://app.box.com/s/xwvcb9ai5v6ht43tqnnsn9ih706c6b2q">handful of bundles</a> to make it work. I&rsquo;ve zipped them all up and put them on Box.net to make them easier to get started with. Here&rsquo;s the video, enjoy!</p>
+
+<iframe width="625" height="385" src="https://www.youtube.com/embed/_q7_8yGJ1nM" frameborder="0" allowfullscreen></iframe>
+
+
+<p>It took some trial and error, but after I made it work once, I captured the launch descriptor in a gist which you can see as well:</p>
+
+<script src="https://gist.github.com/PlasmaTrout/7dd5646a258a664ce8bd.js"></script>
+
+
+<p>The video link to youtube is on the <a href="http://www.codeaffectionado.com/labs-and-tutorials]">labs and tutorials</a> page.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Set Up for 2015 (Videos and More)]]></title>
