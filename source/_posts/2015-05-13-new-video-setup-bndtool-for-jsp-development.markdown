@@ -16,4 +16,4 @@ It took some trial and error, but after I made it work once, I captured the laun
 
 <script src="https://gist.github.com/PlasmaTrout/7dd5646a258a664ce8bd.js"></script>
 
-The video link to youtube is on the [labs and tutorials](/labs-and-tutorials]) page.
+The video link to youtube is on the [labs and tutorials](/labs-and-tutorials/osgi) page. I will work on the written tutorial and should have it out in a few days.
