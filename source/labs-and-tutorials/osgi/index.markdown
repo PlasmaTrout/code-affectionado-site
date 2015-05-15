@@ -18,6 +18,7 @@ The following OSGi labs are normally done in order, however frequently we includ
 6.  [Using Bndtools](/labs-and-tutorials/osgi/apache-felix-maven-to-bndtools)
 7.  [Multiple Cardinality References](/labs-and-tutorials/osgi/apache-felix-multiple-cardinality-references)
 8.  [Filtering References](/labs-and-tutorials/osgi/apache-felix-filtering-multiple-references)
+9.  [Setting Up JSP Support In BndTools Using Pax-Web](/labs-and-tutorials/osgi/bndtools-and-felix-with-jsp-support)
 
 #### Video Tutorials
 

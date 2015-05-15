@@ -4,7 +4,7 @@
   <title><![CDATA[CodeAffectionado]]></title>
   <link href="http://www.codeaffectionado.com/atom.xml" rel="self"/>
   <link href="http://www.codeaffectionado.com/"/>
-  <updated>2015-05-13T18:08:04-04:00</updated>
+  <updated>2015-05-15T01:48:20-04:00</updated>
   <id>http://www.codeaffectionado.com/</id>
   <author>
     <name><![CDATA[jeff.downing@latchd.com]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[New Video: Setup BndTool for JSP Development]]></title>
+    <title type="html"><![CDATA[New Video: Setting Up BndTools for JSP Development]]></title>
     <link href="http://www.codeaffectionado.com/blog/2015/05/13/new-video-setup-bndtool-for-jsp-development/"/>
     <updated>2015-05-13T17:19:00-04:00</updated>
     <id>http://www.codeaffectionado.com/blog/2015/05/13/new-video-setup-bndtool-for-jsp-development</id>
@@ -36,7 +36,7 @@ need a <a href="https://app.box.com/s/xwvcb9ai5v6ht43tqnnsn9ih706c6b2q">handful 
   </entry>
   
   <entry>
-    <title type="html"><![CDATA[Set Up for 2015 (Videos and More)]]></title>
+    <title type="html"><![CDATA[Setting Up for 2015 (Videos and More)]]></title>
     <link href="http://www.codeaffectionado.com/blog/2015/05/13/setting-up-for-2015/"/>
     <updated>2015-05-13T09:16:00-04:00</updated>
     <id>http://www.codeaffectionado.com/blog/2015/05/13/setting-up-for-2015</id>

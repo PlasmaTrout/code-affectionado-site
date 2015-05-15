@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "New Video: Setup BndTool For JSP Development"
+title: "New Video: Setting Up BndTools For JSP Development"
 date: 2015-05-13 17:19
 comments: true
 categories: 

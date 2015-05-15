@@ -1,0 +1,643 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <script src="/js/vendor/modernizr.js"></script>
+  <meta charset="utf-8">
+  <title>Setting Up JSP Support in BndTools Using Pax-Web | CodeAffectionado</title>
+  <meta name="author" content="jeff.downing@latchd.com">
+
+  
+  <meta name="description" content="Setting Up JSP Support in BndTools Using Pax-Web May 14, 2015 --> In this tutorial we will setup a new BndTools project to compile and host JSP web &hellip;">
+  
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.codeaffectionado.com/labs-and-tutorials/osgi/bndtools-and-felix-with-jsp-support">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="CodeAffectionado" type="application/atom+xml">
+
+  <script src="/js/vendor/jquery.js"></script>
+  <script src="/js/vendor/fastclick.js"></script>
+
+  <script src="/js/foundation.min.js"></script>
+
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+
+
+  <script>
+
+  $(document).ready(function(){
+    $(document).foundation();
+  });
+
+  </script>
+
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=Roboto:300,300italic,500,500italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Ubuntu:500' rel='stylesheet' type='text/css'>
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43174506-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body  >
+  <header role="banner" class="top-header">
+</header>
+  <nav role="navigation"><ul class="subscription hide" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+
+
+  <nav class="top-bar" data-topbar>
+
+    <!--Uncomment CodeAffectionado below if you would like a title area on the left side of the nav bar-->
+
+    <ul class="title-area">
+        <li class="name">
+          <h1><a href="/">CodeAffectionado</a></h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#">Menu</a></li>
+    </ul>
+
+
+    <section class="top-bar-section">
+
+      <ul class="main-navigation right">
+
+          <li><a href="/">Home</a></li>
+      	  <li class="has-dropdown">
+            <a href="/labs-and-tutorials">Tutorials</a>
+        		<ul class="dropdown">
+        		   <li><a href="/labs-and-tutorials/osgi/">OSGi</a></li>
+        		   <li><a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a></li>
+        		</ul>
+          <li>
+
+          <!--<li class="has-dropdown">
+            <a href="/no-sidebar">No Sidebar Page</a>
+
+            <ul class="dropdown">
+              <li><a href="/no-sidebar/left-sidebar">Left Sidebar Page</a></li>
+              <li><a href="/no-sidebar/right-sidebar">Right Sidebar Page</a></li>
+              <li><a href="/no-sidebar/example-formatting">Example Formatting</a></li>
+            </ul>
+
+          </li>-->
+
+          <li><a href="/blog/archives">Archives</a></li>
+
+      </ul>
+
+    </section>
+  </nav>
+
+
+</nav>
+  <div id="main">
+    <div id="content" class="row">
+        <div class="small-12 medium-12 large-8 columns">
+  <article role="article">
+    
+    <header class="page-header">
+      <h1 class="page-title">Setting Up JSP Support in BndTools Using Pax-Web</h1>
+      
+      <!--<p class="meta">
+
+
+
+
+
+
+
+
+  
+
+
+<i class="fa fa-calendar-o"></i> <time datetime="2015-05-14T22:02:00-04:00" pubdate data-updated="true">May 14, 2015</time> </p>-->
+    </header>
+    
+    <p>In this tutorial we will setup a new BndTools project to compile and host JSP web pages as a Web Application Bundle. If you prefer video tutorials, there is a <a href="https://youtu.be/_q7_8yGJ1nM">video tutorial</a> on how to do this, however it differs in that this example will use shortcuts for the sections that are mostly visual. This allows us to spend more time setting up our JSP bundle and less time worrying about the Pax-Web recipe.</p>
+
+<h2 id="id-ee68e5b99222bbc29a480fcb0d1d6ee2">1 Prerequisites</h2>
+
+<p>There are a few preerquisites in order to follow along with this tutorial. It&rsquo;s important to have BndTools installed into Eclipse at this point. If you don&rsquo;t, take some time and watch the <a href="https://youtu.be/AEUxeUBb6i0">video</a> on how to accomplish that step.</p>
+
+<h3 id="id-07ea6f4430582dcee1dcce4efcc64164">1.1 Download The Pax-Web Dependency Bundle</h3>
+
+<p>A zip file is needed before this tutorial will work properly (dont worry, it&rsquo;s all jar files and 0 viruses). It&rsquo;s a 15M zip of bundles ready to be put into the local repository in BndTools. Once it&rsquo;s downloaded and unzipped everything is ready to go.</p>
+
+<p>Download: <a href="https://app.box.com/s/xwvcb9ai5v6ht43tqnnsn9ih706c6b2q">CodeAffectionado_PaxJSP_Achive.zip</a></p>
+
+<h2 id="id-bf647454e36069fd16f1a7a35cf6a865">2 Getting Started</h2>
+
+<h3 id="id-11389d0154cf40e6540879994a5ca303">2.1 Install the Zip File Bundles</h3>
+
+<p>Starting with a new workspace and a new bndtools osgi project (component development) project in Eclipse (the name doesn&rsquo;t matter), copy all of the jar files inside of the downloaded zip file to the Local repository. This is done by dragging them onto the Local folder of the Repositories window. Once all the jar files are visible in the repository, restart Eclipse.</p>
+
+<h3 id="id-ea8faa9bc5172ff8cefb347a148d05a1">2.2 Create a New Run Descriptor</h3>
+
+<p>Right click the project folder and create a new <em>Run Descriptor</em>. Leave it default to use Apache Felix 4 with the Gogo Shell. It really doesn&rsquo;t matter what it&rsquo;s named, but I named mine paxweb. The final file for me that was created was named <code>paxweb.bndrun</code>.</p>
+
+<h3 id="id-3cba5cdd6767559a93d36468bfd0e890">2.3 Add the Run Bundles to you Run Descriptor</h3>
+
+<p>Double click on the new Run Descriptor that bndtools created to open the editor in Eclipse. Collapse the <em>Run Requirements</em> section and expand the <em>Run Bundles</em> section. This will help with the visibility of what bundles are being installed into the Felix runtime.</p>
+
+<p>Now find and click on the <em>Source</em> tab on the bottom of the <code>paxweb.bndrun</code> editor window. Inside this source editor examine the current configuration.</p>
+
+<h4 id="id-9060587edeb01a63e3d3edc959678d1e">2.3.1 Before</h4>
+
+<p>Currently there is a runbundles section of the source that looks like:</p>
+
+<div>
+  <pre><code class='plain'>-runbundles:\
+    org.apache.felix.gogo.runtime,\
+    org.apache.felix.gogo.shell,\
+    org.apache.felix.gogo.command</code></pre>
+</div>
+
+
+
+
+<br/><br/>
+
+
+<h4 id="id-7bfcadb5535fe8aad5032762b7bfe159">2.3.2 After</h4>
+
+<p>In order for the bundles downloaded earlier to be included in the framework they need to be added to the runbundles section. Replace that entire section with this:</p>
+
+<div>
+  <pre><code class='plain'>-runbundles:  \
+    org.apache.felix.gogo.command,\
+    org.apache.felix.gogo.runtime,\
+    org.apache.felix.gogo.shell,\
+    org.apache.felix.configadmin,\
+    org.apache.felix.eventadmin,\
+    javax.servlet,\
+    org.apache.felix.http.api,\
+    org.objectweb.asm.all,\
+    slf4j.api,\
+    slf4j.simple,\
+    org.apache.xbean.bundleutils,\
+    org.apache.xbean.finder,\
+    org.ops4j.pax.web.pax-web-jetty-bundle,\
+    org.apache.felix.webconsole,\
+    org.ops4j.pax.logging.pax-logging-api,\
+    org.ops4j.pax.web.pax-web-jsp,\
+    org.ops4j.pax.web.pax-web-extender-whiteboard,\
+    org.ops4j.pax.web.pax-web-extender-war,\
+    org.apache.felix.scr,\
+    biz.aQute.bnd.annotation,\
+    org.apache.felix.metatype,\
+    org.eclipse.jdt.core.compiler.batch,\
+    javax.servlet.jsp.jstl-api,\
+    org.ops4j.pax.web.pax-web-api</code></pre>
+</div>
+
+
+
+
+<br/><br/>
+
+
+<p>Now hit <strong>save</strong> and go back to the <em>Run</em> tab and verify that the bundles are now in the run bundles section of the editor.</p>
+
+<h3 id="id-636dac06d0f4e0b10eda97f66cc3a087">2.4 Startup The Laucher</h3>
+
+<p>Go ahead and hit the <em>Run OSGi</em> button now. The framework should startup and wait for a plethora of messages that look like the following to scroll by:</p>
+
+<div>
+  <pre><code class='plain'>org.ops4j.pax.web.pax-web-jsp[org.apache.tomcat.util.digester.Digester] :   Fire body() for org.apache.tomcat.util.descriptor.tld.TldRuleSet$1@5156d4a7
+org.ops4j.pax.web.pax-web-jsp[org.apache.tomcat.util.digester.Digester] :   Popping body text ''
+org.ops4j.pax.web.pax-web-jsp[org.apache.tomcat.util.digester.Digester] :   Fire end() for org.apache.tomcat.util.descriptor.tld.TldRuleSet$1@5156d4a7
+org.ops4j.pax.web.pax-web-jsp[org.apache.tomcat.util.digester.Digester.sax] : endPrefixMapping()
+org.ops4j.pax.web.pax-web-jsp[org.apache.tomcat.util.digester.Digester.sax] : endPrefixMapping(xsi)
+org.ops4j.pax.web.pax-web-jsp[org.apache.tomcat.util.digester.Digester.sax] : endDocument()
+org.ops4j.pax.web.pax-web-jsp[org.apache.tomcat.util.digester.Digester] : addRuleSet() with no namespace URI</code></pre>
+</div>
+
+
+
+
+<br/><br/>
+
+
+<p>This is the logger, in association with the jdt compiler, logging some of the JSP internals as they happen. Navigate to <a href="http://localhost:8080/system/console">http://localhost:8080/system/console</a> and login as admin/admin and note that the webconsole, with full JSP/WAR/WAB/Whiteboard support, is running.</p>
+
+<h2 id="id-beda65bcd91ea13ec58694c0fa88db11">3 Create A JSP WAB Project</h2>
+
+<p>To create a JSP Web Application Bundle (WAB) start with a fresh Bundle Descriptor.Right click on the project folder in the package explorer and choose New &ndash;> Bundle Descriptor. It&rsquo;s name doesn&rsquo;t really matter, but I named mine jsptest. Aftwards, double click on the .bnd file (mine was <code>jsptest.bnd</code>) to open up the editor.</p>
+
+<h3 id="id-cf00a4aee5649475229d66935c93af27">3.1 Remove Default Private Package</h3>
+
+<p>Notice by default that BndTools included a private package in the private packages window. Go ahead and remove it by clicking on it and choosing the X icon at the top of the window. Hit <strong>save</strong>.</p>
+
+<p><em>Note: This step isn&rsquo;t critical, however I have ran into issues on my mac where a crazy osgi.ee missing requirement error message will show when this is left in. On windows I haven&rsquo;t seen the issue.</em></p>
+
+<h3 id="id-bc3438f683fa2517d6ea8d7b77ac8d49">3.2 Create Web Application Folder And Files</h3>
+
+<p>At the root of the project folder, create a new folder called webapp. Inside of the webapp folder create a WEB-INF folder. in the webapp folder create a file called <code>test.jsp</code> and give it the following contents:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;head&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;title&gt;</span>OSGi JSP File<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/head&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;body&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;h1&gt;</span>This Proves That My JSP Works!<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>When complete the package explorer should look like this:</p>
+
+<p><img src="/images/bndtools/Capture10.PNG" title="'Final Project Structure 'Final Project Structure'" ></p>
+
+<p><em>Note: I didn&rsquo;t include a web.xml, which is normally considered bad practice for a WAR file, but for a WAB it&rsquo;s purely optional.</em></p>
+
+<h3 id="id-6ce505efb1b0978ef1c83995c592a711">3.3 Edit Bundle Descriptor</h3>
+
+<p>Now let&rsquo;s find the source tab of the <code>jsptest.bnd</code> bundle descriptor and click on it. The rather minimal source file should resemble:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>Bundle-Version: 0.0.0.${tstamp}
+</span><span class='line'>Service-Component:  \
+</span><span class='line'>  *
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Some lines will need to be appended ot the source to instruct it how to create a web application bundle. First add this line to the bottom of the file:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>Web-ContextPath: jsptest/
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>This determines the context path when the OSGi servlet container hosts the web application bundle. This is found in 128.3.1 of the <a href="https://osgi.org/download/r4v42/r4.enterprise.pdf">OSGi Enterprise 4.2 Specification</a>\</p>
+
+<p>Also add:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>WebApp-Context: jsptest/
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>This is Pax specific and really only applies to older versions of Pax-Web and similar frameworks.</p>
+
+<p>Finally add the final line:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>-wab: webapp
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>This tells the bundler that everything found in the webapp directory should be included in the bundle and that any class based components should be moved to the appropriate locations for a web application.</p>
+
+<p><em>Note: If we did add some components to this WAB you would see them go into WEB-INF/classes instead of their usual location.</em></p>
+
+<p>The final file should look like this:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>Bundle-Version: 0.0.0.${tstamp}
+</span><span class='line'>Service-Component:  \
+</span><span class='line'>  *
+</span><span class='line'>Web-ContextPath: jsptest/
+</span><span class='line'>WebApp-Context: jsptest/
+</span><span class='line'>-wab: webapp
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h3 id="id-bdc06c3eb305c812e4b3782d500748c7">3.4 Add Bundle To Run Descriptor And Test</h3>
+
+<p>Go back to the <code>paxweb.bndrun</code> editor and go to the Run tab and search for the new Bundle Desciptor in the search box. When we find it, we can drag it into the run bundles window and hit save.</p>
+
+<p>Now navigate to <a href="http://localhost:8080/jsptest/test.jsp">http://localhost:8080/jsptest/test.jsp</a> to see the plain vanilla JSP in all it&rsquo;s glory.</p>
+
+<h2 id="id-63e8d882ab309823b8a620fa51540c5a">4 Testing Scriplets</h2>
+
+<p>Modify the <code>test.jsp</code> file to include some scriptlet code by optining it in the editor and making the following changes:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;head&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;title&gt;</span>OSGi JSP File<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/head&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;body&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;h1&gt;</span>This Proves That My JSP Works!<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;h2&gt;</span>This Proves That <span class="err">&lt;</span>%= &quot;Scriptlets&quot;.toString() %&gt; Work!<span class="nt">&lt;/h2&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Now hit save and wait for the recompilation and check <a href="http://localhost:8080/jsptest/test.jsp">http://localhost:8080/jsptest/test.jsp</a> again to make sure it worked.</p>
+
+<h2 id="id-5ed6c4efe97f568d65dd1252d7236be8">5 Testing TagLibs</h2>
+
+<p>In order to use taglibs in the JSP, they must first be setup one of two different ways:</p>
+
+<ul>
+<li>If its a standard taglib (such as JSTL) the namespaces must be imported by the bundle.</li>
+<li>If its a custom taglib it must be deployed by the web application bundle</li>
+</ul>
+
+
+<p>In this case the standard tag library will be used for testing. Double click the  <code>jsptest.bnd</code> Bundle Descriptor again and on the Content tab expand the <em>Customise Imports</em> section.</p>
+
+<p>Click on the + button and then add <code>org.apache.taglibs.standard.lang.jstl</code> to the pattern box and hit save. Browse to the source section and verify it&rsquo;s similar to:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>Bundle-Version: 1.0
+</span><span class='line'>Service-Component:  \
+</span><span class='line'>  *
+</span><span class='line'>Web-ContextPath: jsptest/
+</span><span class='line'>WebApp-Context: jsptest/
+</span><span class='line'>-wab: /webapp
+</span><span class='line'>Bundle-Name: Test Bundle
+</span><span class='line'>Import-Package:  \
+</span><span class='line'>  org.apache.taglibs.standard.lang.jstl,\
+</span><span class='line'>  *
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Lastly, change the test.jsp file to look like this:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="err">&lt;</span>%@ taglib uri=&quot;http://java.sun.com/jsp/jstl/core&quot; prefix=&quot;c&quot; %&gt;
+</span><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;head&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;title&gt;</span>OSGi JSP File<span class="nt">&lt;/title&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/head&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;body&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;c:set</span> <span class="na">var=</span><span class="s">&quot;testvar&quot;</span> <span class="na">value=</span><span class="s">&quot;Tag Libraries&quot;</span><span class="nt">/&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;h1&gt;</span>This Proves That My JSP Works!<span class="nt">&lt;/h1&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;h2&gt;</span>This Proves That <span class="err">&lt;</span>%= &quot;Scriptlets&quot;.toString() %&gt; Work!<span class="nt">&lt;/h2&gt;</span>
+</span><span class='line'>      <span class="nt">&lt;h3&gt;</span>This Proves That ${ testvar } and Expressions Work!<span class="nt">&lt;/h3&gt;</span>
+</span><span class='line'>  <span class="nt">&lt;/body&gt;</span>
+</span><span class='line'><span class="nt">&lt;/html&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>After hitting save, browse back to <a href="http://localhost:8080/jsptest/test.jsp">http://localhost:8080/jsptest/test.jsp</a> and see the JSP file at work.</p>
+
+<h3 id="id-290612199861c31d1036b185b4e69b75">5.1 Summary</h3>
+
+<p>In this tutorial we setup our BndTools environment to run JSP Web Application Bundles and created a simple JSP page to test it. Getting core JSP applications to run is a big step toward creating a full fledged application in OSGi. In the next tutorials we will use JSPs and Servlets to call services and access more intense features of the OSGi framework.</p>
+
+<h2 id="id-a646b872fd78a31b54713fe6f12a521e">6 Some Things That May Go Wrong</h2>
+
+<p>During this tutorial, both on video and written, I had a number of things go wrong. Here are the errors and fixes that occurred while making the tutorials.</p>
+
+<h3 id="id-ad821f4cb8b713dfcab27961588d0f39">6.1 JSP bundle shows in Run Bundles but is not actually in the list of running bundles</h3>
+
+<p>This happens when you start a plain project with a pre-existing bnd.bnd file but don&rsquo;t use it and create a completely new bundle descriptor instead. Basically the workspace bundles list needs to be refreshed to see the correct bundle. Try refreshing or closing the editor and re-opening it. This usually solves the problem. Once you can see the correct workspace bundle you can drag it over instead.</p>
+
+<p>The reason for this is: Let&rsquo;s say your project is named A and you created a bundle descriptor named B. You ended up with a jar named A.B.jar. The available bundles section might have not refreshed and it still has an A.jar in it. If you drag that A.jar over to the running bundles section you have essentially loaded a bundle that doesn&rsquo;t exist anymore. The errors message will say something to the effect to, if you stop and restart the framework.</p>
+
+<h3 id="id-bef46f066b48502b82d85209de9e6a2e">6.2 org.apache.jasper.JasperException: The absolute uri: <a href="http://java.sun.com/jsp/jstl/core">http://java.sun.com/jsp/jstl/core</a> cannot be resolved in either web.xml or the jar files deployed with this application</h3>
+
+<p>Ah ha! Caught you skipping steps&hellip;.just kidding. This happens because the bundle didn&rsquo;t either import the correct namespace or didn&rsquo;t import one at all. Make sure you&rsquo;re JSP bundle imports <strong>org.apache.taglibs.standard.lang.jstl</strong>. You can see in the Testing Taglibs Section of this tutorial were we do that.</p>
+
+<h3 id="id-401a54142d394c6a2bf8cb2aa37aedd8">6.3 I added a bunch of bundles to the local repository but they aren&rsquo;t showing up in the available bundle section.</h3>
+
+<p>Yeah this one bothers me all the time. Just restart Eclipse. It&rsquo;s the easiest way to get it to work. I&rsquo;ve found that single drags into the local repository don&rsquo;t usually cause a problem but as soon as I multi-drag I have to restart to see them. I just got used to doing it.</p>
+
+    
+      <footer>
+        <p class="meta">
+          
+          
+
+
+
+
+
+
+
+
+  
+
+
+<i class="fa fa-calendar-o"></i> <time datetime="2015-05-14T22:02:00-04:00" pubdate data-updated="true">May 14, 2015</time> 
+          
+        </p>
+        
+          <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/labs-and-tutorials/osgi/bndtools-and-felix-with-jsp-support/index.html" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/labs-and-tutorials/osgi/bndtools-and-felix-with-jsp-support/index.html" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+        
+      </footer>
+    
+  </article>
+  
+    <section>
+      <h1>Comments</h1>
+      <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </section>
+  
+  </div><!--.columns-->
+  
+  <aside class="sidebar small-12 medium-12 large-4 columns">
+    
+      
+  <section>
+  <h1>Tutorial Steps</h1>
+  <ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-ee68e5b99222bbc29a480fcb0d1d6ee2">Prerequisites</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-07ea6f4430582dcee1dcce4efcc64164">Download The Pax-Web Dependency Bundle</a></li></ul></li><li style="list-style:inherit;"><a href="#id-bf647454e36069fd16f1a7a35cf6a865">Getting Started</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-11389d0154cf40e6540879994a5ca303">Install the Zip File Bundles</a></li> <li style="list-style:inherit;"><a href="#id-ea8faa9bc5172ff8cefb347a148d05a1">Create a New Run Descriptor</a></li> <li style="list-style:inherit;"><a href="#id-3cba5cdd6767559a93d36468bfd0e890">Add the Run Bundles to you Run Descriptor</a></li> <li style="list-style:inherit;"><a href="#id-636dac06d0f4e0b10eda97f66cc3a087">Startup The Laucher</a></li></ul></li><li style="list-style:inherit;"><a href="#id-beda65bcd91ea13ec58694c0fa88db11">Create A JSP WAB Project</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-cf00a4aee5649475229d66935c93af27">Remove Default Private Package</a></li> <li style="list-style:inherit;"><a href="#id-bc3438f683fa2517d6ea8d7b77ac8d49">Create Web Application Folder And Files</a></li> <li style="list-style:inherit;"><a href="#id-6ce505efb1b0978ef1c83995c592a711">Edit Bundle Descriptor</a></li> <li style="list-style:inherit;"><a href="#id-bdc06c3eb305c812e4b3782d500748c7">Add Bundle To Run Descriptor And Test</a></li></ul></li><li style="list-style:inherit;"><a href="#id-63e8d882ab309823b8a620fa51540c5a">Testing Scriplets</a></li><li style="list-style:inherit;"><a href="#id-5ed6c4efe97f568d65dd1252d7236be8">Testing TagLibs</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-290612199861c31d1036b185b4e69b75">Summary</a></li></ul></li><li style="list-style:inherit;"><a href="#id-a646b872fd78a31b54713fe6f12a521e">Some Things That May Go Wrong</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-ad821f4cb8b713dfcab27961588d0f39">JSP bundle shows in Run Bundles but is not actually in the list of running bundles</a></li> <li style="list-style:inherit;"><a href="#id-bef46f066b48502b82d85209de9e6a2e">org.apache.jasper.JasperException: The absolute uri: <a href="http://java.sun.com/jsp/jstl/core">http://java.sun.com/jsp/jstl/core</a> cannot be resolved in either web.xml or the jar files deployed with this application</a></li> <li style="list-style:inherit;"><a href="#id-401a54142d394c6a2bf8cb2aa37aedd8">I added a bunch of bundles to the local repository but they aren&rsquo;t showing up in the available bundle section.</a></li></ul></li></ol>
+  </section>
+<section>
+	<h1>Lab/Tutorial Sections</h1>
+	<ul id="recent_posts">
+      <li class="post">
+        <a href="/labs-and-tutorials/osgi/">OSGi</a>
+      </li>
+      <li>
+      	<a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a>
+      </li>
+  </ul>
+</section><section>
+  <h1>Recent Posts <i class="fa fa-edit"></i></h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/05/13/new-video-setup-bndtool-for-jsp-development/">New Video: Setting Up BndTools for JSP Development</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/13/setting-up-for-2015/">Setting Up for 2015 (Videos and More)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/16/hey-whats-with-this-wordpress-site/">Hey? Whats With This Wordpress Site?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/16/new-osgi-tutorial-posted/">New OSGi Tutorial on Bndtools Posted</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/09/03/labs-and-tutorials-slash-apache-jackrabbit-slash-importing-xml/">The Most Important JavaScript Videos You Might Watch This Year</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="googleplus">
+  <h3>
+    <a href="https://plus.google.com/114996005873710645329?rel=author">
+      <i class="fa fa-google-plus-square"></i> 
+      Google+
+    </a>
+  </h3>
+</section>
+
+
+
+    
+  </aside>
+  
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p class="text-center">
+  <span class="copyright">
+  	Copyright &copy; 2015 by jeff.downing@latchd.com
+  </span>
+
+  <span class="credit">
+  	Powered by <a href="http://octopress.org" target="_blank">Octopress</a><br />
+  	<span><a href="http://github.com/annejohnson/octofound" target="_blank">Theme</a> by <a href="http://feathers.io" target="_blank">Anne Johnson</a></span>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'aggrolearning';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://www.codeaffectionado.com/labs-and-tutorials/osgi/bndtools-and-felix-with-jsp-support/index.html';
+        var disqus_url = 'http://www.codeaffectionado.com/labs-and-tutorials/osgi/bndtools-and-felix-with-jsp-support/index.html';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+
+</body>
+</html>
