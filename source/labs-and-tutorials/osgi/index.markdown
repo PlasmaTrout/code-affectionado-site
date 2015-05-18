@@ -26,4 +26,5 @@ The following OSGi labs are normally done in order, however frequently we includ
 2.  [Installing Apache Karaf With Web Console From Scratch](https://youtu.be/Z7kDntKsS6w)
 3.  [Setting Up Eclipse With BndTools](https://youtu.be/AEUxeUBb6i0)
 4.  [Setting Up BndTools For JSP Development Using Pax-Web](https://youtu.be/_q7_8yGJ1nM)
+5.  [OSGi Experimentation: Services Vs ServiceFactories](https://youtu.be/MpQZTG7A3Dw)
 

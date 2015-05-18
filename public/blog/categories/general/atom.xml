@@ -4,7 +4,7 @@
   <title><![CDATA[Category: General | CodeAffectionado]]></title>
   <link href="http://www.codeaffectionado.com/blog/categories/general/atom.xml" rel="self"/>
   <link href="http://www.codeaffectionado.com/"/>
-  <updated>2015-05-15T04:11:41-04:00</updated>
+  <updated>2015-05-18T10:23:12-04:00</updated>
   <id>http://www.codeaffectionado.com/</id>
   <author>
     <name><![CDATA[jeff.downing@latchd.com]]></name>
@@ -12,6 +12,29 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[New Video: OSGi Services vs Service Factories]]></title>
+    <link href="http://www.codeaffectionado.com/blog/2015/05/18/new-video-osgi-services-vs-service-factories/"/>
+    <updated>2015-05-18T09:58:00-04:00</updated>
+    <id>http://www.codeaffectionado.com/blog/2015/05/18/new-video-osgi-services-vs-service-factories</id>
+    <content type="html"><![CDATA[<p>I just added a new video to the programmer vs world channel (sorry I still haven&rsquo;t set up the one for this site yet).
+For some reason the phrase</p>
+
+<blockquote><p>all bundles are singleton unless told otherwise</p></blockquote>
+
+<p>wasn&rsquo;t reitereated enough for me when I first started, or maybe I just skimmed too much of the documentation. Either way,
+I suffered great peril until I got my head around it and how to change that behaviour when you need to. The answer is much simplier than you might think.</p>
+
+<iframe width="625" height="385" src="https://www.youtube.com/embed/MpQZTG7A3Dw" frameborder="0" allowfullscreen></iframe>
+
+
+<br/><br/>
+
+
+<p>I put the sample code from this video on <a href="https://github.com/PlasmaTrout/ca-servicefactory-demo">github</a> if you want to take a closer look at it and keep your eye on the <a href="https://www.youtube.com/channel/UCXUMchScrOIZYUa9_6wmFTg">PvW youTube Channel</a> for more.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Setting Up for 2015 (Videos and More)]]></title>

@@ -6,11 +6,12 @@
 <head>
   <script src="/js/vendor/modernizr.js"></script>
   <meta charset="utf-8">
-  <title>Apache Felix - Modifying First Bundle Using Blueprint | CodeAffectionado</title>
+  <title>New Video: OSGi Services vs Service Factories | CodeAffectionado</title>
   <meta name="author" content="jeff.downing@latchd.com">
 
   
-  <meta name="description" content="Apache Felix - Modifying First Bundle Using Blueprint August 22, 2013 --> OSGi has been a mature framework for building modular applications for &hellip;">
+  <meta name="description" content="I just added a new video to the programmer vs world channel (sorry I still haven&rsquo;t set up the one for this site yet).
+For some reason the &hellip;">
   
 
   <meta name="HandheldFriendly" content="True">
@@ -18,7 +19,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-blueprint">
+  <link rel="canonical" href="http://www.codeaffectionado.com/blog/2015/05/18/new-video-osgi-services-vs-service-factories">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="CodeAffectionado" type="application/atom+xml">
@@ -115,58 +116,70 @@
 </nav>
   <div id="main">
     <div id="content" class="row">
-        <div class="small-12 medium-12 large-8 columns">
-  <article role="article">
-    
-    <header class="page-header">
-      <h1 class="page-title">Apache Felix - Modifying First Bundle Using Blueprint</h1>
-      
-      <!--<p class="meta">
-
-
-
-
-
-
-
-
+      <div class="small-12 medium-12 large-8 columns">
+<article class="hentry" role="article">
   
-
-
-<i class="fa fa-calendar-o"></i> <time datetime="2013-08-22T10:01:00-04:00" pubdate data-updated="true">August 22, 2013</time> </p>-->
-    </header>
+  <header>
     
-    <p>OSGi has been a mature framework for building modular applications for quite some time. It has however, not not been embraced fully by the development community. The primary reason it stays unpopular in the development arena lies in its lack of beginning level tutorials or classes. This tutorial begins a series of labs to demystify the OSGi framework and begin familiarity with Apache Felix.</p>
-
-<p>This lab shows how to register a service bundle using blueprint services. The intent is to give the developer some options especially if dependency injection is needed prior to bundle registration.</p>
-
-<h2>Audience</h2>
-
-<p>The core audience is seated in a comfortable classroom or conference room environment. Readers performing this tutorial have received an overview of OSGi and completed a previous lab in which we setup a framework for use. A reader performing this tutorial would have a printed version of this media or the web site up on one screen while they work on code in another. The audience can be made up of developers from different disciplines but knowledge and understanding of the Java language is assumed.</p>
-
+      <h1 class="page-title">New Video: OSGi Services vs Service Factories</h1>
     
-      <footer>
-        <p class="meta">
-          
-          
-
-
-
-
-
-
-
-
-  
-
-
-<i class="fa fa-calendar-o"></i> <time datetime="2013-08-22T10:01:00-04:00" pubdate data-updated="true">August 22, 2013</time> 
-          
-        </p>
+    
+      <p class="meta">
         
-          <div class="sharing">
+
+
+
+
+
+
+
+
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-blueprint/index.html" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-blueprint/index.html" >Tweet</a>
+
+
+<i class="fa fa-calendar-o"></i> <time datetime="2015-05-18T09:58:00-04:00" pubdate data-updated="true">May 18, 2015</time> 
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>I just added a new video to the programmer vs world channel (sorry I still haven&rsquo;t set up the one for this site yet).
+For some reason the phrase</p>
+
+<blockquote><p>all bundles are singleton unless told otherwise</p></blockquote>
+
+<p>wasn&rsquo;t reitereated enough for me when I first started, or maybe I just skimmed too much of the documentation. Either way,
+I suffered great peril until I got my head around it and how to change that behaviour when you need to. The answer is much simplier than you might think.</p>
+
+<iframe width="625" height="385" src="https://www.youtube.com/embed/MpQZTG7A3Dw" frameborder="0" allowfullscreen></iframe>
+
+
+<br/><br/>
+
+
+<p>I put the sample code from this video on <a href="https://github.com/PlasmaTrout/ca-servicefactory-demo">github</a> if you want to take a closer look at it and keep your eye on the <a href="https://www.youtube.com/channel/UCXUMchScrOIZYUa9_6wmFTg">PvW youTube Channel</a> for more.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+
+<span class="categories">
+
+  <i class="fa fa-tag"></i> <strong>Posted in </strong>  
+  
+    <a class='category' href='/blog/categories/general/'>General</a>, <a class='category' href='/blog/categories/osgi/'>OSGi</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/blog/2015/05/18/new-video-osgi-services-vs-service-factories/" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/blog/2015/05/18/new-video-osgi-services-vs-service-factories/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -176,22 +189,27 @@
   
 </div>
 
-        
-      </footer>
     
-  </article>
-  
-    <section>
-      <h1>Comments</h1>
-      <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-</div>
-    </section>
-  
-  </div><!--.columns-->
-  
-  <aside class="sidebar small-12 medium-12 large-4 columns">
-    
+    <p class="meta">
       
+        <a class="basic-alignment left" href="/blog/2015/05/13/new-video-setup-bndtool-for-jsp-development/" title="Previous Post: New Video: Setting Up BndTools For JSP Development">&laquo; New Video: Setting Up BndTools For JSP Development</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar small-12 medium-12 large-4 columns">
+  
+    
   
 <section>
 	<h1>Lab/Tutorial Sections</h1>
@@ -241,9 +259,8 @@
 
 
 
-    
-  </aside>
   
+</aside>
 
 
     </div>
@@ -267,8 +284,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-blueprint/index.html';
-        var disqus_url = 'http://www.codeaffectionado.com/labs-and-tutorials/osgi/apache-felix-blueprint/index.html';
+        var disqus_identifier = 'http://www.codeaffectionado.com/blog/2015/05/18/new-video-osgi-services-vs-service-factories/';
+        var disqus_url = 'http://www.codeaffectionado.com/blog/2015/05/18/new-video-osgi-services-vs-service-factories/';
         var disqus_script = 'embed.js';
       
     (function () {
