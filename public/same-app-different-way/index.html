@@ -1,0 +1,344 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <script src="/js/vendor/modernizr.js"></script>
+  <meta charset="utf-8">
+  <title>Same App, Different Way | CodeAffectionado</title>
+  <meta name="author" content="jeff.downing@latchd.com">
+
+  
+  <meta name="description" content="Same App, Different Way May 19, 2015 --> Same App, Different Way is a concept for tutorials that allows us to built the same solution in different &hellip;">
+  
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.codeaffectionado.com/same-app-different-way">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="CodeAffectionado" type="application/atom+xml">
+
+  <script src="/js/vendor/jquery.js"></script>
+  <script src="/js/vendor/fastclick.js"></script>
+
+  <script src="/js/foundation.min.js"></script>
+
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+
+
+  <script>
+
+  $(document).ready(function(){
+    $(document).foundation();
+  });
+
+  </script>
+
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=Roboto:300,300italic,500,500italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Ubuntu:500' rel='stylesheet' type='text/css'>
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43174506-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body  >
+  <header role="banner" class="top-header">
+</header>
+  <nav role="navigation"><ul class="subscription hide" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+
+
+  <nav class="top-bar" data-topbar>
+
+    <!--Uncomment CodeAffectionado below if you would like a title area on the left side of the nav bar-->
+
+    <ul class="title-area">
+        <li class="name">
+          <h1><a href="/">CodeAffectionado</a></h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#">Menu</a></li>
+    </ul>
+
+
+    <section class="top-bar-section">
+
+      <ul class="main-navigation right">
+
+          <li><a href="/">Home</a></li>
+      	  <li class="has-dropdown">
+            <a href="/labs-and-tutorials">Tutorials</a>
+        		<ul class="dropdown">
+        		   <li><a href="/labs-and-tutorials/osgi/">OSGi</a></li>
+        		   <li><a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a></li>
+        		</ul>
+          <li>
+
+          <!--<li class="has-dropdown">
+            <a href="/no-sidebar">No Sidebar Page</a>
+
+            <ul class="dropdown">
+              <li><a href="/no-sidebar/left-sidebar">Left Sidebar Page</a></li>
+              <li><a href="/no-sidebar/right-sidebar">Right Sidebar Page</a></li>
+              <li><a href="/no-sidebar/example-formatting">Example Formatting</a></li>
+            </ul>
+
+          </li>-->
+
+          <li><a href="/blog/archives">Archives</a></li>
+
+      </ul>
+
+    </section>
+  </nav>
+
+
+</nav>
+  <div id="main">
+    <div id="content" class="row">
+        <div class="small-12 medium-12 large-8 columns">
+  <article role="article">
+    
+    <header class="page-header">
+      <h1 class="page-title">Same App, Different Way</h1>
+      
+      <!--<p class="meta">
+
+
+
+
+
+
+
+
+  
+
+
+<i class="fa fa-calendar-o"></i> <time datetime="2015-05-19T23:36:00-04:00" pubdate data-updated="true">May 19, 2015</time> </p>-->
+    </header>
+    
+    <p>Same App, Different Way is a concept for tutorials that allows us to built the same solution in different frameworks, technologies and/or languages. We did this so that
+folks who may not have much development experience can see how a relatively simple app is done in a myriad of different ways. This allows them to learn, examine and possible choose a new framework or technology based on what it takes to create an application.</p>
+
+<p>Since all applications are designed to solve a problem, lets take a look at our problem.</p>
+
+<h2>The Problem</h2>
+
+<p>Podcasting is taking over the world. Well, some of the world. Everyday more and more podcasters get their start, but recently iTunes took it to a whole new level. They placed the podcats app as one of their default applications on the phone. This means a whole new world of subscribers just got their first introduction into this dynamic and fascinating world of internet broadcasting. Now for the subscribers this is great, for the podcasters themselves it created a need.</p>
+
+<p>See, iTunes uses an RSS feed to put items in the podcast store for users of iPhones to subscribe to. All a podcaster can do it created a feed and submit to iTunes for acceptance. However, most poscasters are not web designers or developers.</p>
+
+<p>This means there is a need to have a web application that a podcaster can easily deploy that allows them to enter in the URL&rsquo;s to their podcasts and some superflious information and have it dynamically generate their RSS feed for iTunes.</p>
+
+<h2>Our Application Requirements</h2>
+
+<p>Our app will allow a user to login (preferably using facebook or twitter). Once logged in the user will be presented with all of the podcasts they have submitted organized by the date. From here they can add/remove/update all of the media for each podcast they run. When they are done, the RSS feed for that specific podcast will reflect the changes.</p>
+
+<p>Some important points:</p>
+
+<ul>
+<li>The application will only save the URL&rsquo;s to media that is stored somewhere else. We won&rsquo;t be taking the uploads themselves (at least not yet).</li>
+<li>The application will allow a single user to maintain multiple feeds.</li>
+<li>The application will need to have a different feed for each podcast.</li>
+<li>The application will allow for all of the itunes specific elements to be maintained.</li>
+<li>The target user of the application is someone who isn&rsquo;t a developer.</li>
+</ul>
+
+
+<h2>The Tutorials</h2>
+
+<p>Each tutorial will build this app differently, however the core use of the application will remain the same. If you have suggestions on specific frameworks and/or technologies you would like to see, leave them in the comments!</p>
+
+    
+      <footer>
+        <p class="meta">
+          
+          
+
+
+
+
+
+
+
+
+  
+
+
+<i class="fa fa-calendar-o"></i> <time datetime="2015-05-19T23:36:00-04:00" pubdate data-updated="true">May 19, 2015</time> 
+          
+        </p>
+        
+          <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/same-app-different-way/index.html" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/same-app-different-way/index.html" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+        
+      </footer>
+    
+  </article>
+  
+    <section>
+      <h1>Comments</h1>
+      <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </section>
+  
+  </div><!--.columns-->
+  
+  <aside class="sidebar small-12 medium-12 large-4 columns">
+    
+      
+  
+<section>
+	<h1>Lab/Tutorial Sections</h1>
+	<ul id="recent_posts">
+      <li class="post">
+        <a href="/labs-and-tutorials/osgi/">OSGi</a>
+      </li>
+      <li>
+      	<a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a>
+      </li>
+  </ul>
+</section><section>
+  <h1>Recent Posts <i class="fa fa-edit"></i></h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/05/18/new-video-osgi-services-vs-service-factories/">New Video: OSGi Services vs Service Factories</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/13/new-video-setup-bndtool-for-jsp-development/">New Video: Setting Up BndTools for JSP Development</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/13/setting-up-for-2015/">Setting Up for 2015 (Videos and More)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/16/hey-whats-with-this-wordpress-site/">Hey? Whats With This Wordpress Site?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/16/new-osgi-tutorial-posted/">New OSGi Tutorial on Bndtools Posted</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="googleplus">
+  <h3>
+    <a href="https://plus.google.com/114996005873710645329?rel=author">
+      <i class="fa fa-google-plus-square"></i> 
+      Google+
+    </a>
+  </h3>
+</section>
+
+
+
+    
+  </aside>
+  
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p class="text-center">
+  <span class="copyright">
+  	Copyright &copy; 2015 by jeff.downing@latchd.com
+  </span>
+
+  <span class="credit">
+  	Powered by <a href="http://octopress.org" target="_blank">Octopress</a><br />
+  	<span><a href="http://github.com/annejohnson/octofound" target="_blank">Theme</a> by <a href="http://feathers.io" target="_blank">Anne Johnson</a></span>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'aggrolearning';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://www.codeaffectionado.com/same-app-different-way/index.html';
+        var disqus_url = 'http://www.codeaffectionado.com/same-app-different-way/index.html';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+
+</body>
+</html>
