@@ -27,16 +27,16 @@ Some important points:
 * The application will allow for all of the itunes specific elements to be maintained for each podcasts and episode.
 * The target user of the application is someone who isn't a developer.
 
-{% img /images/castr/castr_uc.PNG 'Top Level Use Case' 'Top Level Use Case' %}
+{% img /images/castr/castr_uc.png 'Top Level Use Case' 'Top Level Use Case' %}
 
 > The CastR application will allow a podcaster to maintain their podcasts as well as provide an RSS feed for iTunes.
 
 
-{% img /images/castr/castr_level2.PNG 'Maintaining Podcasts' 'Maintaining Podcasts' %}
+{% img /images/castr/castr_level2.png 'Maintaining Podcasts' 'Maintaining Podcasts' %}
 
 The domain looks like:
 
-{% img /images/castr/castr_domain.PNG 'Domain Diagram' 'Domain Diagram'} %}
+{% img /images/castr/castr_domain.png 'Domain Diagram' 'Domain Diagram'} %}
 
 ## The Tutorials
 Each tutorial will build this app differently, however the core use of the application will remain the same. If you have suggestions on specific frameworks and/or technologies you would like to see, leave them in the comments!
