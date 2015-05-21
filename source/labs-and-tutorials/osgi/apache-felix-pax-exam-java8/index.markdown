@@ -1,11 +1,10 @@
 ---
 layout: page
-title: "Apache Felix - Pax Exam And Unit Testing Felix Bundles (Java 1.7 Version)"
-date: 2013-08-19 14:23
+title: "Apache Felix - Pax Exam And Unit Testing Felix Bundles (Java 1.8 Version)"
+date: 2015-05-21 00:13
 comments: true
 sharing: true
 footer: true
-indexer: true
 ---
 OSGi has been a mature framework for building modular applications for quite some time. It has however, not not been embraced fully by the development community. The primary reason it stays unpopular in the development arena lies in its lack of beginning level tutorials or classes. This tutorial begins a series of labs to demystify the OSGi framework and begin familiarity with Apache Felix.
 
@@ -23,8 +22,6 @@ If you haven't done the first few bundle tutorials mentioned above you can grab 
 ```bash Lab Quick Start Code https://github.com/PlasmaTrout/greeter-bundle-lab4 GitHub
 git clone git@github.com:PlasmaTrout/greeter-bundle-lab4.git
 ```
-
-This tutorial only works with Java 1.7 and below currently, if you are using Java 1.8 then check out the tutorial [here](/labs-and-tutorials/osgi/apache-felix-pax-exam-java8).
 
 Remove Our Command Class and Its XML File
 -----
@@ -76,52 +73,72 @@ The new goal is to ensure that the manifest is actually written at a different p
 
 Add A Few More Maven Dependencies
 -----
-So now we need to add a few Maven dependencies. I won't explain them, just know that they are requirements for Pax Exam and are available in their documentation. We are also going to scope most of them to test only anyways. We won't be deploying them. In your POM.xml add the following dependency chain:
+So now we need to add a few Maven dependencies. I won't explain them, just know that they are requirements for Pax Exam and are available in their documentation. We are also going to scope most of them to test only anyways. In your POM.xml add the following dependency chain:
 
 ```xml Pax Exam POM Dependencies
-<!--Used for Pax Exam unit testing only -->
-<dependency>
-    <groupId>org.ops4j.pax.exam</groupId>
-    <artifactId>pax-exam-container-native</artifactId>
-    <version>2.5.0</version>
-    <scope>test</scope>
-</dependency>
-<dependency>
-    <groupId>org.ops4j.pax.exam</groupId>
-    <artifactId>pax-exam-junit4</artifactId>
-    <version>2.5.0</version>
-    <scope>test</scope>
-</dependency>
-<dependency>
-    <groupId>org.ops4j.pax.exam</groupId>
-    <artifactId>pax-exam-link-mvn</artifactId>
-    <version>2.5.0</version>
-    <scope>test</scope>
-</dependency>
-<dependency>
-    <groupId>org.ops4j.pax.url</groupId>
-    <artifactId>pax-url-aether</artifactId>
-    <version>1.4.0</version>
-    <scope>test</scope>
-</dependency>
-<dependency>
-    <groupId>org.apache.felix</groupId>
-    <artifactId>org.apache.felix.framework</artifactId>
-    <version>3.2.2</version>
-    <scope>test</scope>
-</dependency>
-<dependency>
-    <groupId>ch.qos.logback</groupId>
-    <artifactId>logback-core</artifactId>
-    <version>0.9.20</version>
-    <scope>test</scope>
-</dependency>
-<dependency>
-    <groupId>ch.qos.logback</groupId>
-    <artifactId>logback-classic</artifactId>
-    <version>0.9.20</version>
-    <scope>test</scope>
-</dependency>
+<dependencies>
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-simple</artifactId>
+		<version>1.7.12</version>
+	</dependency>
+    <dependency>
+        <groupId>org.ops4j.pax.exam</groupId>
+        <artifactId>pax-exam-container-native</artifactId>
+        <version>${pax.exam.version}</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.ops4j.pax.exam</groupId>
+        <artifactId>pax-exam-junit4</artifactId>
+        <version>${pax.exam.version}</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.ops4j.pax.exam</groupId>
+        <artifactId>pax-exam-link-mvn</artifactId>
+        <version>${pax.exam.version}</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.ops4j.pax.url</groupId>
+        <artifactId>pax-url-aether</artifactId>
+        <version>${url.version}</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>org.apache.felix.framework</artifactId>
+        <version>5.0.0</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-core</artifactId>
+        <version>0.9.20</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>ch.qos.logback</groupId>
+        <artifactId>logback-classic</artifactId>
+        <version>0.9.20</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.12</version>
+    </dependency>
+</dependencies>
+```
+
+And at the top of your POM add the following section right under the name of our project:
+
+```xml
+<properties>
+    	<pax.exam.version>4.5.0</pax.exam.version>
+    	<url.version>1.6.0</url.version>
+</properties>
 ```
 
 Thats really all we had to do in this step. Its probably best that we run a **mvn package** or **mvn test** just to make sure we have no Maven errors.
@@ -133,16 +150,16 @@ We already have a unit test that was created with the quick start archetype. Up 
 Now lets decorate the top of it with some annotations that will help Pax Exam pick up on its existence (I'm omitting the imports that are needed to support these, I'm hoping your IDE does some work here):
 
 ```java Decorating Our Test Class With Some Annotations
-@RunWith(JUnit4TestRunner.class)
-@ExamReactorStrategy(AllConfinedStagedReactorFactory.class)
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
 public class GreeterPaxExamTest
     extends TestCase
 {
 ```
 
-The first is a common annotation to change what runner (test system) that the unit test will run on. Without this annotation, Maven will default to its own runner and we don't want that in this case. We want it to use JUnit 4.8.2's test runner.
+The first is a common annotation to change what runner (test system) that the unit test will run on. Without this annotation, Maven will default to its own runner and we don't want that in this case. We want it to use Pax-Exams test runner.
 
-The second tells Pax Exam what kind of strategy to use when starting and stopping the container. With our selection a brand new test container is started and stopped for each test that is run. The only other option is EagerSingleStagedReactorFactory which is explained in Pax Exam's documentation. Our statement is the default so its really not needed but let's leave it in anyways.
+The second tells Pax Exam what kind of strategy to use when starting and stopping the container. With our selection a brand new test container is started and stopped for each test class that is run. 
 
 ### Create Config Method
 Pax Exams uses a special configuration method to help it load the framework when the test is being run. It's important that we add the bundles we need to it, just like we would do to a stand-alone Felix framework. Place this method in your test class:
@@ -197,7 +214,7 @@ public void simpleGreetingImplCheck()
 
 Just in case your having trouble, the final test class should look like the following:
 
-{% include_code GreeterPaxExamTest.java %}
+{% include_code GreeterPaxExamTest2.java %}
 
 Build Our Application and Run Unit Tests
 -----
@@ -211,4 +228,47 @@ This is due to our test case having the world fail in it. If we change it to jus
 
 With this setup we now can actually test our bundles prior to deploying them. In the next tutorial we will make declarative services one more step easier by removing the xml files and using our classes to define the component information.
 
-If you want the source code you can find it at [https://github.com/PlasmaTrout/greeter-bundle-lab5](https://github.com/PlasmaTrout/greeter-bundle-lab5) make sure to make note the java 1.8 version is on a different branch.
+If you want the source code you can find it at [https://github.com/PlasmaTrout/greeter-bundle-lab5/tree/java8](https://github.com/PlasmaTrout/greeter-bundle-lab5/tree/java8) make sure to make note the java 1.8 version is on a different branch.
+
+## Errors Encountered During This Series
+You may see some of these when trying to do this tutorial in Java 1.8.
+
+### java.lang.NoSuchMethodError: org.osgi.framework.BundleEvent.<init>(ILorg/osgi/framework/Bundle;Lorg/osgi/framework/Bundle;)V
+This one is primarily due to an extra org.osgi.core bundle being declared in the pom. I had a dependency to:
+
+```xml
+<dependency>
+    <groupId>org.apache.felix</groupId>
+    <artifactId>org.osgi.core</artifactId>
+    <version>1.4.0</version>
+    <scope>provided</scope>
+</dependency>
+```
+
+Which BTW is incredibly out of date. Once I removed it, everything worked fine.
+
+### org.osgi.framework.BundleException: Unresolved constraint in bundle org.ops4j.pax.exam.invoker.junit [17]: Unable to resolve 17.0: (blah blah blah)
+
+All of this is due to the wrong Felix Framework vs Pax-Exam combination. I originally had:
+
+```xml
+<dependency>
+    <groupId>org.apache.felix</groupId>
+    <artifactId>org.apache.felix.framework</artifactId>
+    <version>4.0.3</version>
+    <scope>test</scope>
+</dependency>
+```
+
+when I changed it to:
+
+```xml
+<dependency>
+    <groupId>org.apache.felix</groupId>
+    <artifactId>org.apache.felix.framework</artifactId>
+    <version>5.0.0</version>
+    <scope>test</scope>
+</dependency>
+```
+
+Everything ran great!
