@@ -10,17 +10,17 @@ indexer: true
 In this tutorial we will setup a new BndTools project to compile and host JSP web pages as a Web Application Bundle. If you prefer video tutorials, there is a [video tutorial](https://youtu.be/_q7_8yGJ1nM) on how to do this, however it differs in that this example will use shortcuts for the sections that are mostly visual. This allows us to spend more time setting up our JSP bundle and less time worrying about the Pax-Web recipe.
 
 ## Prerequisites
-There are a few preerquisites in order to follow along with this tutorial. It's important to have BndTools installed into Eclipse at this point. If you don't, take some time and watch the [video](https://youtu.be/AEUxeUBb6i0) on how to accomplish that step. 
+There are a few prerequisites in order to follow along with this tutorial. It's important to have BndTools installed into Eclipse at this point. If you don't, take some time and watch the [video](https://youtu.be/AEUxeUBb6i0) on how to accomplish that step. 
 
 ### Download The Pax-Web Dependency Bundle
-A zip file is needed before this tutorial will work properly (dont worry, it's all jar files and 0 viruses). It's a 15M zip of bundles ready to be put into the local repository in BndTools. Once it's downloaded and unzipped everything is ready to go.
+A zip file is needed before this tutorial will work properly (don’t worry, it's all jar files and 0 viruses). It's a 15M zip of bundles ready to be put into the local repository in BndTools. Once it's downloaded and un-zipped everything is ready to go.
 
 Download: [CodeAffectionado_PaxJSP_Achive.zip](https://app.box.com/s/xwvcb9ai5v6ht43tqnnsn9ih706c6b2q)
 
 ## Getting Started
 
 ### Install the Zip File Bundles
-Starting with a new workspace and a new bndtools osgi project (component development) project in Eclipse (the name doesn't matter), copy all of the jar files inside of the downloaded zip file to the Local repository. This is done by dragging them onto the Local folder of the Repositories window. Once all the jar files are visible in the repository, restart Eclipse.
+Starting with a new workspace and a new bndtools OSGi project (component development) project in Eclipse (the name doesn't matter), copy all of the jar files inside of the downloaded zip file to the Local repository. This is done by dragging them onto the Local folder of the Repositories window. Once all the jar files are visible in the repository, restart Eclipse.
 
 ### Create a New Run Descriptor
 Right click the project folder and create a new _Run Descriptor_. Leave it default to use Apache Felix 4 with the Gogo Shell. It really doesn't matter what it's named, but I named mine paxweb. The final file for me that was created was named ```paxweb.bndrun```.
@@ -89,12 +89,12 @@ org.ops4j.pax.web.pax-web-jsp[org.apache.tomcat.util.digester.Digester] : addRul
 This is the logger, in association with the jdt compiler, logging some of the JSP internals as they happen. Navigate to [http://localhost:8080/system/console](http://localhost:8080/system/console) and login as admin/admin and note that the webconsole, with full JSP/WAR/WAB/Whiteboard support, is running.
 
 ## Create A JSP WAB Project
-To create a JSP Web Application Bundle (WAB) start with a fresh Bundle Descriptor.Right click on the project folder in the package explorer and choose New -> Bundle Descriptor. It's name doesn't really matter, but I named mine jsptest. Aftwards, double click on the .bnd file (mine was ```jsptest.bnd```) to open up the editor.
+To create a JSP Web Application Bundle (WAB) start with a fresh Bundle Descriptor.Right click on the project folder in the package explorer and choose New -> Bundle Descriptor. It's name doesn't really matter, but I named mine jsptest. Afterwards, double click on the .bnd file (mine was ```jsptest.bnd```) to open up the editor.
 
 ### Remove Default Private Package
 Notice by default that BndTools included a private package in the private packages window. Go ahead and remove it by clicking on it and choosing the X icon at the top of the window. Hit **save**.
 
-_Note: This step isn't critical, however I have ran into issues on my mac where a crazy osgi.ee missing requirement error message will show when this is left in. On windows I haven't seen the issue._
+_Note: This step isn't critical, however I have ran into issues on my Mac where a crazy osgi.ee missing requirement error message will show when this is left in. On windows I haven't seen the issue._
 
 ### Create Web Application Folder And Files
 At the root of the project folder, create a new folder called webapp. Inside of the webapp folder create a WEB-INF folder. in the webapp folder create a file called ```test.jsp``` and give it the following contents:
@@ -124,7 +124,7 @@ Service-Component:  \
 	*
 ```
 
-Some lines will need to be appended ot the source to instruct it how to create a web application bundle. First add this line to the bottom of the file:
+Some lines will need to be appended to the source to instruct it how to create a web application bundle. First add this line to the bottom of the file:
 
 ```
 Web-ContextPath: jsptest/
@@ -158,12 +158,12 @@ WebApp-Context: jsptest/
 ```
 
 ### Add Bundle To Run Descriptor And Test
-Go back to the ```paxweb.bndrun``` editor and go to the Run tab and search for the new Bundle Desciptor in the search box. When we find it, we can drag it into the run bundles window and hit save. 
+Go back to the ```paxweb.bndrun``` editor and go to the Run tab and search for the new Bundle Descriptor in the search box. When we find it, we can drag it into the run bundles window and hit save. 
 
 Now navigate to [http://localhost:8080/jsptest/test.jsp](http://localhost:8080/jsptest/test.jsp) to see the plain vanilla JSP in all it's glory.
 
 ## Testing Scriplets
-Modify the ```test.jsp``` file to include some scriptlet code by optining it in the editor and making the following changes:
+Modify the ```test.jsp``` file to include some scriptlet code by opening it in the editor and making the following changes:
 
 ```html
 <html>

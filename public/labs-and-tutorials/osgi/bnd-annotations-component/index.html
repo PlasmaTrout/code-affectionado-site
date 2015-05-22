@@ -6,11 +6,11 @@
 <head>
   <script src="/js/vendor/modernizr.js"></script>
   <meta charset="utf-8">
-  <title>Understanding the BND Annotations | CodeAffectionado</title>
+  <title>Understanding the BND Annotations - @Component | CodeAffectionado</title>
   <meta name="author" content="jeff.downing@latchd.com">
 
   
-  <meta name="description" content="Understanding the BND Annotations May 15, 2015 --> This reference is designed to help developers understand the BND Annotation and how they relate &hellip;">
+  <meta name="description" content="Understanding the BND Annotations - @Component May 15, 2015 --> This reference is designed to help developers understand the BND Annotation and how &hellip;">
   
 
   <meta name="HandheldFriendly" content="True">
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://www.codeaffectionado.com/labs-and-tutorials/osgi/bnd-annotations">
+  <link rel="canonical" href="http://www.codeaffectionado.com/labs-and-tutorials/osgi/bnd-annotations-component">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="CodeAffectionado" type="application/atom+xml">
@@ -119,7 +119,7 @@
   <article role="article">
     
     <header class="page-header">
-      <h1 class="page-title">Understanding the BND Annotations</h1>
+      <h1 class="page-title">Understanding the BND Annotations - @Component</h1>
       
       <!--<p class="meta">
 
@@ -136,20 +136,20 @@
 <i class="fa fa-calendar-o"></i> <time datetime="2015-05-15T02:02:00-04:00" pubdate data-updated="true">May 15, 2015</time> </p>-->
     </header>
     
-    <p>This reference is designed to help developers understand the BND Annotation and how they relate to OSGi bundles.</p>
+    <p>This reference is designed to help developers understand the BND Annotation and how they relate to OSGi bundles. This documentation will change as new points are brought up in the comments, email, etc.</p>
 
 <h2>What&rsquo;s a Component Anyway</h2>
 
-<p>A component is just an all encompasing term that means any Java class inside a bundle that has given up its normal rights to be controlled exclusively by the component runtime of an OSGi framework. This means when it become available or unavailable is up to the runtime.</p>
+<p>A component is just an all encompassing term that means any Java class inside a bundle that has given up its normal rights to be controlled exclusively by the component runtime of an OSGi framework. This means when it become available or unavailable is up to the runtime.</p>
 
 <p>A component is declared in OSGi by the presence of a specific component.xml file that gets deployed with the bundle declaring it. The SCR and BND annotations allow this file to be built for you using the decorations on your classes.</p>
 
 <p>There are essentially three types of components:</p>
 
 <ol>
-<li>Immeadiate Components, which are components that must be made active and ready as soon as it&rsquo;s possible for the runtime to do so.</li>
+<li>Immediate Components, which are components that must be made active and ready as soon as it&rsquo;s possible for the runtime to do so.</li>
 <li>Delayed Components, which are components that don&rsquo;t become active until someone needs them and calls them.</li>
-<li>And Factory Components that allows other bundles, code or admin dialogs to active, stop and destory them.</li>
+<li>And Factory Components that allows other bundles, code or admin dialogs to active, stop and destroy them.</li>
 </ol>
 
 
@@ -159,9 +159,9 @@
 
 <p>As you can image, putting the <code>@Component</code> annotation on a class causes a component.xml file to be generated and declares that class as a component. But what type of component? Well that depends.</p>
 
-<p>If the component doesn&rsquo;t provide a service interface (which is what the provide parameter is for) and has no dependencies then it will be considered an immeadiate component. This is because with no dependencies and no service interface, it&rsquo;s impossible for the framework to figure out when to active it. It needs a solid trigger if the framework is going to delay it.</p>
+<p>If the component doesn&rsquo;t provide a service interface (which is what the provide parameter is for) and has no dependencies then it will be considered an immediate component. This is because with no dependencies and no service interface, it&rsquo;s impossible for the framework to figure out when to active it. It needs a solid trigger if the framework is going to delay it.</p>
 
-<p>Howver, if you provide a service interface then the framework can delay the activation of your component until someone actually calls it. If you provide dependencies it can wait to active it until all of the required ones are met. If you have neither the framework has no choice but to activate it immeadiately, otherwise it would never be able to.</p>
+<p>However, if you provide a service interface then the framework can delay the activation of your component until someone actually calls it. If you provide dependencies it can wait to active it until all of the required ones are met. If you have neither the framework has no choice but to activate it immediately, otherwise it would never be able to.</p>
 
 <p>So lets take a simple class and show how this works.</p>
 
@@ -186,7 +186,7 @@
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<p>In this case the component is activated immeadiately since it has no dependencies and provides no service interface to anyone. As soon as it&rsquo;s placed into the runtime it will print the message <code>Component was activated!</code>.</p>
+<p>In this case the component is activated immediately since it has no dependencies and provides no service interface to anyone. As soon as it&rsquo;s placed into the runtime it will print the message <code>Component was activated!</code>.</p>
 
 <p>If we implement an interface things change, the component annotation will automatically provide a service by that interfaces name and the component will become delayed.</p>
 
@@ -287,7 +287,7 @@
 </tr>
 <tr>
 <td>immediate  </td>
-<td> This true or false field suggests your intent to the framework of whether to delay activation or do so immeadiately when all dependencies are met. If you have a component with no services and no dependencies like we described in the beginning of this article, setting this to false has no effect.</td>
+<td> This true or false field suggests your intent to the framework of whether to delay activation or do so immediately when all dependencies are met. If you have a component with no services and no dependencies like we described in the beginning of this article, setting this to false has no effect.</td>
 </tr>
 <tr>
 <td>properties </td>
@@ -299,7 +299,7 @@
 </tr>
 <tr>
 <td>serviceFactory </td>
-<td> When this is set to true, any bundle that requests the service gets a completely new and uniquely configured instance. Because of this you can&rsquo;t have immeadiate set to true and this set to true at the same time.</td>
+<td> When this is set to true, any bundle that requests the service gets a completely new and uniquely configured instance. Because of this you can&rsquo;t have immediate set to true and this set to true at the same time.</td>
 </tr>
 <tr>
 <td>designate </td>
@@ -309,9 +309,15 @@
 <td>designateFactory </td>
 <td> This allows you to specify the class that will serve as the basis for every instance that the factory will create of a given service.</td>
 </tr>
+<tr>
+<td>factory </td>
+<td> Sets the pid so that you can use factories programmatically to create instances. Odds are, you will never use this.</td>
+</tr>
 </tbody>
 </table>
 
+
+<p>Be wary of the factory and designateFactory parameters. They probably aren&rsquo;t used like you think. As a matter of fact some of the writers of the OSGi specification have even warned about using them outside of the scope of the very limited use cases they were designed for.</p>
 
     
       <footer>
@@ -335,7 +341,7 @@
         
           <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/labs-and-tutorials/osgi/bnd-annotations/index.html" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/labs-and-tutorials/osgi/bnd-annotations/index.html" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/labs-and-tutorials/osgi/bnd-annotations-component/index.html" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/labs-and-tutorials/osgi/bnd-annotations-component/index.html" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -436,8 +442,8 @@
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://www.codeaffectionado.com/labs-and-tutorials/osgi/bnd-annotations/index.html';
-        var disqus_url = 'http://www.codeaffectionado.com/labs-and-tutorials/osgi/bnd-annotations/index.html';
+        var disqus_identifier = 'http://www.codeaffectionado.com/labs-and-tutorials/osgi/bnd-annotations-component/index.html';
+        var disqus_url = 'http://www.codeaffectionado.com/labs-and-tutorials/osgi/bnd-annotations-component/index.html';
         var disqus_script = 'embed.js';
       
     (function () {

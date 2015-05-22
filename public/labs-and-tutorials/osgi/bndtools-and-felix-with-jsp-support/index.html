@@ -140,11 +140,11 @@
 
 <h2 id="id-ee68e5b99222bbc29a480fcb0d1d6ee2">1 Prerequisites</h2>
 
-<p>There are a few preerquisites in order to follow along with this tutorial. It&rsquo;s important to have BndTools installed into Eclipse at this point. If you don&rsquo;t, take some time and watch the <a href="https://youtu.be/AEUxeUBb6i0">video</a> on how to accomplish that step.</p>
+<p>There are a few prerequisites in order to follow along with this tutorial. It&rsquo;s important to have BndTools installed into Eclipse at this point. If you don&rsquo;t, take some time and watch the <a href="https://youtu.be/AEUxeUBb6i0">video</a> on how to accomplish that step.</p>
 
 <h3 id="id-07ea6f4430582dcee1dcce4efcc64164">1.1 Download The Pax-Web Dependency Bundle</h3>
 
-<p>A zip file is needed before this tutorial will work properly (dont worry, it&rsquo;s all jar files and 0 viruses). It&rsquo;s a 15M zip of bundles ready to be put into the local repository in BndTools. Once it&rsquo;s downloaded and unzipped everything is ready to go.</p>
+<p>A zip file is needed before this tutorial will work properly (don’t worry, it&rsquo;s all jar files and 0 viruses). It&rsquo;s a 15M zip of bundles ready to be put into the local repository in BndTools. Once it&rsquo;s downloaded and un-zipped everything is ready to go.</p>
 
 <p>Download: <a href="https://app.box.com/s/xwvcb9ai5v6ht43tqnnsn9ih706c6b2q">CodeAffectionado_PaxJSP_Achive.zip</a></p>
 
@@ -152,7 +152,7 @@
 
 <h3 id="id-11389d0154cf40e6540879994a5ca303">2.1 Install the Zip File Bundles</h3>
 
-<p>Starting with a new workspace and a new bndtools osgi project (component development) project in Eclipse (the name doesn&rsquo;t matter), copy all of the jar files inside of the downloaded zip file to the Local repository. This is done by dragging them onto the Local folder of the Repositories window. Once all the jar files are visible in the repository, restart Eclipse.</p>
+<p>Starting with a new workspace and a new bndtools OSGi project (component development) project in Eclipse (the name doesn&rsquo;t matter), copy all of the jar files inside of the downloaded zip file to the Local repository. This is done by dragging them onto the Local folder of the Repositories window. Once all the jar files are visible in the repository, restart Eclipse.</p>
 
 <h3 id="id-ea8faa9bc5172ff8cefb347a148d05a1">2.2 Create a New Run Descriptor</h3>
 
@@ -245,13 +245,13 @@ org.ops4j.pax.web.pax-web-jsp[org.apache.tomcat.util.digester.Digester] : addRul
 
 <h2 id="id-beda65bcd91ea13ec58694c0fa88db11">3 Create A JSP WAB Project</h2>
 
-<p>To create a JSP Web Application Bundle (WAB) start with a fresh Bundle Descriptor.Right click on the project folder in the package explorer and choose New &ndash;> Bundle Descriptor. It&rsquo;s name doesn&rsquo;t really matter, but I named mine jsptest. Aftwards, double click on the .bnd file (mine was <code>jsptest.bnd</code>) to open up the editor.</p>
+<p>To create a JSP Web Application Bundle (WAB) start with a fresh Bundle Descriptor.Right click on the project folder in the package explorer and choose New &ndash;> Bundle Descriptor. It&rsquo;s name doesn&rsquo;t really matter, but I named mine jsptest. Afterwards, double click on the .bnd file (mine was <code>jsptest.bnd</code>) to open up the editor.</p>
 
 <h3 id="id-cf00a4aee5649475229d66935c93af27">3.1 Remove Default Private Package</h3>
 
 <p>Notice by default that BndTools included a private package in the private packages window. Go ahead and remove it by clicking on it and choosing the X icon at the top of the window. Hit <strong>save</strong>.</p>
 
-<p><em>Note: This step isn&rsquo;t critical, however I have ran into issues on my mac where a crazy osgi.ee missing requirement error message will show when this is left in. On windows I haven&rsquo;t seen the issue.</em></p>
+<p><em>Note: This step isn&rsquo;t critical, however I have ran into issues on my Mac where a crazy osgi.ee missing requirement error message will show when this is left in. On windows I haven&rsquo;t seen the issue.</em></p>
 
 <h3 id="id-bc3438f683fa2517d6ea8d7b77ac8d49">3.2 Create Web Application Folder And Files</h3>
 
@@ -295,7 +295,7 @@ org.ops4j.pax.web.pax-web-jsp[org.apache.tomcat.util.digester.Digester] : addRul
 </span></code></pre></td></tr></table></div></figure></notextile></div>
 
 
-<p>Some lines will need to be appended ot the source to instruct it how to create a web application bundle. First add this line to the bottom of the file:</p>
+<p>Some lines will need to be appended to the source to instruct it how to create a web application bundle. First add this line to the bottom of the file:</p>
 
 <div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='html'><span class='line'>Web-ContextPath: jsptest/
@@ -343,13 +343,13 @@ org.ops4j.pax.web.pax-web-jsp[org.apache.tomcat.util.digester.Digester] : addRul
 
 <h3 id="id-bdc06c3eb305c812e4b3782d500748c7">3.4 Add Bundle To Run Descriptor And Test</h3>
 
-<p>Go back to the <code>paxweb.bndrun</code> editor and go to the Run tab and search for the new Bundle Desciptor in the search box. When we find it, we can drag it into the run bundles window and hit save.</p>
+<p>Go back to the <code>paxweb.bndrun</code> editor and go to the Run tab and search for the new Bundle Descriptor in the search box. When we find it, we can drag it into the run bundles window and hit save.</p>
 
 <p>Now navigate to <a href="http://localhost:8080/jsptest/test.jsp">http://localhost:8080/jsptest/test.jsp</a> to see the plain vanilla JSP in all it&rsquo;s glory.</p>
 
 <h2 id="id-63e8d882ab309823b8a620fa51540c5a">4 Testing Scriplets</h2>
 
-<p>Modify the <code>test.jsp</code> file to include some scriptlet code by optining it in the editor and making the following changes:</p>
+<p>Modify the <code>test.jsp</code> file to include some scriptlet code by opening it in the editor and making the following changes:</p>
 
 <div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>

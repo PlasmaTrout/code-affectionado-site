@@ -8,6 +8,9 @@ footer: true
 ---
 The following OSGi labs are normally done in order, however frequently we include GitHub links directly to finished versions of the previous labs so you can jump right in. This list is updated often as new tutorials are completed so check back often. The following labs are available in the category OSGi:
 
+#### References
+1. [BND Annotations - Component](/labs-and-tutorials/osgi/bnd-annotations-component)
+
 #### Web Tutorials
 
 1.	[Starting From Scratch](/labs-and-tutorials/osgi/apache-felix-from-scratch/)
