@@ -7,15 +7,15 @@ sharing: true
 footer: true
 indexer: true
 ---
-In this tutorial we will download and setup a basic development environment using Apache Sling. While there are numerous ways to work with Apache Sling, the WebDav method is the easiest for this tutorial. Once more advanced features like deployment, replication and source control are needed, future tutorials will cover these topics.
+In this tutorial we will download and setup a basic development environment using Apache Sling. While there are numerous ways to work with Apache Sling, the WebDav method is the easiest for this tutorial. Future tutorials will cover the more advanced features like deployment, replication and source control.
 
 ## What Is Apache Sling?
-Well, to borrow from the official [Apache Sling website](http://sling.apache.org/), Apache Sling can be summed up in five bullet points:
+Well, to borrow from the official [Apache Sling web-site](http://sling.apache.org/), Apache Sling can be summed up in five bullet points:
 
 * REST Based Web Framework
 * Content-Driven (using a JCR)
 * Powered By OSGi
-* Multple Languages Supported (JSP, Server Side JavaScript/ESP, Groovy, etc.)
+* Multiple Languages Supported (JSP, Server Side JavaScript/ESP, Groovy, etc.)
 * Open Source
 
 ## Getting Apache Sling
@@ -23,11 +23,11 @@ Apache Sling's download page is located at [http://sling.apache.org/downloads.cg
 
 Download Type | Description
 -------------------- | ----------- 
-Standalone Application | This is what we will use in our development environment. It is a standalone runnable jar file and makes installing the platform a breeze. All of sling is encapsulated in a running Apache Felix OSGi instance so if you done the OSGi tutorials you should already be confortable with it.
-Sling Web Application | This is basically a war file made to snap into your web server of choice. It's important to know though that this WAR file embeds OSGi and the system console into the web app. So don't try to deploy it to a Jetty/WAR whiteboard in an existing OSGi framework. That would be a bit silly.
+Standalone Application | This is what we will use in our development environment. It is a standalone runnable jar file and makes installing the platform a breeze. All of sling is encapsulated in a running Apache Felix OSGi instance. 
+Sling Web Application | This is basically a war file made to snap into your web server of choice. It's important to know though that this WAR file embeds OSGi and the system console into the web application. So don't try to deploy it to a Jetty/WAR white-board in an existing OSGi framework. That would be a bit silly.
 Sling Source Release | If for some reason you need to build Apache Sling under a different JDK or for a different processor type, the source is available to you.
 
-Let's grab the [standalone jar file](http://mirror.sdunix.com/apache//sling/org.apache.sling.launchpad-7-standalone.jar) and move it to a new directory created on our filesystem. This step is important since running it will cause a few new directories and config files to be created at its root, and you don't want that cluttering your documents or downloads folder. I saved mine in ```D:/Sling/``` since I'm on a windows machine for this tutorial.
+Let's grab the [standalone jar file](http://mirror.sdunix.com/apache//sling/org.apache.sling.launchpad-7-standalone.jar) and move it to a new directory created on our file system. This step is important since running it will cause a few new directories and config files to be created at its root, and you don't want that cluttering your documents or downloads folder. I saved mine in ```D:/Sling/``` since I'm on a windows machine for this tutorial.
 
 ## Running The Jar File
 Change directory to where you placed your file, and execute a java -jar on the jarfile. Mine looked something like this:
@@ -68,7 +68,7 @@ ons.logservice.internal.LogReaderServiceFactory,18] ServiceEvent REGISTERED
 
 The most important of these is the line ```HTTP server port: 8080``` which tells us where to go next.
 
-## Yep This Is Felix
+## Hey Isn't This Felix?
 If you navigate to <a href="http://localhost:8080/system/console" target="_blank">http://localhost:8080/system/console</a> and login as ```admin:admin``` you should be greeted with your old friend the Apache Felix web console. Of course this one is branded with Apache Slings logo, but it operates just the same. Feel free to browse around. Notice there are around 105 bundles in this installation. Most belong to Felix and Apache Jackrabbit (see why we started there first), but a large portion are Sling specific bundles.
 
 Now navigate to [http://localhost:8080/index.html](http://localhost:8080/index.html) and you should be presented with a welcome screen, just like you would on tomcat or similar web server.
@@ -85,30 +85,33 @@ Ubuntu   | Places -> Connect To Server -> http://admin:admin@localhost:8080/
 Windows  | Windows can be a real pain especially since windows 8. To connect to it see the next section.
 
 ### Connecting To Sling WebDav On Windows
-For Windows users connecting to Sling, WebDav is a little unintuitive. For starters the actual URI you need to connect to is [http://localhost:8080/dav/default](http://localhost:8080/dav/default) and most of you will get a network error out of the box. This is due to a new default setting thats been around since Window 7 that turns off basic authentication for non-SSL pages. So if you are seeing errors like:
+For Windows users connecting to Sling, WebDav can be more difficult. For starters the actual URI you need to connect to is [http://localhost:8080/dav/default](http://localhost:8080/dav/default) (which isn't mentioned anywhere) and most of you will get a network error out of the box. This is due to a new default setting thats been around since Windows 7 that turns off basic authentication for non-SSL pages. So if you are seeing errors like:
 
 {% img /images/sling/erro1.PNG 'Unknown Error Dialog' 'Unknown Error Dialog' %}
 
-or the infamous ```0x80070043 Network Name Cannot Be Found``` Error
+or the infamous ```0x80070043 Network Name Cannot Be Found``` 
 
 {% img /images/sling/error2.PNG 'Network Name Cannot Be Found' 'Network Name Cannot Be Found' %}
 
-Your issue is basic auth being disabled. To turn it back on you basically follow a Microsoft KB Article [#84125](https://support.microsoft.com/en-us/kb/841215) to turn it back on. As long as you are not running XP the TL;DR of this is adding a new DWORD to ```HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WebClient\Parameters``` thats sets ```BasicAuthLevel``` to the value 2 and rebooting.
+Your issue is basic auth being disabled. To turn it back on follow the Microsoft KB Article [#84125](https://support.microsoft.com/en-us/kb/841215).
 
-Afterwards, in windows explorer, map a network drive to http://localhost:8080/dav/default to a drive letter you can remember. In my case I ended up looking like this:
+_Note: As long as you are not running Windows XP the TL;DR of this is adding a new DWORD to ```HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WebClient\Parameters``` thats sets ```BasicAuthLevel``` to the value 2 and rebooting._
+
+Afterwards, in windows explorer, you should be able to now map a network drive to [the webdav url](http://localhost:8080/dav/default). All said and done your explorer should end up like this:
 
 {% img /images/sling/fix1.PNG 'WebDav Mounted' 'WebDav Mounted' %}
 
 Feel free to explore these new directories but don't modify any of the files just yet. 
 
 ## Playing Around
-Even though we have this mounted, you are infact not on a file system. Instead you are inside a Apache Jackrabbit database that has a REST interface exposed. Notice that on your WebDav mount there is a folder called apps. Trying using the following address in your browser and see what happens:
+Even though we have this mounted, you are in fact not on a file system. Instead you are inside a Apache Jackrabbit repository that has a RESTfull interface exposed. Notice that on your WebDav mount there is a folder called apps. Trying navigating to the following address in your browser and see what happens:
 
 ```
 http://localhost:8080/apps.json
 ```
 
-You will get the response:
+Notice the response:
+
 ```javascript
 {
 "jcr:createdBy": "admin",
@@ -117,7 +120,7 @@ You will get the response:
 }
 ```
 
-Now try:
+So we just received a JSON resource that explained that we hit a node of type sling:Folder. Interesting. Now try:
 
 ```
 http://localhost:8080/apps.4.json
@@ -131,14 +134,16 @@ Even better try this:
 http://localhost:8080/apps.xml
 ```
 
-How did that happen? You are essentially playing with the base way that sling operates. See that path after the host and port is really a path to tell Apache Jackrabbit where from the root to go. In this case you said /apps. The extension you entered after the word apps told Sling how to render the node. In our case we used both json and xml which are default renderers that are always available, but what happens if you use .html instead? Try it.
+How did this happen? Well, we are essentially playing with the main way that Apache Sling operates. The path (/apps) after the host and port is really a way to tell Apache Jackrabbit what node you want to grab. In this case you said /apps. Once the node was located Sling used the extension you entered to determine how to render the node. In this case we used both the json and xml renderers which are always available, but what happens if you use .html instead? Try it.
 
 {% img /images/sling/sling1.PNG 'Sling Render Error' 'Sling Render Error' %}
 
-Notice how an HTML renderer tried to process that node, but realized basically it was a folder and didn't know what to do with it (to be fair it was missing a special property too that we will get into later). So when Sling encounters a .html extension it looks first to see if the URI you gave actually points to a file (like http://localhost:8080/index.html) if so it just renders it. If it doesn't it looks to see if there are any script files (JSP,ESP,Etc) in JackRabbit that could render the node, otherwise it fails to a screen similar to this except telling you it searched and just coulding find a renderer.
+Notice how an another available type called the HTML renderer tried to process that node, but realized it was a folder and didn't know what to do with it (to be fair it was missing a special property that would have helped the rendered find it). 
+
+So what happened here? Well, when Sling encounters a .html extension it looks first to see if the URI you gave actually points to a file that ends in .html (like http://localhost:8080/index.html) if so it just renders it. If it doesn't it looks to see if there are any script files (JSP,ESP,Etc) in JackRabbit that could render the node, otherwise it fails to a screen similar to this except telling you it searched and just could not find a renderer. Where it looks for the scripts can be hinted in the actual node themselves but this is out next tutorial, so let's leave it at that.
 
 ## Data First Development
-So Apache Sling development basically functions backwards doesn't it? Essentially the workflow works like this:
+So Apache Sling development basically functions backwards from the normal way we approach web apps. Essentially the work flow works like this:
 
 1. Decide the URI you want to place the data
 2. Place the data in JackRabbit under that URI
@@ -146,7 +151,7 @@ So Apache Sling development basically functions backwards doesn't it? Essentiall
 4. Build renderers for that data by making JSP, ESP or XSLT pages (there are more options)
 5. Any other derivatives of the page can utilize selectors (eg: index.login.html).
 
-This is known as data first development and it's the big reason why Sling is different from all the other web frameworks out there.
+This is known as data first development and it's the big reason why Sling is different from all the other web frameworks out there. In future tutorials we will alway start with some nodes of data before we do anything with them.
 
 ## Summary
 In this tutorial we installed Apache Sling, verified it's operation by opening up the OSGi console and navigating to URLs and learned some basic mechanics behind how it renders things. In the next tutorial we need to give Sling some data and then build a simple JSP renderer for it.

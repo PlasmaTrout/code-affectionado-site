@@ -6,7 +6,7 @@ comments: true
 sharing: true
 footer: true
 ---
-This section is for Apache Sling tutorials and instructional videos.
+This section is for Apache Sling references, tutorials and instructional videos. If you have any possible references or tutorial suggestions, please feel free to share in the comments. I am always generating new content, though I do have a day job and it takes time. Please be patient and enjoy!
 
 ### References
 1.	[Discover Sling In 15 Minutes](http://sling.apache.org/documentation/getting-started/discover-sling-in-15-minutes.html)
@@ -15,4 +15,4 @@ This section is for Apache Sling tutorials and instructional videos.
 
 #### Web Tutorials
 
-1. [Setting Up Initial Environment](/labs-and-tutorials/sling/starting-from-scratch)
+1. [Starting From Scratch](/labs-and-tutorials/sling/starting-from-scratch)
