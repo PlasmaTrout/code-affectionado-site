@@ -1,6 +1,6 @@
 ---
 layout: page
-title: "Apache Felix - Multiple Cardinality References"
+title: "Apache Felix - Multiple Cardinality References (BndTools)"
 date: 2014-10-20 10:01
 comments: true
 sharing: true
