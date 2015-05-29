@@ -1,0 +1,542 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <script src="/js/vendor/modernizr.js"></script>
+  <meta charset="utf-8">
+  <title>Apache Sling - Starting From Scratch | CodeAffectionado</title>
+  <meta name="author" content="jeff.downing@latchd.com">
+
+  
+  <meta name="description" content="Apache Sling - Starting From Scratch May 28, 2015 --> In this tutorial we will download and setup a basic development environment using Apache Sling &hellip;">
+  
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.codeaffectionado.com/labs-and-tutorials/sling/starting-from-scratch">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="CodeAffectionado" type="application/atom+xml">
+
+  <script src="/js/vendor/jquery.js"></script>
+  <script src="/js/vendor/fastclick.js"></script>
+
+  <script src="/js/foundation.min.js"></script>
+
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+
+
+  <script>
+
+  $(document).ready(function(){
+    $(document).foundation();
+  });
+
+  </script>
+
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=Roboto:300,300italic,500,500italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Ubuntu:500' rel='stylesheet' type='text/css'>
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43174506-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body  >
+  <header role="banner" class="top-header">
+</header>
+  <nav role="navigation"><ul class="subscription hide" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+
+
+  <nav class="top-bar" data-topbar>
+
+    <!--Uncomment CodeAffectionado below if you would like a title area on the left side of the nav bar-->
+
+    <ul class="title-area">
+        <li class="name">
+          <h1><a href="/">CodeAffectionado</a></h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#">Menu</a></li>
+    </ul>
+
+
+    <section class="top-bar-section">
+
+      <ul class="main-navigation right">
+
+          <li><a href="/">Home</a></li>
+      	  <li class="has-dropdown">
+            <a href="/labs-and-tutorials">Tutorials</a>
+        		<ul class="dropdown">
+        		   <li><a href="/labs-and-tutorials/osgi/">OSGi</a></li>
+        		   <li><a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a></li>
+        		</ul>
+          <li>
+
+          <!--<li class="has-dropdown">
+            <a href="/no-sidebar">No Sidebar Page</a>
+
+            <ul class="dropdown">
+              <li><a href="/no-sidebar/left-sidebar">Left Sidebar Page</a></li>
+              <li><a href="/no-sidebar/right-sidebar">Right Sidebar Page</a></li>
+              <li><a href="/no-sidebar/example-formatting">Example Formatting</a></li>
+            </ul>
+
+          </li>-->
+
+          <li><a href="/blog/archives">Archives</a></li>
+
+      </ul>
+
+    </section>
+  </nav>
+
+
+</nav>
+  <div id="main">
+    <div id="content" class="row">
+        <div class="small-12 medium-12 large-8 columns">
+  <article role="article">
+    
+    <header class="page-header">
+      <h1 class="page-title">Apache Sling - Starting From Scratch</h1>
+      
+      <!--<p class="meta">
+
+
+
+
+
+
+
+
+  
+
+
+<i class="fa fa-calendar-o"></i> <time datetime="2015-05-28T21:31:00-04:00" pubdate data-updated="true">May 28, 2015</time> </p>-->
+    </header>
+    
+    <p>In this tutorial we will download and setup a basic development environment using Apache Sling. While there are numerous ways to work with Apache Sling, the WebDav method is the easiest for this tutorial. Once more advanced features like deployment, replication and source control are needed, future tutorials will cover these topics.</p>
+
+<h2 id="id-0331dfefe8f7ab8400aa0811155fb1c2">1 What Is Apache Sling?</h2>
+
+<p>Well, to borrow from the official <a href="http://sling.apache.org/">Apache Sling website</a>, Apache Sling can be summed up in five bullet points:</p>
+
+<ul>
+<li>REST Based Web Framework</li>
+<li>Content-Driven (using a JCR)</li>
+<li>Powered By OSGi</li>
+<li>Multple Languages Supported (JSP, Server Side JavaScript/ESP, Groovy, etc.)</li>
+<li>Open Source</li>
+</ul>
+
+
+<h2 id="id-77bd0009a0dc250f9d0514193c917230">2 Getting Apache Sling</h2>
+
+<p>Apache Sling&rsquo;s download page is located at <a href="http://sling.apache.org/downloads.cgi">http://sling.apache.org/downloads.cgi</a>. Notice that under the Sling Application header there are 3 main types of downloads. Which one you get really depends on your needs but let&rsquo;s take a look at whats offered:</p>
+
+<table>
+<thead>
+<tr>
+<th>Download Type </th>
+<th> Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Standalone Application </td>
+<td> This is what we will use in our development environment. It is a standalone runnable jar file and makes installing the platform a breeze. All of sling is encapsulated in a running Apache Felix OSGi instance so if you done the OSGi tutorials you should already be confortable with it.</td>
+</tr>
+<tr>
+<td>Sling Web Application </td>
+<td> This is basically a war file made to snap into your web server of choice. It&rsquo;s important to know though that this WAR file embeds OSGi and the system console into the web app. So don&rsquo;t try to deploy it to a Jetty/WAR whiteboard in an existing OSGi framework. That would be a bit silly.</td>
+</tr>
+<tr>
+<td>Sling Source Release </td>
+<td> If for some reason you need to build Apache Sling under a different JDK or for a different processor type, the source is available to you.</td>
+</tr>
+</tbody>
+</table>
+
+
+<p>Let&rsquo;s grab the <a href="http://mirror.sdunix.com/apache//sling/org.apache.sling.launchpad-7-standalone.jar">standalone jar file</a> and move it to a new directory created on our filesystem. This step is important since running it will cause a few new directories and config files to be created at its root, and you don&rsquo;t want that cluttering your documents or downloads folder. I saved mine in <code>D:/Sling/</code> since I&rsquo;m on a windows machine for this tutorial.</p>
+
+<h2 id="id-b0275689999bdc4f9506b121014e395a">3 Running The Jar File</h2>
+
+<p>Change directory to where you placed your file, and execute a java -jar on the jarfile. Mine looked something like this:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>cd D:
+</span><span class='line'>cd Sling
+</span><span class='line'>java -jar org.apache.sling.launchpad-7-standalone.jar</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>That&rsquo;s really all there was to installing it. In the console you probably received quite a few lines of output:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>28.05.2015 21:45:05.497 *INFO * [main] Setting sling.home=sling (default)
+</span><span class='line'>28.05.2015 21:45:05.498 *INFO * [main] Starting Apache Sling in d:\Sling\sling
+</span><span class='line'>28.05.2015 21:45:05.500 *INFO * [main] Sling  Extension Lib Home : d:\Sling\sling\ext
+</span><span class='line'>28.05.2015 21:45:05.501 *INFO * [main] Checking launcher JAR in folder d:\Sling\sling
+</span><span class='line'>28.05.2015 21:45:05.509 *INFO * [main] Installing new launcher: jar:file:/D:/Sling/org.apache.sling.launchpad-7-sta
+</span><span class='line'>ndalone.jar!/resources/org.apache.sling.launchpad.base.jar, 4.4.1.2_5_2 (org.apache.sling.launchpad.base.jar.143286
+</span><span class='line'>3905508)
+</span><span class='line'>28.05.2015 21:45:05.510 *INFO * [main] Loading launcher class org.apache.sling.launchpad.base.app.MainDelegate from
+</span><span class='line'> org.apache.sling.launchpad.base.jar.1432863905508
+</span><span class='line'>28.05.2015 21:45:05.510 *INFO * [main] External Libs Home (ext) is null or does not exists.
+</span><span class='line'>28.05.2015 21:45:05.527 *INFO * [main] Setting sling.launchpad=d:\Sling\sling
+</span><span class='line'>28.05.2015 21:45:05.527 *INFO * [main] Starting launcher ...
+</span><span class='line'>28.05.2015 21:45:05.528 *INFO * [main] HTTP server port: 8080
+</span><span class='line'>28.05.2015 21:45:06.979 *INFO* [FelixStartLevel] org.apache.sling.commons.log.logback.internal.Activator LogbackMan
+</span><span class='line'>ager initialized at bundle startup
+</span><span class='line'>28.05.2015 21:45:06.984 *INFO* [FelixStartLevel] org.apache.sling.commons.logservice Service [org.apache.sling.comm
+</span><span class='line'>ons.logservice.internal.LogServiceFactory,17] ServiceEvent REGISTERED
+</span><span class='line'>28.05.2015 21:45:06.985 *INFO* [FelixStartLevel] org.apache.sling.commons.logservice Service [org.apache.sling.comm
+</span><span class='line'>ons.logservice.internal.LogReaderServiceFactory,18] ServiceEvent REGISTERED
+</span><span class='line'>28.05.2015 21:45:06.985 *INFO* [FelixStartLevel] org.apache.sling.commons.logservice BundleEvent STARTED
+</span><span class='line'>28.05.2015 21:45:06.986 *INFO* [FelixStartLevel] org.apache.sling.installer.core BundleEvent RESOLVED
+</span><span class='line'>28.05.2015 21:45:06.987 *INFO* [FelixStartLevel] org.apache.sling.installer.core BundleEvent STARTING
+</span><span class='line'>28.05.2015 21:45:07.183 *INFO * [main] Startup completed</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>The most important of these is the line <code>HTTP server port: 8080</code> which tells us where to go next.</p>
+
+<h2 id="id-ac9bb786a58c65f8ffb9ad97d02c1455">4 Yep This Is Felix</h2>
+
+<p>If you navigate to <a href="http://localhost:8080/system/console" target="_blank"><a href="http://localhost:8080/system/console">http://localhost:8080/system/console</a></a> and login as <code>admin:admin</code> you should be greeted with your old friend the Apache Felix web console. Of course this one is branded with Apache Slings logo, but it operates just the same. Feel free to browse around. Notice there are around 105 bundles in this installation. Most belong to Felix and Apache Jackrabbit (see why we started there first), but a large portion are Sling specific bundles.</p>
+
+<p>Now navigate to <a href="http://localhost:8080/index.html">http://localhost:8080/index.html</a> and you should be presented with a welcome screen, just like you would on tomcat or similar web server.</p>
+
+<p><em>Note: You may or may not be logged in as admin. If not click on the login link and try to stay logged in as admin/admin through these tutorials.</em></p>
+
+<h2 id="id-09b0887acb4142055830b94aee6ddf64">5 The Tricky Part: WebDav</h2>
+
+<p>In order to do some of these new tutorials in Apache Sling, at least until we learn how to make content loaders in Maven, we will need access to the WebDav port that sling exposes so we can drop files on it. This will temporarily serve as our deployment method, however this method differs by OS.</p>
+
+<table>
+<thead>
+<tr>
+<th>Platform </th>
+<th> Technique</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mac      </td>
+<td> In finder choose Go &ndash;> Connect To Server and put in  <a href="http://admin:admin@localhost:8080/">http://admin:admin@localhost:8080/</a> and click connect.</td>
+</tr>
+<tr>
+<td>Ubuntu   </td>
+<td> Places &ndash;> Connect To Server &ndash;> <a href="http://admin:admin@localhost:8080/">http://admin:admin@localhost:8080/</a></td>
+</tr>
+<tr>
+<td>Windows  </td>
+<td> Windows can be a real pain especially since windows 8. To connect to it see the next section.</td>
+</tr>
+</tbody>
+</table>
+
+
+<h3 id="id-3d578ea365c061184fa2f3dce21ff70b">5.1 Connecting To Sling WebDav On Windows</h3>
+
+<p>For Windows users connecting to Sling, WebDav is a little unintuitive. For starters the actual URI you need to connect to is <a href="http://localhost:8080/dav/default">http://localhost:8080/dav/default</a> and most of you will get a network error out of the box. This is due to a new default setting thats been around since Window 7 that turns off basic authentication for non-SSL pages. So if you are seeing errors like:</p>
+
+<p><img src="/images/sling/erro1.PNG" title="Unknown Error Dialog" alt="Unknown Error Dialog"></p>
+
+<p>or the infamous <code>0x80070043 Network Name Cannot Be Found</code> Error</p>
+
+<p><img src="/images/sling/error2.PNG" title="Network Name Cannot Be Found" alt="Network Name Cannot Be Found"></p>
+
+<p>Your issue is basic auth being disabled. To turn it back on you basically follow a Microsoft KB Article <a href="https://support.microsoft.com/en-us/kb/841215">#84125</a> to turn it back on. As long as you are not running XP the TL;DR of this is adding a new DWORD to <code>HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\WebClient\Parameters</code> thats sets <code>BasicAuthLevel</code> to the value 2 and rebooting.</p>
+
+<p>Afterwards, in windows explorer, map a network drive to <a href="http://localhost:8080/dav/default">http://localhost:8080/dav/default</a> to a drive letter you can remember. In my case I ended up looking like this:</p>
+
+<p><img src="/images/sling/fix1.PNG" title="WebDav Mounted" alt="WebDav Mounted"></p>
+
+<p>Feel free to explore these new directories but don&rsquo;t modify any of the files just yet.</p>
+
+<h2 id="id-3f7a8e33c169307809ad23d0a5b17247">6 Playing Around</h2>
+
+<p>Even though we have this mounted, you are infact not on a file system. Instead you are inside a Apache Jackrabbit database that has a REST interface exposed. Notice that on your WebDav mount there is a folder called apps. Trying using the following address in your browser and see what happens:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:8080/apps.json</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>You will get the response:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span>
+</span><span class='line'><span class="s2">&quot;jcr:createdBy&quot;</span><span class="o">:</span> <span class="s2">&quot;admin&quot;</span><span class="p">,</span>
+</span><span class='line'><span class="s2">&quot;jcr:created&quot;</span><span class="o">:</span> <span class="s2">&quot;Thu May 28 2015 21:45:14 GMT-0400&quot;</span><span class="p">,</span>
+</span><span class='line'><span class="s2">&quot;jcr:primaryType&quot;</span><span class="o">:</span> <span class="s2">&quot;sling:Folder&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Now try:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">http</span><span class="o">:</span><span class="c1">//localhost:8080/apps.4.json</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Whoa right? Now you can recursively see down 4 levels of nested folders (well they look like folders don&rsquo;t they?)</p>
+
+<p>Even better try this:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">http</span><span class="o">:</span><span class="c1">//localhost:8080/apps.xml</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>How did that happen? You are essentially playing with the base way that sling operates. See that path after the host and port is really a path to tell Apache Jackrabbit where from the root to go. In this case you said /apps. The extension you entered after the word apps told Sling how to render the node. In our case we used both json and xml which are default renderers that are always available, but what happens if you use .html instead? Try it.</p>
+
+<p><img src="/images/sling/sling1.PNG" title="Sling Render Error" alt="Sling Render Error"></p>
+
+<p>Notice how an HTML renderer tried to process that node, but realized basically it was a folder and didn&rsquo;t know what to do with it (to be fair it was missing a special property too that we will get into later). So when Sling encounters a .html extension it looks first to see if the URI you gave actually points to a file (like <a href="http://localhost:8080/index.html">http://localhost:8080/index.html</a>) if so it just renders it. If it doesn&rsquo;t it looks to see if there are any script files (JSP,ESP,Etc) in JackRabbit that could render the node, otherwise it fails to a screen similar to this except telling you it searched and just coulding find a renderer.</p>
+
+<h2 id="id-82ebb0b88dd8f52d956600be7d675067">7 Data First Development</h2>
+
+<p>So Apache Sling development basically functions backwards doesn&rsquo;t it? Essentially the workflow works like this:</p>
+
+<ol>
+<li>Decide the URI you want to place the data</li>
+<li>Place the data in JackRabbit under that URI</li>
+<li>Access the data using the URI in browser</li>
+<li>Build renderers for that data by making JSP, ESP or XSLT pages (there are more options)</li>
+<li>Any other derivatives of the page can utilize selectors (eg: index.login.html).</li>
+</ol>
+
+
+<p>This is known as data first development and it&rsquo;s the big reason why Sling is different from all the other web frameworks out there.</p>
+
+<h2 id="id-290612199861c31d1036b185b4e69b75">8 Summary</h2>
+
+<p>In this tutorial we installed Apache Sling, verified it&rsquo;s operation by opening up the OSGi console and navigating to URLs and learned some basic mechanics behind how it renders things. In the next tutorial we need to give Sling some data and then build a simple JSP renderer for it.</p>
+
+    
+      <footer>
+        <p class="meta">
+          
+          
+
+
+
+
+
+
+
+
+  
+
+
+<i class="fa fa-calendar-o"></i> <time datetime="2015-05-28T21:31:00-04:00" pubdate data-updated="true">May 28, 2015</time> 
+          
+        </p>
+        
+          <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/labs-and-tutorials/sling/starting-from-scratch/index.html" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/labs-and-tutorials/sling/starting-from-scratch/index.html" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+        
+      </footer>
+    
+  </article>
+  
+    <section>
+      <h1>Comments</h1>
+      <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </section>
+  
+  </div><!--.columns-->
+  
+  <aside class="sidebar small-12 medium-12 large-4 columns">
+    
+      
+  <section>
+  <h1>Tutorial Steps</h1>
+  <ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-0331dfefe8f7ab8400aa0811155fb1c2">What Is Apache Sling?</a></li><li style="list-style:inherit;"><a href="#id-77bd0009a0dc250f9d0514193c917230">Getting Apache Sling</a></li><li style="list-style:inherit;"><a href="#id-b0275689999bdc4f9506b121014e395a">Running The Jar File</a></li><li style="list-style:inherit;"><a href="#id-ac9bb786a58c65f8ffb9ad97d02c1455">Yep This Is Felix</a></li><li style="list-style:inherit;"><a href="#id-09b0887acb4142055830b94aee6ddf64">The Tricky Part: WebDav</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-3d578ea365c061184fa2f3dce21ff70b">Connecting To Sling WebDav On Windows</a></li></ul></li><li style="list-style:inherit;"><a href="#id-3f7a8e33c169307809ad23d0a5b17247">Playing Around</a></li><li style="list-style:inherit;"><a href="#id-82ebb0b88dd8f52d956600be7d675067">Data First Development</a></li><li style="list-style:inherit;"><a href="#id-290612199861c31d1036b185b4e69b75">Summary</a></li></ol>
+  </section>
+<section>
+	<h1>Lab/Tutorial Sections</h1>
+	<ul id="recent_posts">
+      <li class="post">
+        <a href="/labs-and-tutorials/osgi/">OSGi</a>
+      </li>
+      <li>
+      	<a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a>
+      </li>
+  </ul>
+</section><section>
+  <h1>Recent Posts <i class="fa fa-edit"></i></h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/05/18/new-video-osgi-services-vs-service-factories/">New Video: OSGi Services vs Service Factories</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/13/new-video-setup-bndtool-for-jsp-development/">New Video: Setting Up BndTools for JSP Development</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/13/setting-up-for-2015/">Setting Up for 2015 (Videos and More)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/16/hey-whats-with-this-wordpress-site/">Hey? Whats With This Wordpress Site?</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/16/new-osgi-tutorial-posted/">New OSGi Tutorial on Bndtools Posted</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="googleplus">
+  <h3>
+    <a href="https://plus.google.com/114996005873710645329?rel=author">
+      <i class="fa fa-google-plus-square"></i> 
+      Google+
+    </a>
+  </h3>
+</section>
+
+
+
+    
+  </aside>
+  
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p class="text-center">
+  <span class="copyright">
+  	Copyright &copy; 2015 by jeff.downing@latchd.com
+  </span>
+
+  <span class="credit">
+  	Powered by <a href="http://octopress.org" target="_blank">Octopress</a><br />
+  	<span><a href="http://github.com/annejohnson/octofound" target="_blank">Theme</a> by <a href="http://feathers.io" target="_blank">Anne Johnson</a></span>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'aggrolearning';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://www.codeaffectionado.com/labs-and-tutorials/sling/starting-from-scratch/index.html';
+        var disqus_url = 'http://www.codeaffectionado.com/labs-and-tutorials/sling/starting-from-scratch/index.html';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+
+</body>
+</html>
