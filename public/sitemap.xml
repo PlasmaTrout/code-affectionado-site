@@ -41,16 +41,22 @@
         <lastmod>2015-05-19T23:30:17-04:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://www.codeaffectionado.com/blog/2015/05/29/updates-to-videos-and-tutorial-sections/
+        </loc>
+        <lastmod>2015-05-29T03:48:25-04:00</lastmod>
+    </url>
+    <url>
         <loc>http://www.codeaffectionado.com/archives/</loc>
-        <lastmod>2015-05-19T23:30:17-04:00</lastmod>
+        <lastmod>2015-05-29T03:48:25-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/blog/archives/</loc>
-        <lastmod>2015-05-19T23:30:17-04:00</lastmod>
+        <lastmod>2015-05-29T03:48:25-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/</loc>
-        <lastmod>2015-05-19T23:30:17-04:00</lastmod>
+        <lastmod>2015-05-29T03:48:25-04:00</lastmod>
     </url>
     <url>
         <loc>
@@ -174,11 +180,11 @@
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/labs-and-tutorials/osgi/</loc>
-        <lastmod>2015-05-28T21:22:28-04:00</lastmod>
+        <lastmod>2015-05-29T03:54:52-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/labs-and-tutorials/sling/</loc>
-        <lastmod>2015-05-29T03:32:22-04:00</lastmod>
+        <lastmod>2015-05-29T03:53:51-04:00</lastmod>
     </url>
     <url>
         <loc>http://www.codeaffectionado.com/labs-and-tutorials/sling/starting-from-scratch/</loc>

@@ -8,9 +8,6 @@ footer: true
 ---
 The following OSGi labs are normally done in order, however frequently we include GitHub links directly to finished versions of the previous labs so you can jump right in. This list is updated often as new tutorials are completed so check back often. The following labs are available in the category OSGi:
 
-#### References
-1. [BND Annotations - Component](/labs-and-tutorials/osgi/bnd-annotations-component)
-
 #### Web Tutorials
 
 1.	[Starting From Scratch](/labs-and-tutorials/osgi/apache-felix-from-scratch/)
@@ -33,3 +30,11 @@ The following OSGi labs are normally done in order, however frequently we includ
 5.  [OSGi Experimentation: Services Vs ServiceFactories](https://youtu.be/MpQZTG7A3Dw)
 6.  [Multiple Cardinality References (Using Maven/SCR)](https://youtu.be/nb9E6o9-UJs)
 
+#### References
+This section contains links of both external reference and internal ones that I try to maintain.
+
+##### Internal (My Feeble Attempt At Explaining Them)
+1. [BND Annotations - Component](/labs-and-tutorials/osgi/bnd-annotations-component)
+
+##### External (My Sources Of Information)
+1. [aQute Bnd Component Reference](http://www.aqute.biz/Bnd/Components)

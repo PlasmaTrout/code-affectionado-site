@@ -4,7 +4,7 @@
   <title><![CDATA[CodeAffectionado]]></title>
   <link href="http://www.codeaffectionado.com/atom.xml" rel="self"/>
   <link href="http://www.codeaffectionado.com/"/>
-  <updated>2015-05-29T03:32:22-04:00</updated>
+  <updated>2015-05-29T03:54:52-04:00</updated>
   <id>http://www.codeaffectionado.com/</id>
   <author>
     <name><![CDATA[jeff.downing@latchd.com]]></name>
@@ -12,6 +12,29 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Updates to Videos and Tutorial Sections]]></title>
+    <link href="http://www.codeaffectionado.com/blog/2015/05/29/updates-to-videos-and-tutorial-sections/"/>
+    <updated>2015-05-29T03:34:00-04:00</updated>
+    <id>http://www.codeaffectionado.com/blog/2015/05/29/updates-to-videos-and-tutorial-sections</id>
+    <content type="html"><![CDATA[<p>Some things were updated and added this week:</p>
+
+<p>First of all there is a <a href="https://youtu.be/nb9E6o9-UJs">new video tutorial</a> on multiple cardinality references and filtering. For those of you that may have done the ones in the OSGi section, this one covers the Maven/SCR Annotation method instead of BndTools. It does run long (sorry) at 47 minutes. In fairness though, it does cover about 4 tutorials worth of information. I promise not to make them this long again.</p>
+
+<iframe width="625" height="385" src="https://www.youtube.com/embed/nb9E6o9-UJs" frameborder="0" allowfullscreen></iframe>
+
+
+<br/><br/>
+
+
+<p>Secondly the <a href="http://www.codeaffectionado.com/labs-and-tutorials/sling/">Apache Sling section</a> has been opened. So far only one <a href="http://www.codeaffectionado.com/labs-and-tutorials/sling/starting-from-scratch">starting from scratch</a> tutorial is in there, but we all have to start somewhere :)</p>
+
+<p>Lastly, there is a new reference area in both the <a href="http://www.codeaffectionado.com/labs-and-tutorials/osgi/">OSGi</a> area and the <a href="http://www.codeaffectionado.com/labs-and-tutorials/sling/">Apache Sling</a> Area (Jackrabbit is coming). My intent is not only to give you some links to references I use for a particular subject but to provde some content to provide a more user friendly explanation of some of the things I&rsquo;ve learned. I hope I succeed.</p>
+
+<p>Enjoy and have a great week!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[New Video: OSGi Services vs Service Factories]]></title>
