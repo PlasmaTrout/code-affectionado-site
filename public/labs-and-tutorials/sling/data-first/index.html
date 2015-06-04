@@ -1,0 +1,705 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <script src="/js/vendor/modernizr.js"></script>
+  <meta charset="utf-8">
+  <title>Apache Sling - Data First Development | CodeAffectionado</title>
+  <meta name="author" content="jeff.downing@latchd.com">
+
+  
+  <meta name="description" content="Apache Sling - Data First Development June 3, 2015 --> In this tutorial we will learn how post data to our CastR application by using the Sling POST &hellip;">
+  
+
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://www.codeaffectionado.com/labs-and-tutorials/sling/data-first">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="CodeAffectionado" type="application/atom+xml">
+
+  <script src="/js/vendor/jquery.js"></script>
+  <script src="/js/vendor/fastclick.js"></script>
+
+  <script src="/js/foundation.min.js"></script>
+
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+
+
+  <script>
+
+  $(document).ready(function(){
+    $(document).foundation();
+  });
+
+  </script>
+
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href='http://fonts.googleapis.com/css?family=Roboto:300,300italic,500,500italic' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Ubuntu:500' rel='stylesheet' type='text/css'>
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43174506-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body  >
+  <header role="banner" class="top-header">
+</header>
+  <nav role="navigation"><ul class="subscription hide" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+
+
+  <nav class="top-bar" data-topbar>
+
+    <!--Uncomment CodeAffectionado below if you would like a title area on the left side of the nav bar-->
+
+    <ul class="title-area">
+        <li class="name">
+          <h1><a href="/">CodeAffectionado</a></h1>
+        </li>
+        <li class="toggle-topbar menu-icon"><a href="#">Menu</a></li>
+    </ul>
+
+
+    <section class="top-bar-section">
+
+      <ul class="main-navigation right">
+
+          <li><a href="/">Home</a></li>
+      	  <li class="has-dropdown">
+            <a href="/labs-and-tutorials">Tutorials</a>
+        		<ul class="dropdown">
+        		   <li><a href="/labs-and-tutorials/osgi/">OSGi</a></li>
+        		   <li><a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a></li>
+               <li><a href="/labs-and-tutorials/sling/">Apache Sling</a></li>
+        		</ul>
+          <li>
+
+          <!--<li class="has-dropdown">
+            <a href="/no-sidebar">No Sidebar Page</a>
+
+            <ul class="dropdown">
+              <li><a href="/no-sidebar/left-sidebar">Left Sidebar Page</a></li>
+              <li><a href="/no-sidebar/right-sidebar">Right Sidebar Page</a></li>
+              <li><a href="/no-sidebar/example-formatting">Example Formatting</a></li>
+            </ul>
+
+          </li>-->
+
+          <li><a href="/blog/archives">Archives</a></li>
+
+      </ul>
+
+    </section>
+  </nav>
+
+
+</nav>
+  <div id="main">
+    <div id="content" class="row">
+        <div class="small-12 medium-12 large-8 columns">
+  <article role="article">
+    
+    <header class="page-header">
+      <h1 class="page-title">Apache Sling - Data First Development</h1>
+      
+      <!--<p class="meta">
+
+
+
+
+
+
+
+
+  
+
+
+<i class="fa fa-calendar-o"></i> <time datetime="2015-06-03T22:45:00-04:00" pubdate data-updated="true">June  3, 2015</time> </p>-->
+    </header>
+    
+    <p>In this tutorial we will learn how post data to our <a href="/same-app-different-way">CastR</a> application by using the Sling POST Servlet built into Apache Sling. Future tutorials will use this data to show how to build pages that render the contents of this exercise.</p>
+
+<h2 id="id-82ebb0b88dd8f52d956600be7d675067">1 Data First Development</h2>
+
+<p>Before we begin let&rsquo;s have a quick review on how Sling works. Apache Sling operates a bit differently from most frameworks in that it&rsquo;s considered a data first development platform, but what does that mean exactly?</p>
+
+<h3 id="id-4f898dd24ad6818bc6e77b619b080bc7">1.1 The Normal Way</h3>
+
+<p>In a typical application we first must decide what framework we want to use, because once we choose we are usually confined to it&rsquo;s development and build process. After making a decision on the specific framework (Grails, Tomcat, .NET etc), we generally start a project structure and start working with a specific style of pages (GSP, JSP, ASPX, etc). Once the project is running and a few test pages have been built, we normally decide on a data-store and then start hooking our application up to the database. We may even decide later that building a RESTfull interface over the data is a better solution to help integrate with other systems.
+Then we have to prime the database with some starting content and then we start development of our dynamic sections of code.</p>
+
+<h3 id="id-25a585d4a21d12f62c61dfbb11f3fcbb">1.2 The Sling Way</h3>
+
+<p>Sling works backwards from the normal way. In Sling a content storage system is already built into the framework and this content storage system already has a RESTfull API over top of it (BTW built by the same person that wrote the REST specification in the first place). It also exposes a programmatic API within it so server side pages and code can talk directly to the content repository without using DB related queries and code.</p>
+
+<p>Development is almost always started with a core set of data to store or view. Once the data has been stored in the content repository (called a JCR) it can then be accessed via a URL using the RESTfull layer on top of it.</p>
+
+<p>When data in Sling is accessed via a URL, a set of servlets try to make an intelligent decision about how to render it back to the browser by using the extension (.html, .json, .xml etc). Sling also understands that html can be rendered by other scripting languages and searches for plugged in languages that can be used. Because of this, Apache Sling doesn&rsquo;t care how you want to build pages, your more than welcome to use whatever method (JSP, ESP, XSLT, Groovy etc) or a mix of these methods if you wish.</p>
+
+<h3 id="id-3f9509df98ca727a53d5effc7c7e0f8f">1.3 The Nutshell</h3>
+
+<p>Normal development usually constrains you to a specific scripting language, gives you free reign of databases, and requires you to implement RESTfull facets.</p>
+
+<p>Apache Sling constrains you to a content storage paradigm, provides a RESTfull interface and gives you free reign of what scripting/languages you would like to use (with some obvious exceptions).</p>
+
+<h2 id="id-c9466c81f176c76d7a8a6d33bd332a71">2 Starting Our Podcast Site</h2>
+
+<p>Armed with our new understanding of how Apache Sling works we need to take some steps to set everything up:</p>
+
+<ol>
+<li>We need to decide on our canonical URL structure of our site</li>
+<li>We need to store some data to make our URL structure live</li>
+<li>We can then test the rendering in JSON and XML formats to make sure it looks good</li>
+</ol>
+
+
+<p><em>Note: Future tutorials will render these pages in HTML so don&rsquo;t sweat that part just yet.</em></p>
+
+<h3 id="id-ae92293d03b0869b30d710a07d0f75d2">2.1 The CastR URL Structure</h3>
+
+<p>Before we go too far, let&rsquo;s first talk about the JCR and node based storage. Node storage is very similar to the file tree style controls in Windows Explorer and Mac Finder. Each one starts with a root note, signified by <code>/</code> and usually folders underneath help organize things into logical structures. We typically don&rsquo;t just throw a ton of stuff in the root folder because then it becomes hard to understand and organize. Imagine if hundreds of documents were just sitting in the root of your drive.</p>
+
+<p>In Apache Sling we have another concern in that the root folder already has some other folders in it. These folders are in lower case and some have specific purposes and we should mess with them. For instance the <code>apps/</code> folder is very important to Apache Sling. Right now our directory looks like:</p>
+
+<p><img src="/images/sling/fix1.PNG" title="WebDav Mounted" alt="WebDav Mounted"></p>
+
+<p>This is solved in the Apache Sling and Adobe AEM world by a habit that developers have of creating a folder named <code>content/</code> to store the content in (don&rsquo;t do this just yet, we&rsquo;re getting to it). Sticking with this convention, and knowing we were creating a site to store podcasts and episodes, it makes since to have a URL structure like this:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:8080/content/castr/podcasts</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Getting a specific podcast would be done like this:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:8080/content/castr/podcasts/my_crazy_podcast</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Getting an episode would then look something like this:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>http://localhost:8080/content/castr/podcasts/my_crazy_podcast/episode_1</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h3 id="id-712c4f259eb4f9053ab04eac70cb6ba9">2.2 Curl?</h3>
+
+<p>To make this tutorial work, a tool named curl is needed. On a Mac or Linux machine it&rsquo;s probably already there. For Windows the best bet is use the Git Bash shell to do this tutorial since it&rsquo;s already built into it. If you need it for windows, find it at this <a href="https://git-scm.com/download/win">link</a>. Make sure to install the git bash shell.</p>
+
+<p>This gives us enough to get started. Now we need to learn how to get data into Apache Sling and how to visualize it after we do.</p>
+
+<h2 id="id-23350de68901dd40c54c44bed36d8796">3 Priming Some Podcast Data</h2>
+
+<p>Posting data to Apache Sling will seem relatively straight forward and limited at first, however looks are deceiving. There is a very polished <a href="https://sling.apache.org/documentation/bundles/manipulating-content-the-slingpostservlet-servlets-post.html">servlet</a> hanging out behind the scenes that can do some pretty amazing things. But lets start by posting a single field to a URL and watch what happens. In the command prompt (with curl installed) paste in the following line:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>curl "http://localhost:8080/content/castr/podcasts/programmer_vs_world" -F"title=Programmer Versus World" -u "admin:admin"</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p><em>Note: Here we posted to our <code>content -&gt; castr -&gt; podcasts</code> folder a new post named <code>programmer_vs_world</code> and gave it one field. The -u flag is our login credentials which is needed to manipulate data.</em></p>
+
+<p>In the HTML response notice the following two table entries:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='xml'><span class='line'><span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;td&gt;</span>Status<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;td&gt;&lt;div</span> <span class="na">id=</span><span class="s">&quot;Status&quot;</span><span class="nt">&gt;</span>201<span class="nt">&lt;/div&gt;&lt;/td&gt;</span>
+</span><span class='line'><span class="nt">&lt;/tr&gt;</span>
+</span><span class='line'><span class="nt">&lt;tr&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;td&gt;</span>Message<span class="nt">&lt;/td&gt;</span>
+</span><span class='line'>    <span class="nt">&lt;td&gt;&lt;div</span> <span class="na">id=</span><span class="s">&quot;Message&quot;</span><span class="nt">&gt;</span>Created<span class="nt">&lt;/div&gt;&lt;/td&gt;</span>
+</span><span class='line'><span class="nt">&lt;/tr&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p><em>Note: A HTML response comes back from this as the default reply because most POSTs are coming from web forms and this would be seen by the browser after a successful post.</em></p>
+
+<h3 id="id-302dbad7d961c743374fe2cb850eedd3">3.1 Viewing Our New Post</h3>
+
+<p>To view the new post we will use the default JSON renderer. You&rsquo;ll notice we will use the form <code>somepage.&lt;number&gt;.json</code> a lot. The number in this format tells Sling how far down to recursively render. In most cases we will use 4 but feel free to experiment. The phrase &ldquo;infinity&rdquo; can also be used if you want to really have some fun later.</p>
+
+<p>Navigate to:</p>
+
+<p><a href="http://localhost:8080/content.4.json">http://localhost:8080/content.4.json</a></p>
+
+<p>That command, did indeed create the full path we wanted. Notice how, even if the nodes didn&rsquo;t exist, Apache Sling just created them for us.</p>
+
+<p>We can further narrow out display of the data by using URLS like:</p>
+
+<ul>
+<li><a href="http://localhost:8080/content/castr.4.json">http://localhost:8080/content/castr.4.json</a></li>
+<li><a href="http://localhost:8080/content/castr/podcasts.4.json">http://localhost:8080/content/castr/podcasts.4.json</a>, * <a href="http://localhost:8080/content/castr/podcasts/programmer_vs_world.4.json">http://localhost:8080/content/castr/podcasts/programmer_vs_world.json</a>.</li>
+</ul>
+
+
+<p>Because we only added one field (title) when we made that final node it ended up like this:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Programmer Versus World&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="s2">&quot;jcr:primaryType&quot;</span><span class="o">:</span> <span class="s2">&quot;nt:unstructured&quot;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p><em>Note: The primaryType property is automatically added in our case because it&rsquo;s mandatory. The nt:unstructured type just means it&rsquo;s schema-less.</em></p>
+
+<h3 id="id-3e1eb66e78df94f23d3a0d46fc186bd7">3.2 Adding Another Node</h3>
+
+<p>Let&rsquo;s add two more podcast nodes and see what happens:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">curl</span> <span class="s2">&quot;http://localhost:8080/content/castr/podcasts/some_other_podcast&quot;</span> <span class="o">-</span><span class="nx">F</span><span class="s2">&quot;title=The Other Podcast&quot;</span> <span class="o">-</span><span class="nx">u</span> <span class="s2">&quot;admin:admin&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">curl</span> <span class="s2">&quot;http://localhost:8080/content/castr/podcasts/some_other_podcast2&quot;</span> <span class="o">-</span><span class="nx">F</span><span class="s2">&quot;title=The Deletable Podcast&quot;</span> <span class="o">-</span><span class="nx">u</span> <span class="s2">&quot;admin:admin&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Now if we go to:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">http</span><span class="o">:</span><span class="c1">//localhost:8080/content/castr/podcasts.4.json</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>We notice we have three podcasts nodes now:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;jcr:primaryType&quot;</span><span class="o">:</span> <span class="s2">&quot;nt:unstructured&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;programmer_vs_world&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Programmer Versus World&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;jcr:primaryType&quot;</span><span class="o">:</span> <span class="s2">&quot;nt:unstructured&quot;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>      <span class="s2">&quot;some_other_podcast&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;The Other Podcast&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;jcr:primaryType&quot;</span><span class="o">:</span> <span class="s2">&quot;nt:unstructured&quot;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>      <span class="s2">&quot;some_other_podcast2&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;The Deletable Podcast&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;jcr:primaryType&quot;</span><span class="o">:</span> <span class="s2">&quot;nt:unstructured&quot;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2 id="id-8f03a582ba650150e4e672a7af5d61c7">4 Deleting A Node</h2>
+
+<p>That <em>some_other_podcast2</em> entry was just an extra. Lets remove it. To do this we need to use a special field that the Apache Sling post servlet understands. It&rsquo;s named <code>:operation</code>.</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">curl</span> <span class="s2">&quot;http://localhost:8080/content/castr/podcasts/some_other_podcast2&quot;</span> <span class="o">-</span><span class="nx">F</span><span class="s2">&quot;:operation=delete&quot;</span> <span class="o">-</span><span class="nx">u</span> <span class="s2">&quot;admin:admin&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Notice how this is still a <em>HTTP POST</em>, just with a field named &ldquo;:operation&rdquo; set to &ldquo;delete&rdquo;. This will delete whatever node is specified in the URL. Be careful with this one.</p>
+
+<p>Now our <a href="http://localhost:8080/content/castr/podcasts.4.json">podcasts node</a> shows:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;jcr:primaryType&quot;</span><span class="o">:</span> <span class="s2">&quot;nt:unstructured&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;programmer_vs_world&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Programmer Versus World&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;jcr:primaryType&quot;</span><span class="o">:</span> <span class="s2">&quot;nt:unstructured&quot;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>      <span class="s2">&quot;some_other_podcast&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;The Other Podcast&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;jcr:primaryType&quot;</span><span class="o">:</span> <span class="s2">&quot;nt:unstructured&quot;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p></p>
+
+<h2 id="id-2aabe3a494d753748b1b725c5f918c86">5 Updating Data</h2>
+
+<p>To update data in Apache Sling all we need to do is post again to the same area with the changes we want to see. If we don&rsquo;t want a specific field changed, we just leave it out. The first podcast entry we created only had a title field and a primaryType field. Let&rsquo;s add a description to it by copying the following command to the terminal:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">curl</span> <span class="s2">&quot;http://localhost:8080/content/castr/podcasts/programmer_vs_world&quot;</span> <span class="o">-</span><span class="nx">F</span><span class="s2">&quot;description=Programmer vs World is a podcast centered around asking the hard coding, programming, engineering and software architecture related questions but with a fun and humorous touch.&quot;</span> <span class="o">-</span><span class="nx">u</span> <span class="s2">&quot;admin:admin&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Now when we view the <a href="http://localhost:8080/content/castr/podcasts.4.json">podcasts</a> node we get:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;jcr:primaryType&quot;</span><span class="o">:</span> <span class="s2">&quot;nt:unstructured&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;programmer_vs_world&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;description&quot;</span><span class="o">:</span> <span class="s2">&quot;Programmer vs World is a podcast centered around asking the hard coding, programming, engineering and software architecture related questions but with a fun and humorous touch.&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Programmer Versus World&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;jcr:primaryType&quot;</span><span class="o">:</span> <span class="s2">&quot;nt:unstructured&quot;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span><span class='line'>      <span class="s2">&quot;some_other_podcast&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;The Other Podcast&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;jcr:primaryType&quot;</span><span class="o">:</span> <span class="s2">&quot;nt:unstructured&quot;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Let&rsquo;s go ahead and add a description to the other one too:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">curl</span> <span class="s2">&quot;http://localhost:8080/content/castr/podcasts/some_other_podcast&quot;</span> <span class="o">-</span><span class="nx">F</span><span class="s2">&quot;description=Current this podcast doesn&#39;t really exit so it doesn&#39;t really have a good description, however, if it did exist that description would go here.&quot;</span> <span class="o">-</span><span class="nx">u</span> <span class="s2">&quot;admin:admin&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2 id="id-0b273d23bb9360f2d5303da6bbdf4f8c">6 Adding Child Nodes</h2>
+
+<p>Adding children is really just as simple as adding new fields except we need to be more specific on the URL that we give curl. Let&rsquo;s add some podcasts to our first node just to demonstrate the point:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">curl</span> <span class="s2">&quot;http://localhost:8080/content/castr/podcasts/programmer_vs_world/episode_1&quot;</span> <span class="o">-</span><span class="nx">F</span><span class="s2">&quot;title=The Beginnings Of Things To Come&quot;</span> <span class="o">-</span><span class="nx">F</span><span class="s2">&quot;description=In this episode Jeff and Gabe, along with special guest Zack, talk about certifications, becoming architects and should developers be the stakeholders or architecture.&quot;</span> <span class="o">-</span><span class="nx">F</span><span class="s2">&quot;link=https://dl.dropboxusercontent.com/u/16986127/Podcasts/Podcast%20Session%201%20Mastered.mp3&quot;</span> <span class="o">-</span><span class="nx">u</span> <span class="s2">&quot;admin:admin&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>and</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">curl</span> <span class="s2">&quot;http://localhost:8080/content/castr/podcasts/programmer_vs_world/episode_2&quot;</span> <span class="o">-</span><span class="nx">F</span><span class="s2">&quot;title=Build 2015&quot;</span> <span class="o">-</span><span class="nx">F</span><span class="s2">&quot;description=In this episode the crew recaps a few of the big announcements from Microsofts Build 2015 conference.&quot;</span> <span class="o">-</span><span class="nx">F</span><span class="s2">&quot;link=https://dl.dropboxusercontent.com/u/16986127/Podcasts/PvW_Episode2_Final.mp3&quot;</span> <span class="o">-</span><span class="nx">u</span> <span class="s2">&quot;admin:admin&quot;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Now if we checkout the root node we should see:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="p">{</span>
+</span><span class='line'>      <span class="s2">&quot;jcr:primaryType&quot;</span><span class="o">:</span> <span class="s2">&quot;nt:unstructured&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="s2">&quot;programmer_vs_world&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="s2">&quot;description&quot;</span><span class="o">:</span> <span class="s2">&quot;Programmer vs World is a podcast centered around asking the hard coding, programming, engineering and software architecture related questions but with a fun and humorous touch.&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Programmer Versus World&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s2">&quot;jcr:primaryType&quot;</span><span class="o">:</span> <span class="s2">&quot;nt:unstructured&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s2">&quot;episode_1&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>              <span class="s2">&quot;description&quot;</span><span class="o">:</span> <span class="s2">&quot;In this episode Jeff and Gabe, along with special guest Zack, talk about certifications, becoming architects and should developers be the stakeholders or architecture.&quot;</span><span class="p">,</span>
+</span><span class='line'>              <span class="s2">&quot;link&quot;</span><span class="o">:</span> <span class="s2">&quot;https://dl.dropboxusercontent.com/u/16986127/Podcasts/Podcast%20Session%201%20Mastered.mp3&quot;</span><span class="p">,</span>
+</span><span class='line'>              <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;The Beginnings Of Things To Come&quot;</span><span class="p">,</span>
+</span><span class='line'>              <span class="s2">&quot;jcr:primaryType&quot;</span><span class="o">:</span> <span class="s2">&quot;nt:unstructured&quot;</span>
+</span><span class='line'>          <span class="p">},</span>
+</span><span class='line'>          <span class="s2">&quot;episode_2&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>              <span class="s2">&quot;description&quot;</span><span class="o">:</span> <span class="s2">&quot;In this episode the crew recaps a few of the big announcements from Microsofts Build 2015 conference.&quot;</span><span class="p">,</span>
+</span><span class='line'>              <span class="s2">&quot;link&quot;</span><span class="o">:</span> <span class="s2">&quot;https://dl.dropboxusercontent.com/u/16986127/Podcasts/PvW_Episode2_Final.mp3&quot;</span><span class="p">,</span>
+</span><span class='line'>              <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;Build 2015&quot;</span><span class="p">,</span>
+</span><span class='line'>              <span class="s2">&quot;jcr:primaryType&quot;</span><span class="o">:</span> <span class="s2">&quot;nt:unstructured&quot;</span>
+</span><span class='line'>          <span class="p">}</span>
+</span><span class='line'>      <span class="p">},</span>
+</span><span class='line'>      <span class="s2">&quot;some_other_podcast&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>          <span class="s2">&quot;description&quot;</span><span class="o">:</span> <span class="s2">&quot;Current this podcast doesn&#39;t really exit so it doesn&#39;t really have a good description, however, if it did exist that description would go here.&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s2">&quot;title&quot;</span><span class="o">:</span> <span class="s2">&quot;The Other Podcast&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="s2">&quot;jcr:primaryType&quot;</span><span class="o">:</span> <span class="s2">&quot;nt:unstructured&quot;</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<h2 id="id-78164dff696aeb23e84a49b459a6848b">7 Some Other Fun Stuff</h2>
+
+<p>Now we have some primed data we can build off of on a future tutorial. But before we fully abandon this one let&rsquo;s try a few more URL&rsquo;s before we move on. Enter this one in your browser:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">http</span><span class="o">:</span><span class="c1">//localhost:8080/content/castr/podcasts.xml</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Apache Sling also has a default XML renderer as well and we don&rsquo;t need to specify a depth when we use it either. As you can imagine using this in conjunction with some XSLT would make things easy.</p>
+
+<p>Now let&rsquo;s try another one:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">http</span><span class="o">:</span><span class="c1">//localhost:8080/content/castr/podcasts/some_other_podcast.txt</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Notice how we got the content of the some_other_podcast node back as text. So what happens when we use:</p>
+
+<div class='bogus-wrapper'><notextile><figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">http</span><span class="o">:</span><span class="c1">//localhost:8080/content/castr/podcasts/some_other_podcast.html</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+
+
+<p>Notice how we received a default response that looks like the text servlet just in an HTML form. This is the default HTML renderer and this is how things will look if we don&rsquo;t create pages for them.</p>
+
+<h2 id="id-290612199861c31d1036b185b4e69b75">8 Summary</h2>
+
+<p>In this tutorial we used the sling post servlet to prime some content into our content repository. In the next tutorial we will abandon the default HTML renderer and make some pages that will render our content.</p>
+
+    
+      <footer>
+        <p class="meta">
+          
+          
+
+
+
+
+
+
+
+
+  
+
+
+<i class="fa fa-calendar-o"></i> <time datetime="2015-06-03T22:45:00-04:00" pubdate data-updated="true">June  3, 2015</time> 
+          
+        </p>
+        
+          <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://www.codeaffectionado.com/labs-and-tutorials/sling/data-first/index.html" data-via="mrjepp" data-counturl="http://www.codeaffectionado.com/labs-and-tutorials/sling/data-first/index.html" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+        
+      </footer>
+    
+  </article>
+  
+    <section>
+      <h1>Comments</h1>
+      <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+    </section>
+  
+  </div><!--.columns-->
+  
+  <aside class="sidebar small-12 medium-12 large-4 columns">
+    
+      
+  <section>
+  <h1>Tutorial Steps</h1>
+  <ol style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-82ebb0b88dd8f52d956600be7d675067">Data First Development</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-4f898dd24ad6818bc6e77b619b080bc7">The Normal Way</a></li> <li style="list-style:inherit;"><a href="#id-25a585d4a21d12f62c61dfbb11f3fcbb">The Sling Way</a></li> <li style="list-style:inherit;"><a href="#id-3f9509df98ca727a53d5effc7c7e0f8f">The Nutshell</a></li></ul></li><li style="list-style:inherit;"><a href="#id-c9466c81f176c76d7a8a6d33bd332a71">Starting Our Podcast Site</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-ae92293d03b0869b30d710a07d0f75d2">The CastR URL Structure</a></li> <li style="list-style:inherit;"><a href="#id-712c4f259eb4f9053ab04eac70cb6ba9">Curl?</a></li></ul></li><li style="list-style:inherit;"><a href="#id-23350de68901dd40c54c44bed36d8796">Priming Some Podcast Data</a><ul style="margin-left: 1.3em;"><li style="list-style:inherit;"><a href="#id-302dbad7d961c743374fe2cb850eedd3">Viewing Our New Post</a></li> <li style="list-style:inherit;"><a href="#id-3e1eb66e78df94f23d3a0d46fc186bd7">Adding Another Node</a></li></ul></li><li style="list-style:inherit;"><a href="#id-8f03a582ba650150e4e672a7af5d61c7">Deleting A Node</a></li><li style="list-style:inherit;"><a href="#id-2aabe3a494d753748b1b725c5f918c86">Updating Data</a></li><li style="list-style:inherit;"><a href="#id-0b273d23bb9360f2d5303da6bbdf4f8c">Adding Child Nodes</a></li><li style="list-style:inherit;"><a href="#id-78164dff696aeb23e84a49b459a6848b">Some Other Fun Stuff</a></li><li style="list-style:inherit;"><a href="#id-290612199861c31d1036b185b4e69b75">Summary</a></li></ol>
+  </section>
+<section>
+	<h1>Lab/Tutorial Sections</h1>
+	<ul id="recent_posts">
+      <li class="post">
+        <a href="/labs-and-tutorials/osgi/">OSGi</a>
+      </li>
+      <li>
+      	<a href="/labs-and-tutorials/apache-jackrabbit/">Apache Jackrabbit</a>
+      </li>
+      <li>
+      	<a href="/labs-and-tutorials/sling/">Apache Sling</a>
+      </li>
+  </ul>
+</section><section>
+  <h1>Recent Posts <i class="fa fa-edit"></i></h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/05/29/updates-to-videos-and-tutorial-sections/">Updates to Videos and Tutorial Sections</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/18/new-video-osgi-services-vs-service-factories/">New Video: OSGi Services vs Service Factories</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/13/new-video-setup-bndtool-for-jsp-development/">New Video: Setting Up BndTools for JSP Development</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/05/13/setting-up-for-2015/">Setting Up for 2015 (Videos and More)</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/16/hey-whats-with-this-wordpress-site/">Hey? Whats With This Wordpress Site?</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section class="googleplus">
+  <h3>
+    <a href="https://plus.google.com/114996005873710645329?rel=author">
+      <i class="fa fa-google-plus-square"></i> 
+      Google+
+    </a>
+  </h3>
+</section>
+
+
+
+    
+  </aside>
+  
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p class="text-center">
+  <span class="copyright">
+  	Copyright &copy; 2015 by jeff.downing@latchd.com
+  </span>
+
+  <span class="credit">
+  	Powered by <a href="http://octopress.org" target="_blank">Octopress</a><br />
+  	<span><a href="http://github.com/annejohnson/octofound" target="_blank">Theme</a> by <a href="http://feathers.io" target="_blank">Anne Johnson</a></span>
+  </span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'aggrolearning';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://www.codeaffectionado.com/labs-and-tutorials/sling/data-first/index.html';
+        var disqus_url = 'http://www.codeaffectionado.com/labs-and-tutorials/sling/data-first/index.html';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+
+</body>
+</html>
